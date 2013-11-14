@@ -1,0 +1,260 @@
+<?xml version='1.0'?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY jena    'http://jena.hpl.hp.com/schemas/'>
+
+    <!ENTITY rdf     'http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+    <!ENTITY rdfs    'http://www.w3.org/2000/01/rdf-schema#'>
+    <!ENTITY xsd     'http://www.w3.org/2001/XMLSchema#'>
+    <!ENTITY base    '&jena;2003/03/ont-manager'>
+    <!ENTITY ont     '&base;#'>
+]>
+
+<rdf:RDF
+  xmlns:rdf ="&rdf;"
+  xmlns:rdfs="&rdfs;"
+  xmlns     ="&ont;"
+  xml:base  ="&base;"
+>
+
+
+<DocumentManagerPolicy>
+    <!-- policy for controlling the document manager's behaviour -->
+    <processImports rdf:datatype="&xsd;boolean">true</processImports>
+    <cacheModels    rdf:datatype="&xsd;boolean">true</cacheModels>
+</DocumentManagerPolicy>
+
+
+<OntologySpec>
+    <!-- local version of the OWL language ontology (in OWL) -->
+    <publicURI rdf:resource="http://www.w3.org/2002/07/owl" />
+    <!-- uncomment the following line to re-direct attempts to http get the file -->
+    <altURL    rdf:resource="file:vocabularies/owl.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">owl</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- local version of the RDFS vocabulary -->
+    <publicURI rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
+    <!-- uncomment the following line to re-direct attempts to http get the file -->
+    <altURL    rdf:resource="file:vocabularies/rdf-schema.rdf" />
+    <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
+    <prefix    rdf:datatype="&xsd;string">rdfs</prefix>
+</OntologySpec>
+
+<!-- ###################### ContextAssertion Ontology local mappings  ###################### -->
+<OntologySpec>
+    <!-- URI specification for the ContextAssertion Ontology -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/core/contextassertion.spin.rdf" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">contextassertion</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the Ordered List Ontology -->
+    <publicURI rdf:resource="http://purl.org/ontology/olo/core" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/core/orderedlistontology.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">olo</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA action module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/action" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/action.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">action</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA agent module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/agent" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/agent.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">agent</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA bdi module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/bdi" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/bdi.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">bdi</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA device module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/device" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/device.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">device</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA digital-doc module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/digital-doc" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/digital-doc.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">digital-doc</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA document module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/document" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/document.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">document</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA event module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/event" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/event.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">event</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA geo-measurement module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/geo-measurement" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/geo-measurement.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">geo-measurement</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA img-capture module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/img-capture" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/img-capture.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">img-capture</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA knowledge module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/knowledge" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/knowledge.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">knowledge</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA location module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/location" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/location.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">location</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA meetig module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/meeting" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/meeting.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">meeting</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA person module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/person.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">person</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA policy module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/policy" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/policy.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">policy</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA rcc module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/rcc" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/rcc.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">rcc</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA schedule module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/schedule" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/schedule.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">schedule</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA space module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/space" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/space.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">space</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the SOUPA bdi module -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/time" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/soupa/time.owl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">time</prefix>
+</OntologySpec>
+
+<!-- ###################### SPIN ontologies local mappings  ###################### -->
+<OntologySpec>
+    <publicURI rdf:resource="http://spinrdf.org/spl" />
+    <altURL    rdf:resource="file:etc/ontologies/SPIN/spl.spin.ttl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">spl</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <publicURI rdf:resource="http://spinrdf.org/spin" />
+    <altURL    rdf:resource="file:etc/ontologies/SPIN/spin.ttl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">spin</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <publicURI rdf:resource="http://spinrdf.org/sp" />
+    <altURL    rdf:resource="file:etc/ontologies/SPIN/sp.ttl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">sp</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <publicURI rdf:resource="http://topbraid.org/spin/spinowl" />
+    <altURL    rdf:resource="file:etc/ontologies/SPIN/spinowl.ttl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">spinowl</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <publicURI rdf:resource="http://topbraid.org/spin/owlrl-all" />
+    <altURL    rdf:resource="file:etc/ontologies/SPIN/owlrl-all.ttl" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">owlrl</prefix>
+</OntologySpec>
+
+
+<!-- ###################### Context Domain specific ontology URI specifications ###################### -->
+<OntologySpec>
+    <!-- URI specification for the AdHocMeeting domain ontology -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models" />
+    <altURL    rdf:resource="file:etc/ontologies/domain/models/adhocmeeting.rdf" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">ctxmodels</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the AdHocMeeting function definitions -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion/functions" />
+    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/core/functions.spin.rdf" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">cfn</prefix>
+</OntologySpec>
+
+</rdf:RDF>
