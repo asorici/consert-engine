@@ -8,14 +8,12 @@ import org.aimas.ami.contextrep.core.Config;
 import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
-import org.aimas.ami.contextrep.utils.ContextAssertionUtils;
+import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
 import org.aimas.ami.contextrep.vocabulary.RDFVocabulary;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaUtil;
 
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -27,7 +25,6 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.NodeIterator;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -224,19 +221,19 @@ public class ScenarioInit {
 		validity.add(interval);
 		
 		List<Statement> camera1Annotations = 
-			ContextAssertionUtils.createAnnotationStatements(camera1RoomSectionID, contextModel, 
+			ContextAssertionUtil.createAnnotationStatements(camera1RoomSectionID, contextModel, 
 			ContextAssertionType.Profiled, timestamp, validity, 
-			ProducerEvent.DEFAULT_ACCURACY, ProducerEvent.DEFAULT_SOURCE_URI); 
+			ContextEvent.DEFAULT_ACCURACY, ContextEvent.DEFAULT_SOURCE_URI); 
 		
 		List<Statement> mic1Annotations = 
-			ContextAssertionUtils.createAnnotationStatements(mic1RoomSectionID, contextModel, 
+			ContextAssertionUtil.createAnnotationStatements(mic1RoomSectionID, contextModel, 
 			ContextAssertionType.Profiled, timestamp, validity, 
-			ProducerEvent.DEFAULT_ACCURACY, ProducerEvent.DEFAULT_SOURCE_URI);
+			ContextEvent.DEFAULT_ACCURACY, ContextEvent.DEFAULT_SOURCE_URI);
 		
 		List<Statement> mic2Annotations = 
-			ContextAssertionUtils.createAnnotationStatements(mic2RoomSectionID, contextModel, 
+			ContextAssertionUtil.createAnnotationStatements(mic2RoomSectionID, contextModel, 
 			ContextAssertionType.Profiled, timestamp, validity, 
-			ProducerEvent.DEFAULT_ACCURACY, ProducerEvent.DEFAULT_SOURCE_URI);
+			ContextEvent.DEFAULT_ACCURACY, ContextEvent.DEFAULT_SOURCE_URI);
 		
 		deviceRoomSectionGraph.add(camera1Annotations);
 		deviceRoomSectionGraph.add(mic1Annotations);
@@ -263,7 +260,7 @@ public class ScenarioInit {
 		Resource bnode2 = ResourceFactory.createResource();
 		Resource bnode3 = ResourceFactory.createResource();
 		
-		Property rdfType = ResourceFactory.createProperty(RDFVocabulary.TYPE);
+		
 		OntClass assertionClass = contextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "SensesSkelInPosition");
 		OntClass skeletonClass = contextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "Skeleton");
 		
@@ -292,19 +289,19 @@ public class ScenarioInit {
 		Model skeleton3Graph = dataset.getNamedModel(skeletonAssertionID3);
 		
 		// create first assertion
-		skeleton1Graph.add(bnode1, rdfType, assertionClass);
+		skeleton1Graph.add(bnode1, RDFVocabulary.TYPE, assertionClass);
 		skeleton1Graph.add(bnode1, cameraRole, kinectCamera);
 		skeleton1Graph.add(bnode1, skeletonRole, skeleton1);
 		skeleton1Graph.add(bnode1, skelPositionRole, sittingPosition);
 		
 		// create second assertion
-		skeleton2Graph.add(bnode2, rdfType, assertionClass);
+		skeleton2Graph.add(bnode2, RDFVocabulary.TYPE, assertionClass);
 		skeleton2Graph.add(bnode2, cameraRole, kinectCamera);
 		skeleton2Graph.add(bnode2, skeletonRole, skeleton2);
 		skeleton2Graph.add(bnode2, skelPositionRole, sittingPosition);
 		
 		// create third assertion
-		skeleton3Graph.add(bnode3, rdfType, assertionClass);
+		skeleton3Graph.add(bnode3, RDFVocabulary.TYPE, assertionClass);
 		skeleton3Graph.add(bnode3, cameraRole, kinectCamera);
 		skeleton3Graph.add(bnode3, skeletonRole, skeleton3);
 		skeleton3Graph.add(bnode3, skelPositionRole, sittingPosition);
@@ -318,17 +315,17 @@ public class ScenarioInit {
 		CalendarIntervalList validity = new CalendarIntervalList();
 		validity.add(interval);
 		
-		List<Statement> skeleton1Annotations = ContextAssertionUtils.createAnnotationStatements(skeletonAssertionID1, 
+		List<Statement> skeleton1Annotations = ContextAssertionUtil.createAnnotationStatements(skeletonAssertionID1, 
 			contextModel, ContextAssertionType.Sensed, validFrom, validity, 
-			ProducerEvent.DEFAULT_ACCURACY, ProducerEvent.DEFAULT_SOURCE_URI);
+			ContextEvent.DEFAULT_ACCURACY, ContextEvent.DEFAULT_SOURCE_URI);
 		
-		List<Statement> skeleton2Annotations = ContextAssertionUtils.createAnnotationStatements(skeletonAssertionID2, 
+		List<Statement> skeleton2Annotations = ContextAssertionUtil.createAnnotationStatements(skeletonAssertionID2, 
 			contextModel, ContextAssertionType.Sensed, validFrom, validity, 
-			ProducerEvent.DEFAULT_ACCURACY, ProducerEvent.DEFAULT_SOURCE_URI);
+			ContextEvent.DEFAULT_ACCURACY, ContextEvent.DEFAULT_SOURCE_URI);
 		
-		List<Statement> skeleton3Annotations = ContextAssertionUtils.createAnnotationStatements(skeletonAssertionID3, 
+		List<Statement> skeleton3Annotations = ContextAssertionUtil.createAnnotationStatements(skeletonAssertionID3, 
 			contextModel, ContextAssertionType.Sensed, validFrom, validity, 
-			ProducerEvent.DEFAULT_ACCURACY, ProducerEvent.DEFAULT_SOURCE_URI);
+			ContextEvent.DEFAULT_ACCURACY, ContextEvent.DEFAULT_SOURCE_URI);
 	
 		sensesSkeletonGraph.add(skeleton1Annotations);
 		sensesSkeletonGraph.add(skeleton2Annotations);
@@ -370,13 +367,13 @@ public class ScenarioInit {
 		CalendarIntervalList validity = new CalendarIntervalList();
 		validity.add(interval);
 
-		List<Statement> mic1Annotations = ContextAssertionUtils.createAnnotationStatements(hasNoiseLevelID1, 
+		List<Statement> mic1Annotations = ContextAssertionUtil.createAnnotationStatements(hasNoiseLevelID1, 
 			contextModel, ContextAssertionType.Sensed, validFrom, validity, 
-			ProducerEvent.DEFAULT_ACCURACY, ProducerEvent.DEFAULT_SOURCE_URI);
+			ContextEvent.DEFAULT_ACCURACY, ContextEvent.DEFAULT_SOURCE_URI);
 		
-		List<Statement> mic2Annotations = ContextAssertionUtils.createAnnotationStatements(hasNoiseLevelID2, 
+		List<Statement> mic2Annotations = ContextAssertionUtil.createAnnotationStatements(hasNoiseLevelID2, 
 			contextModel, ContextAssertionType.Sensed, validFrom, validity, 
-			ProducerEvent.DEFAULT_ACCURACY, ProducerEvent.DEFAULT_SOURCE_URI);
+			ContextEvent.DEFAULT_ACCURACY, ContextEvent.DEFAULT_SOURCE_URI);
 		
 		hasNoiseLevelGraph.add(mic1Annotations);
 		hasNoiseLevelGraph.add(mic2Annotations);

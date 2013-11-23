@@ -19,7 +19,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.sparql.core.Quad;
@@ -30,7 +29,7 @@ import com.hp.hpl.jena.update.Update;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-public class SenseSkeletonSittingEvent extends ProducerEvent {
+public class SenseSkeletonSittingEvent extends ContextEvent {
 	private static final String LOCAL_NAME = "SensesSkelInPosition";
 	private static final String STORE_NAME = LOCAL_NAME + "Store";
 	
@@ -51,7 +50,6 @@ public class SenseSkeletonSittingEvent extends ProducerEvent {
 		UpdateRequest request = UpdateFactory.create() ;
 		
 		Resource bnode = ResourceFactory.createResource();
-		Property rdfType = ResourceFactory.createProperty(RDFVocabulary.TYPE);
 		OntClass assertionClass = contextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + LOCAL_NAME);
 		
 		Node graphURINode = Node.createURI(GraphUUIDGenerator.createUUID(assertionClass));
@@ -61,7 +59,7 @@ public class SenseSkeletonSittingEvent extends ProducerEvent {
 		OntProperty skeletonRole = contextModel.getOntProperty(ScenarioInit.AD_HOC_MEETING_NS + "skeletonRole");
 		OntProperty skelPositionRole = contextModel.getOntProperty(ScenarioInit.AD_HOC_MEETING_NS + "skelPositionRole");
 		
-		Quad q1 = Quad.create(graphURINode, bnode.asNode(), rdfType.asNode(), assertionClass.asNode());
+		Quad q1 = Quad.create(graphURINode, bnode.asNode(), RDFVocabulary.TYPE.asNode(), assertionClass.asNode());
 		Quad q2 = Quad.create(graphURINode, bnode.asNode(), cameraRole.asNode(), camera.asNode());
 		Quad q3 = Quad.create(graphURINode, bnode.asNode(), skeletonRole.asNode(), skeleton.asNode());
 		Quad q4 = Quad.create(graphURINode, bnode.asNode(), skelPositionRole.asNode(), sittingPosition.asNode());

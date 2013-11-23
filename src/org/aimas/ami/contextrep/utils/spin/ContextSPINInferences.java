@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.topbraid.spin.arq.ARQFactory;
-import org.topbraid.spin.inference.DefaultSPINRuleComparator;
 import org.topbraid.spin.inference.SPINConstructors;
 import org.topbraid.spin.inference.SPINExplanations;
 import org.topbraid.spin.inference.SPINInferencesOptimizer;

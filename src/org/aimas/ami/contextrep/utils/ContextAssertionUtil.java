@@ -10,11 +10,9 @@ import java.util.Set;
 import org.aimas.ami.contextrep.core.Config;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
 import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
-import org.aimas.ami.contextrep.update.ContextAssertionEvent;
 import org.aimas.ami.contextrep.update.ContextAssertionUpdateListener;
+import org.aimas.ami.contextrep.update.ContextAssertionUpdateListener.ContextUpdateHookWrapper;
 import org.aimas.ami.contextrep.update.ContextUpdateHook;
-import org.aimas.ami.contextrep.update.ContextUpdateHookErrorListener;
-import org.aimas.ami.contextrep.update.ContextUpdateHookExecutor;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -34,7 +32,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 
-public class ContextAssertionUtils {
+public class ContextAssertionUtil {
 	/**
 	 * Determine the type of a ContextAssertion (Static, Sensed, Profiled or Derived)
 	 * @param resource The ontology resource defining the ContextAssertion.
@@ -170,7 +168,20 @@ public class ContextAssertionUtils {
 		
 		return registeredContextStoreListeners;
 	}
-
+	
+	
+	public static List<ContextAssertionUpdateListener> registerContextAssertionStoreListeners(List<Graph> assertionStores) {
+		List<ContextAssertionUpdateListener> registeredContextStoreListeners = new ArrayList<>();
+		
+		for (Graph graph : assertionStores) {
+			ContextAssertionUpdateListener listener = new ContextAssertionUpdateListener();
+			registeredContextStoreListeners.add(listener);
+			graph.getEventManager().register(listener);
+		}
+		
+		return registeredContextStoreListeners;
+	}
+	
 	/*
 	public static void executeContextUpdateHooks(Dataset dataset) {
 		ContextAssertionIndex contextAssertionIndex = Config.getContextAssertionIndex();
@@ -190,27 +201,20 @@ public class ContextAssertionUtils {
     }
 	*/
 
-	public static List<ContextUpdateHook> collectContextUpdateHooks(
-			List<ContextAssertionUpdateListener> registeredContextStoreListeners) {
+	public static ContextUpdateHookWrapper collectContextUpdateHooks(
+		List<ContextAssertionUpdateListener> registeredContextStoreListeners) {
 		
-		List<ContextUpdateHook> contextUpdateHooks = new ArrayList<>();
+		ContextUpdateHookWrapper combinedHookWrapper = null;
 		
 		for (ContextAssertionUpdateListener listener : registeredContextStoreListeners) {
-			List<ContextUpdateHook> updateHooks = listener.collectContextUpdateHooks();
-			if (updateHooks != null) {
-				contextUpdateHooks.addAll(updateHooks);
+			if (combinedHookWrapper == null) {
+				combinedHookWrapper = listener.collectContextUpdateHooks();
+			}
+			else {
+				combinedHookWrapper.extend(listener.collectContextUpdateHooks());
 			}
 		}
 		
-		return contextUpdateHooks;
+		return combinedHookWrapper;
     }
-	
-	
-	public static void executeContextUpdateHooks(List<ContextUpdateHook> contextUpdateHooks, 
-			List<ContextUpdateHookErrorListener> updateHookErrorListeners) {
-		
-		ContextUpdateHookExecutor updateHookExecutor = new ContextUpdateHookExecutor(contextUpdateHooks);
-		updateHookExecutor.registerContextUpdateErrorListeners(updateHookErrorListeners);
-		updateHookExecutor.start();
-	}
 }

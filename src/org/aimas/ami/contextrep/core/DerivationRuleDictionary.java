@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
-import org.topbraid.spin.util.CommandWrapper;
 
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class DerivationRuleDictionary {
 	private Map<Resource, List<DerivedAssertionWrapper>> entity2RuleMap;
-	private Map<OntResource, List<DerivedAssertionWrapper>> assertion2RuleMap;
 	private Map<DerivedAssertionWrapper, Resource> rule2EntityMap;
+	private Map<OntResource, List<DerivedAssertionWrapper>> assertion2RuleMap;
+	
 	
 	public DerivationRuleDictionary() {
 		entity2RuleMap = new HashMap<>();

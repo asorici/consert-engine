@@ -73,6 +73,21 @@ public class ContextAssertionIndex {
 	}
 	
 	
+	public OntResource getResourceFromGraphStore(Node graphNode) {
+		// this works because of the way in which we create the 
+		// named graph stores for a particular ContextAssertion
+		String graphURI = graphNode.getURI();
+		int storeSuffixIndex = graphURI.lastIndexOf("Store");
+		
+		if (storeSuffixIndex > 0) {
+			String graphStoreBase = graphURI.substring(0, storeSuffixIndex);
+			return graphURIBase2AssertionMap.get(graphStoreBase);
+		}
+		
+		return null;
+	}
+	
+	
 	public OntResource getResourceFromGraphUUID(Node graphUUIDNode) {
 		// this works because of the way in which we generate the assertion 
 		// named graph UUIDs
@@ -91,6 +106,17 @@ public class ContextAssertionIndex {
 	
 	public boolean isContextAssertionUUID(Node graphNode) {
 		return getResourceFromGraphUUID(graphNode) != null;
+	}
+	
+	
+	public boolean isContextStore(Node graphNode) {
+		String graphURI = graphNode.getURI();
+		
+		if (graphURI.equalsIgnoreCase(Config.getEntityStoreURI())) {
+			return true;
+		}
+		
+		return isContextAssertionStore(graphNode);
 	}
 	
 	

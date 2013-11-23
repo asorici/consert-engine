@@ -33,7 +33,9 @@ public class ContextAssertionVocabulary {
 	public final static String TYPE_DERIVED = NS + "Derived";
 	
 	public final static String CONTEXT_ASSERTION_ROLE = NS + "assertionRole";
+	public final static String CONTEXT_ASSERTION_RESOURCE = NS + "assertionResource";
 	
+	public final static String CONTEXT_ANNOTATION = NS + "ContextAnnotation";
 	public final static String CONTEXT_ANNOTATION_TIMESTAMP = NS + "hasTimestamp";
 	public final static String CONTEXT_ANNOTATION_SOURCE = NS + "assertedBy";
 	public final static String CONTEXT_ANNOTATION_VALIDITY = NS + "validDuring";

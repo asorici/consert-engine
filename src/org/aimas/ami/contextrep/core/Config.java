@@ -3,7 +3,10 @@ package org.aimas.ami.contextrep.core;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.aimas.ami.contextrep.exceptions.ConfigException;
 import org.aimas.ami.contextrep.functions.datetimeDelay;
@@ -17,7 +20,6 @@ import org.aimas.ami.contextrep.functions.validityIntervalsCloseEnough;
 import org.aimas.ami.contextrep.functions.validityIntervalsInclude;
 import org.aimas.ami.contextrep.functions.validityIntervalsOverlap;
 import org.aimas.ami.contextrep.update.ContextAssertionUpdateEngine;
-import org.aimas.ami.contextrep.update.ContextAssertionUpdateListener;
 import org.aimas.ami.contextrep.utils.CalendarIntervalListType;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
 import org.topbraid.spin.system.SPINModuleRegistry;
@@ -28,27 +30,35 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.ReadWrite;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.function.FunctionRegistry;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.tdb.base.file.Location;
+import com.hp.hpl.jena.update.UpdateRequest;
 
 public class Config {
+	// Path to context store
 	private static Location contextStoreLocation;
+	private static String entityStoreURI;
 	
+	// Domain Context Model
 	private static String contextModelBaseURI;
 	private static OntModel basicContextModel;
 	private static OntModel transitiveContextModel;
 	private static OntModel rdfsContextModel;
 	private static OntModel owlContextModel;
 	
+	// ContextAssertion Derivation Rule Dictionary
 	private static DerivationRuleDictionary derivationRuleDictionary;
 	
-	private static String entityStoreURI;
-	private static ContextAssertionIndex contextAssertionIndex; 
+	// ContextAssertion index
+	private static ContextAssertionIndex contextAssertionIndex;
+	
+	// Execution: ContextAssertion insertion and ContextAssertion insertion-hook execution
+	private static ExecutorService assertionInsertExecutor;
+	private static ExecutorService assertionInferenceExecutor;
+	private static LinkedBlockingQueue<UpdateRequest> assertionEventQueue;
 	
 	/**
 	 * Do configuration setup:
@@ -150,12 +160,21 @@ public class Config {
 			System.out.println("Task: compute derivation rule dictionary. Duration: " + 
 				(System.currentTimeMillis() - timestamp) + " ms");
 		}
+		System.out.println("#### Derivation Rule Map : ");
+		System.out.println(derivationRuleDictionary.getAssertion2QueryMap());
 		timestamp = System.currentTimeMillis();
+		
+		// TODO: compute constraint dictionary
 		
 		// register custom TDB UpdateEgine to listen for ContextAssertion insertions
 		ContextAssertionUpdateEngine.register();
+		
+		// lastly create the assertion execution services
+		assertionInsertExecutor = Executors.newSingleThreadExecutor();
+		assertionInferenceExecutor = Executors.newSingleThreadExecutor();
+		assertionEventQueue = new LinkedBlockingQueue<>();
 	}
-
+	
 
 	/**
 	 * Clean out all statements from the named graphs in the dataset
@@ -188,11 +207,45 @@ public class Config {
 		owlContextModel.close();
 		rdfsContextModel.close();
 		transitiveContextModel.close();
-		
 		basicContextModel.close();
 		
-		TDB.sync(contextStoreDataset);
+		// shutdown the executors and await their task termination
+		
+		assertionInsertExecutor.shutdown();
+		assertionInferenceExecutor.shutdown();
+		
+		try {
+	        assertionInsertExecutor.awaitTermination(10, TimeUnit.SECONDS);
+	        assertionInferenceExecutor.awaitTermination(10, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException e) {
+	        e.printStackTrace();
+        }
+		
 		contextStoreDataset.close();
+		
+	}
+	
+	public static ExecutorService assertionInsertExecutor() {
+		if (assertionInsertExecutor == null) {
+			assertionInsertExecutor = Executors.newSingleThreadExecutor();
+		}
+		
+		return assertionInsertExecutor;
+	}
+	
+	
+	public static ExecutorService assertionInferenceExecutor() {
+		if (assertionInferenceExecutor == null) {
+			assertionInferenceExecutor = Executors.newSingleThreadExecutor();
+		}
+		
+		return assertionInferenceExecutor;
+	}
+	
+	
+	public static LinkedBlockingQueue<UpdateRequest> getAssertionEventQueue() {
+		return assertionEventQueue;
 	}
 	
 	

@@ -12,10 +12,10 @@ import com.hp.hpl.jena.sparql.modify.GraphStoreEvents;
 
 public class ContextAssertionUpdateListener implements GraphListener {
 	private boolean updateRunning = false;
-	private List<ContextUpdateHook> updateActionHooks;
+	private ContextUpdateHookWrapper updateHookWrapper;
 	
 	public ContextAssertionUpdateListener() {
-		updateActionHooks = new ArrayList<>();
+		updateHookWrapper = new ContextUpdateHookWrapper();
 	}
 	
 	@Override
@@ -52,7 +52,7 @@ public class ContextAssertionUpdateListener implements GraphListener {
 	public void notifyEvent(Graph source, Object value) {
 		if (value.equals(GraphStoreEvents.RequestStartEvent)) {
 			updateRunning = true;
-			updateActionHooks = new ArrayList<>();
+			updateHookWrapper = new ContextUpdateHookWrapper();
 		}
         else if (value.equals(GraphStoreEvents.RequestFinishEvent)) {
             updateRunning = false;
@@ -71,19 +71,61 @@ public class ContextAssertionUpdateListener implements GraphListener {
 				Node contextAssertionUUID = (Node)event.getContent();
 				
 				// first check continuity 
-				updateActionHooks.add(new CheckValidityContinuityHook(
+				updateHookWrapper.addContinuityHook(new CheckValidityContinuityHook(
 						event.getAssertionResource(), contextAssertionUUID));
 				
 				// then check the 
-				updateActionHooks.add(new CheckConstraintHook(event.getAssertionResource()));
+				updateHookWrapper.addConstraintHook(new CheckConstraintHook(event.getAssertionResource()));
 				
 				// and lastly check if inference of a new ContextAssertion is applicable
-				updateActionHooks.add(new CheckInferenceHook(event.getAssertionResource()));
+				updateHookWrapper.addInferenceHook(new CheckInferenceHook(event.getAssertionResource()));
 			}
 		}
 	}
 	
-	public List<ContextUpdateHook> collectContextUpdateHooks() {
-		return updateActionHooks;
+	public ContextUpdateHookWrapper collectContextUpdateHooks() {
+		return updateHookWrapper;
+	}
+	
+	public static class ContextUpdateHookWrapper {
+		private List<CheckValidityContinuityHook> continuityHooks;
+		private List<CheckConstraintHook> constraintHooks;
+		private List<CheckInferenceHook> inferenceHooks;
+		
+		ContextUpdateHookWrapper() {
+			continuityHooks = new ArrayList<>();
+			constraintHooks = new ArrayList<>();
+			inferenceHooks = new ArrayList<>();
+		}
+		
+		void addContinuityHook(CheckValidityContinuityHook hook) {
+			continuityHooks.add(hook);
+		}
+		
+		void addConstraintHook(CheckConstraintHook hook) {
+			constraintHooks.add(hook);
+		}
+		
+		void addInferenceHook(CheckInferenceHook hook) {
+			inferenceHooks.add(hook);
+		}
+
+		public List<CheckValidityContinuityHook> getContinuityHooks() {
+			return continuityHooks;
+		}
+
+		public List<CheckConstraintHook> getConstraintHooks() {
+			return constraintHooks;
+		}
+
+		public List<CheckInferenceHook> getInferenceHooks() {
+			return inferenceHooks;
+		}
+		
+		public void extend(ContextUpdateHookWrapper other) {
+			continuityHooks.addAll(other.getContinuityHooks());
+			constraintHooks.addAll(other.getConstraintHooks());
+			inferenceHooks.addAll(other.getInferenceHooks());
+		}
 	}
 }

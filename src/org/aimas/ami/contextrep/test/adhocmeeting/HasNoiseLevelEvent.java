@@ -22,11 +22,12 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.modify.request.QuadDataAcc;
 import com.hp.hpl.jena.sparql.modify.request.UpdateCreate;
 import com.hp.hpl.jena.sparql.modify.request.UpdateDataInsert;
+import com.hp.hpl.jena.sparql.modify.request.UpdateModify;
 import com.hp.hpl.jena.update.Update;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-public class HasNoiseLevelEvent extends ProducerEvent {
+public class HasNoiseLevelEvent extends ContextEvent {
 	private static final String LOCAL_NAME = "hasNoiseLevel";
 	private static final String STORE_NAME = LOCAL_NAME + "Store";
 	

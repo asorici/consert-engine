@@ -20,7 +20,6 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.QuerySolutionMap;
-import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -32,26 +31,23 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.tdb.TDB;
 
-public class CheckValidityContinuityHook implements ContextUpdateHook {
+public class CheckValidityContinuityHook extends ContextUpdateHook {
 	
-	private OntResource contextAssertionResource;
 	private Node contextAssertionUUID;
 	
 	public CheckValidityContinuityHook(OntResource contextAssertionResource, Node contextAssertionUUID) {
-		this.contextAssertionResource = contextAssertionResource;
+		super(contextAssertionResource);
 		this.contextAssertionUUID = contextAssertionUUID;
 	}
 	
-	
 	@Override
-	public boolean exec() {
+	public boolean exec(Dataset contextStoreDataset) {
 		System.out.println("======== CHECKING CONTINUITY AVAILABALE FOR assertion <"
 		        + contextAssertionResource + ">. "
 		        + "AssertionUUID: " + contextAssertionUUID);
 		
 		// get access to the datastore and the assertionIndex
 		OntModel contextModel = Config.getBasicContextModel();
-		Dataset contextStoreDataset = Config.getContextStoreDataset();
 		ContextAssertionIndex assertionIndex = Config.getContextAssertionIndex();
 		
 		// find the property that states the validity interval
@@ -66,118 +62,108 @@ public class CheckValidityContinuityHook implements ContextUpdateHook {
 		// (because the contents of the assertions is the same as that of newAssertionUUID)
 		List<ContinuityWrapper> availableContinuityPairs = new ArrayList<>();
 		
-		// enter a READ transaction to determine whether continuity is available
-		contextStoreDataset.begin(ReadWrite.READ);
-		try {
-			// get the contextAssertion store model and the validityAnnotation
-			Model assertionStoreModel = contextStoreDataset.getNamedModel(assertionStoreURI);
-			Statement validityAnnotation = assertionStoreModel.getProperty(newAssertionUUIDResource, validDuringProp);
+		
+		// get the contextAssertion store model and the validityAnnotation
+		Model assertionStoreModel = contextStoreDataset.getNamedModel(assertionStoreURI);
+		Statement validityAnnotation = assertionStoreModel.getProperty(newAssertionUUIDResource, validDuringProp);
+		
+		if (validityAnnotation != null) {
+			RDFNode newValidityPeriod = validityAnnotation.getObject();
+			Template closeEnoughValidity = SPINModuleRegistry.get().getTemplate(
+			        ContextAssertionVocabulary.CLOSE_ENOUGH_VALIDITY_TEMPLATE, null);
 			
-			if (validityAnnotation != null) {
-				RDFNode newValidityPeriod = validityAnnotation.getObject();
-				Template closeEnoughValidity = SPINModuleRegistry.get().getTemplate(ContextAssertionVocabulary.CLOSE_ENOUGH_VALIDITY_TEMPLATE, null); 
+			// Now call the template
+			com.hp.hpl.jena.query.Query arq = ARQFactory.get().createQuery((Select) closeEnoughValidity.getBody());
+			
+			// arq.setPrefix("contextassertion:",
+			// ContextAssertionVocabulary.NS);
+			// arq.setPrefix("functions:",
+			// ContextAssertionVocabulary.FUNCTIONS_NS);
+			// arq.setBaseURI(Config.getContextModelNamespace());
+			QueryExecution qexec = ARQFactory.get().createQueryExecution(arq,
+			        contextStoreDataset);
+			
+			// set the value of the arguments
+			QuerySolutionMap arqBindings = new QuerySolutionMap();
+			arqBindings.add("contextAssertionResource", ResourceFactory.createResource(contextAssertionResource.getURI()));
+			arqBindings.add("contextAssertionStore", ResourceFactory.createResource(assertionStoreURI));
+			arqBindings.add("newAssertionUUID", ResourceFactory.createResource(contextAssertionUUID.getURI()));
+			arqBindings.add("newValidityPeriod", newValidityPeriod);
+			
+			qexec.setInitialBinding(arqBindings); // Pre-assign the required
+												  // arguments
+			
+			// qexec.getContext().set(ARQ.symLogExec, Explain.InfoLevel.FINE) ;
+			try {
+				ResultSet rs = qexec.execSelect();
 				
-				// Now call the template
-				com.hp.hpl.jena.query.Query arq = ARQFactory.get().createQuery((Select)closeEnoughValidity.getBody());
-				
-				//arq.setPrefix("contextassertion:", ContextAssertionVocabulary.NS);
-				//arq.setPrefix("functions:", ContextAssertionVocabulary.FUNCTIONS_NS);
-				//arq.setBaseURI(Config.getContextModelNamespace());
-				QueryExecution qexec = ARQFactory.get().createQueryExecution(arq, contextStoreDataset);
-				
-				// set the value of the arguments
-				QuerySolutionMap arqBindings = new QuerySolutionMap();
-				arqBindings.add("contextAssertionResource", ResourceFactory.createResource(contextAssertionResource.getURI()));
-				arqBindings.add("contextAssertionStore", ResourceFactory.createResource(assertionStoreURI));
-				arqBindings.add("newAssertionUUID", ResourceFactory.createResource(contextAssertionUUID.getURI()));
-				arqBindings.add("newValidityPeriod", newValidityPeriod);
-				
-				qexec.setInitialBinding(arqBindings); // Pre-assign the required arguments
-				
-				//qexec.getContext().set(ARQ.symLogExec, Explain.InfoLevel.FINE) ;
-				try {
-					ResultSet rs = qexec.execSelect();
+				/*
+				 * we will now go through the results and make a list of the
+				 * pairs (assertionUUID, assertionValidity) which can be
+				 * extended with the current (newAssertionUUID,
+				 * newValidityPeriod)
+				 */
+				while (rs.hasNext()) {
+					QuerySolution qs = rs.next();
+					RDFNode assertionUUID = qs.get("assertionUUID");
+					RDFNode validity = qs.get("validity");
 					
-					/*
-					 * we will now go through the results and make a list of
-					 * the pairs (assertionUUID, assertionValidity) which can be extended with
-					 * the current (newAssertionUUID, newValidityPeriod)
-					 */
-					while (rs.hasNext()) {
-						QuerySolution qs = rs.next();
-						RDFNode assertionUUID = qs.get("assertionUUID");
-						RDFNode validity = qs.get("validity");
-						
-						System.out.println("CONTINUITY AVAILABALE FOR assertion <"
-						        + contextAssertionResource + ">. "
-						        + "AssertionUUID: " + assertionUUID
-						        + ", for duration: " + validity);
-						
-						availableContinuityPairs.add(new ContinuityWrapper(assertionUUID, validity));
-					}
-				} 
-				catch (Exception ex) {
-					ex.printStackTrace();
-				}
-				finally {
-					qexec.close();
+					System.out.println("CONTINUITY AVAILABALE FOR assertion <"
+					        + contextAssertionResource + ">. "
+					        + "AssertionUUID: " + assertionUUID
+					        + ", for duration: " + validity);
+					
+					availableContinuityPairs.add(new ContinuityWrapper(
+					        assertionUUID, validity));
 				}
 			}
-		}  
-		finally {
-			contextStoreDataset.end();
-		}
-		
-		
-		if (!availableContinuityPairs.isEmpty()) {
-			// get into a transaction again, this time for WRITE since we delete some graphs and statements
-			contextStoreDataset.begin(ReadWrite.WRITE);
-			try {
-				// get the contextAssertion store model and the validityAnnotation
-				Model assertionStoreModel = contextStoreDataset.getNamedModel(assertionStoreURI);
-				Statement validityAnnotation = assertionStoreModel.getProperty(newAssertionUUIDResource, validDuringProp);
-				
-				// re-get the newValidityPeriod
-				RDFNode newValidityPeriod = validityAnnotation.getObject();
-				
-				// apply extension of validity periods for identified assertions
-				for (ContinuityWrapper pairWrapper : availableContinuityPairs) {
-					// now get the validity of the result
-					CalendarIntervalList newValidityIntervals = (CalendarIntervalList)newValidityPeriod.asLiteral().getValue();
-					CalendarIntervalList validityIntervals = (CalendarIntervalList)pairWrapper.assertionValidity.asLiteral().getValue();
-					
-					CalendarIntervalList mergedValidityIntervals = validityIntervals
-					        .joinCloseEnough(newValidityIntervals, CalendarInterval.MAX_GAP_MILLIS);
-					Literal mergedValidityLiteral = ResourceFactory.createTypedLiteral(mergedValidityIntervals);
-				
-					/*
-					 * Now that we have the merged intervals it's time to update
-					 * the models. We have to: - update the existing assertion
-					 * with the merged validity intervals - at the end of this
-					 * while loop remove the newly inserted context assertion
-					 */
-					Resource assertionUUIDResource = ResourceFactory
-					        .createResource(pairWrapper.assertionUUID.asNode().getURI());
-					assertionStoreModel.remove(assertionUUIDResource, validDuringProp, pairWrapper.assertionValidity);
-					assertionStoreModel.add(assertionUUIDResource, validDuringProp, mergedValidityLiteral);
-				}
-				
-				
-				// we don't need to register the context store listeners here since we are operating a 
-				// known manual event
-				// Config.registerContextAssertionStoreListeners(contextStoreDataset);
-				Model newAssertionStoreModel = contextStoreDataset.getNamedModel(assertionStoreURI);
-				
-				// now remove the newly inserted triples. we just remove the named graphs altogether
-				contextStoreDataset.removeNamedModel(contextAssertionUUID.getURI());
-				StmtIterator newAssertionStatements = newAssertionStoreModel.listStatements(newAssertionUUIDResource, null, (RDFNode)null);
-				newAssertionStoreModel.remove(newAssertionStatements);
-				
-				contextStoreDataset.commit();
+			catch (Exception ex) {
+				ex.printStackTrace();
 			}
 			finally {
-				contextStoreDataset.end();
+				qexec.close();
 			}
+		}
+		
+		if (!availableContinuityPairs.isEmpty()) {
+			// re-get the newValidityPeriod
+			RDFNode newValidityPeriod = validityAnnotation.getObject();
+			
+			// apply extension of validity periods for identified assertions
+			for (ContinuityWrapper pairWrapper : availableContinuityPairs) {
+				// now get the validity of the result
+				CalendarIntervalList newValidityIntervals = (CalendarIntervalList) newValidityPeriod
+				        .asLiteral().getValue();
+				CalendarIntervalList validityIntervals = (CalendarIntervalList) pairWrapper.assertionValidity
+				        .asLiteral().getValue();
+				
+				CalendarIntervalList mergedValidityIntervals = validityIntervals
+				        .joinCloseEnough(newValidityIntervals, CalendarInterval.MAX_GAP_MILLIS);
+				Literal mergedValidityLiteral = ResourceFactory.createTypedLiteral(mergedValidityIntervals);
+				
+				/*
+				 * Now that we have the merged intervals it's time to update the
+				 * models. We have to: - update the existing assertion with the
+				 * merged validity intervals - at the end of this while loop
+				 * remove the newly inserted context assertion
+				 */
+				Resource assertionUUIDResource = ResourceFactory.createResource(pairWrapper.assertionUUID.asNode().getURI());
+				assertionStoreModel.remove(assertionUUIDResource, validDuringProp, pairWrapper.assertionValidity);
+				assertionStoreModel.add(assertionUUIDResource, validDuringProp, mergedValidityLiteral);
+			}
+			
+			// we don't need to register the context store listeners here since
+			// we are operating a
+			// known manual event
+			// Config.registerContextAssertionStoreListeners(contextStoreDataset);
+			Model newAssertionStoreModel = contextStoreDataset.getNamedModel(assertionStoreURI);
+			
+			// now remove the newly inserted triples. we just remove the named
+			// graphs altogether
+			contextStoreDataset.removeNamedModel(contextAssertionUUID.getURI());
+			StmtIterator newAssertionStatements = newAssertionStoreModel
+					.listStatements(newAssertionUUIDResource, null, (RDFNode) null);
+			newAssertionStoreModel.remove(newAssertionStatements);
 		}
 		
 		// finally sync the changes
@@ -186,11 +172,6 @@ public class CheckValidityContinuityHook implements ContextUpdateHook {
 		return true;
 	}
 
-
-	@Override
-    public OntResource getContextAssertionResource() {
-	    return contextAssertionResource;
-    }
 	
 	@Override
 	public String toString() {

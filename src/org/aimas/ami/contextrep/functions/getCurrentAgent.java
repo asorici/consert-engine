@@ -1,6 +1,6 @@
 package org.aimas.ami.contextrep.functions;
 
-import org.aimas.ami.contextrep.test.adhocmeeting.ProducerEvent;
+import org.aimas.ami.contextrep.test.adhocmeeting.ContextEvent;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
@@ -10,7 +10,7 @@ public class getCurrentAgent extends FunctionBase0 {
 
 	@Override
 	public NodeValue exec() {
-		return NodeValue.makeNode(ProducerEvent.DEFAULT_SOURCE_URI, XSDDatatype.XSDanyURI);
+		return NodeValue.makeNode(ContextEvent.DEFAULT_SOURCE_URI, XSDDatatype.XSDanyURI);
 	}
 
 }

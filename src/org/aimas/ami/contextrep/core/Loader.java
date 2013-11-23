@@ -14,17 +14,17 @@ import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
 import org.aimas.ami.contextrep.model.ContextAssertionInfo;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
 import org.aimas.ami.contextrep.utils.ContextAssertionFinder;
-import org.aimas.ami.contextrep.utils.ContextAssertionUtils;
+import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
-import org.topbraid.spin.model.CommandWithWhere;
+import org.topbraid.spin.model.Construct;
 import org.topbraid.spin.model.Element;
 import org.topbraid.spin.model.ElementList;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Template;
 import org.topbraid.spin.model.TemplateCall;
+import org.topbraid.spin.model.TripleTemplate;
 import org.topbraid.spin.util.CommandWrapper;
 import org.topbraid.spin.util.SPINQueryFinder;
-import org.topbraid.spin.vocabulary.SP;
 import org.topbraid.spin.vocabulary.SPIN;
 
 import com.hp.hpl.jena.ontology.OntClass;
@@ -40,7 +40,6 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.tdb.base.file.Location;
@@ -160,7 +159,7 @@ public class Loader {
 		for (; relationPropIt.hasNext();) {
 			OntProperty prop = relationPropIt.next();
 			if (!SPINFactory.isAbstract(prop)) {
-				ContextAssertionType assertionType = ContextAssertionUtils.getType(prop, transitiveContextModel);
+				ContextAssertionType assertionType = ContextAssertionUtil.getType(prop, transitiveContextModel);
 				switch(assertionType) {
 				case Static:
 					assertionIndex.addStaticContextAssertion(new ContextAssertionInfo(assertionType, 2, prop));
@@ -189,7 +188,7 @@ public class Loader {
 		for (; dataPropIt.hasNext();) {
 			OntProperty prop = dataPropIt.next();
 			if (!SPINFactory.isAbstract(prop)) {
-				ContextAssertionType assertionType = ContextAssertionUtils.getType(prop, transitiveContextModel);
+				ContextAssertionType assertionType = ContextAssertionUtil.getType(prop, transitiveContextModel);
 				switch(assertionType) {
 				case Static:
 					assertionIndex.addStaticContextAssertion(new ContextAssertionInfo(assertionType, 2, prop));
@@ -217,7 +216,7 @@ public class Loader {
 		for (; unaryClassIt.hasNext();) {
 			OntClass cls = unaryClassIt.next();
 			if (!SPINFactory.isAbstract(cls)) {
-				ContextAssertionType assertionType = ContextAssertionUtils.getType(cls, transitiveContextModel);
+				ContextAssertionType assertionType = ContextAssertionUtil.getType(cls, transitiveContextModel);
 				switch(assertionType) {
 				case Static:
 					assertionIndex.addStaticContextAssertion(new ContextAssertionInfo(assertionType, 1, cls));
@@ -245,7 +244,7 @@ public class Loader {
 		for (; naryClassIt.hasNext();) {
 			OntClass cls = naryClassIt.next();
 			if (!SPINFactory.isAbstract(cls)) {
-				ContextAssertionType assertionType = ContextAssertionUtils.getType(cls, transitiveContextModel);
+				ContextAssertionType assertionType = ContextAssertionUtil.getType(cls, transitiveContextModel);
 				switch(assertionType) {
 				case Static:
 					assertionIndex.addStaticContextAssertion(new ContextAssertionInfo(assertionType, 3, cls));
@@ -355,28 +354,34 @@ public class Loader {
 					spinCommand = SPINFactory.asCommand(cmd.getSource());
 				}
 				
-				CommandWithWhere whereCommand =  spinCommand.as(CommandWithWhere.class);
-				ElementList whereElements = whereCommand.getWhere();
 				
-				// the derivation rules are constructed as sp:Modify statements with a sp:insertPattern as head
-				Statement insertStatement = spinCommand.getProperty(SP.insertPattern);
-				Element headElement = SPINFactory.asElement(insertStatement.getResource());
+				/*
+				 * The derivation rules are constructed as sp:Construct statement with a SP.templates predicate
+				 * defining the TemplateTriples in the head of the CONSTRUCT statement
+				 */
+				Construct constructCommand =  spinCommand.as(Construct.class);
+				ElementList whereElements = constructCommand.getWhere();
+				List<TripleTemplate> constructedTriples = constructCommand.getTemplates();
+				OntResource derivedAssertionResource = null; 
 				
 				OntModel contextBasicInfModel = getTransitiveInferenceModel(basicContextModel);
 				ContextAssertionFinder ruleBodyFinder = new ContextAssertionFinder(whereElements, contextBasicInfModel);
-				ContextAssertionFinder ruleHeadFinder = new ContextAssertionFinder(headElement, contextBasicInfModel);
 				
-				// run finder and collect results
-				ruleHeadFinder.run();
+				// run context assertion rule body finder and collect results
 				ruleBodyFinder.run();
-				
-				List<ContextAssertion> headContextAssertions = ruleHeadFinder.getResult();
 				List<ContextAssertion> bodyContextAssertions = ruleBodyFinder.getResult();
 				
+				// look through asserted triples as part of the CONSTRUCT for the derived assertion and retrieve
+				// its resource type
+				for (TripleTemplate tpl : constructedTriples) {
+					if (tpl.getPredicate().equals(
+						contextBasicInfModel.getProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_RESOURCE))) {
+						derivedAssertionResource = contextBasicInfModel.getOntResource(tpl.getObjectResource());
+					}
+				}
+				
 				// there is only one head ContextAssertion - the derived one
-				ContextAssertion derivedContextAssertion = headContextAssertions.get(0);
-				OntResource derivedResource = derivedContextAssertion.getAssertionResource();
-				DerivedAssertionWrapper derivationWrapper = new DerivedAssertionWrapper(derivedResource, cmd);
+				DerivedAssertionWrapper derivationWrapper = new DerivedAssertionWrapper(derivedAssertionResource, cmd);
 				
 				for (ContextAssertion assertion : bodyContextAssertions) {
 					// System.out.println(assertion.getAssertionResource().getURI() + ": " + assertion.getAssertionType());

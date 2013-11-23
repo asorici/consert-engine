@@ -99,6 +99,7 @@ public class ContextUpdateWorker extends UpdateEngineWorker {
 		}
 	}
 	
+	
 	@Override
 	protected void execInsert(List<Quad> quads, Node dftGraph, Iterator<Binding> bindings) {
 		// We are only interested in the insert quads because we know that for Context SPIN

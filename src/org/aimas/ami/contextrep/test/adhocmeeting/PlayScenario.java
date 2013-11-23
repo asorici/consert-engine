@@ -7,14 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.aimas.ami.contextrep.core.Config;
 import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
 import org.aimas.ami.contextrep.exceptions.ConfigException;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
+import org.aimas.ami.contextrep.update.ContextUpdateExecutionWrapper;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
 import org.aimas.ami.contextrep.vocabulary.SPINVocabulary;
@@ -44,6 +43,7 @@ public class PlayScenario {
 	
 	public static final int ADVANCE_MIN_SKEL = -7;
 	public static final int ADVANCE_MIN_MIC = -3;
+	private static final int DELAY_MILLIS = 1000;
 	
 	/**
 	 * @param args
@@ -63,29 +63,52 @@ public class PlayScenario {
 			OntModel basicScenarioModel = ScenarioInit.initScenario(dataset, basicContextModel);
 			
 			//attempSPINInference(dataset, basicContextModel);
+			List<ContextEvent> scenarioEvents = buildScenarioEvents(basicScenarioModel, basicContextModel, dataset);
 			
 			
-			List<ProducerEvent> scenarioEvents = buildScenarioEvents(basicScenarioModel, basicContextModel, dataset);
-			
-			LinkedBlockingQueue<ProducerEvent> eventQueue = new LinkedBlockingQueue<>();
-			EventProducerThread producer = new EventProducerThread(scenarioEvents, eventQueue);
-			EventConsumerThread consumer = new EventConsumerThread(eventQueue);
-			
-			producer.start();
-			consumer.start();
-			
-			try {
-				producer.join();
-				consumer.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			// ============================= start event generation =============================
+			while (!scenarioEvents.isEmpty()) {
+				Calendar nowSkel = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+				Calendar nowMic = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+				nowSkel.add(Calendar.MINUTE, ADVANCE_MIN_SKEL);
+				nowMic.add(Calendar.MINUTE, ADVANCE_MIN_MIC);
+				
+				int nrEvents = scenarioEvents.size();
+				//System.out.println("Number of events: " + nrEvents);
+				
+				for (int i = 0; i < nrEvents; i++) {
+					ContextEvent event = scenarioEvents.get(i);
+					if (event instanceof SenseSkeletonSittingEvent && event.timestamp.after(nowSkel)) {
+						break;
+					}
+					else if (event instanceof HasNoiseLevelEvent && event.timestamp.after(nowMic)) {
+						break;
+					}
+					else {
+						scenarioEvents.remove(i);
+						i--;
+						nrEvents--;
+						
+						// wrap event for execution and send it to insert executor
+						System.out.println("GENERATING EVENT: " + event);
+						Config.assertionInsertExecutor().execute(new ContextUpdateExecutionWrapper(event.getUpdateRequest()));
+					}
+				}
+				
+				try {
+					Thread.sleep(DELAY_MILLIS);
+				} 
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			
-			System.out.println("THREADS HAVE JOINED; SIMULATION OVER");
+			System.out.println("SCENARIO GENERATOR THREAD" + " stopping");
 			
+			// ============================== end event generation ==============================
 			
 			try {
-	            Thread.sleep(10000);
+	            Thread.sleep(5000);
             }
             catch (InterruptedException e) {
 	            e.printStackTrace();
@@ -109,7 +132,7 @@ public class PlayScenario {
 			
 			dataset.end();
 			
-			//Config.close();
+			Config.close();
 		} catch (ConfigException e) {
 			e.printStackTrace();
 		}
@@ -182,8 +205,8 @@ public class PlayScenario {
 		
 	}
 
-	private static List<ProducerEvent> buildScenarioEvents(OntModel scenarioModel, OntModel contextModel, Dataset dataset) {
-		List<ProducerEvent> events = new ArrayList<>();
+	private static List<ContextEvent> buildScenarioEvents(OntModel scenarioModel, OntModel contextModel, Dataset dataset) {
+		List<ContextEvent> events = new ArrayList<>();
 		
 		//ScenarioInit.printStatements(scenarioModel);
 		OntClass kinectCamera = contextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "KinectCamera");
@@ -203,7 +226,7 @@ public class PlayScenario {
 		Individual skeleton1 = scenarioModel.createIndividual(ScenarioInit.SCENARIO_NS + "skeleton1", 
 			contextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "Skeleton"));
 		
-		ProducerEvent event1 = new SenseSkeletonSittingEvent(contextModel, timestampSkel1, 600, cameraAlex, skeleton1);
+		ContextEvent event1 = new SenseSkeletonSittingEvent(contextModel, timestampSkel1, 600, cameraAlex, skeleton1);
 		events.add(event1);
 		
 		// round 2
@@ -212,14 +235,14 @@ public class PlayScenario {
 		timestampSkel2.add(Calendar.SECOND, gap);
 		Individual skeleton2 = scenarioModel.createIndividual(ScenarioInit.SCENARIO_NS + "skeleton2", 
 			contextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "Skeleton"));
-		ProducerEvent event2 = new SenseSkeletonSittingEvent(contextModel, timestampSkel2, 600, cameraAlex, skeleton1);
-		ProducerEvent event3 = new SenseSkeletonSittingEvent(contextModel, timestampSkel2, 600, cameraAlex, skeleton2);
+		ContextEvent event2 = new SenseSkeletonSittingEvent(contextModel, timestampSkel2, 600, cameraAlex, skeleton1);
+		ContextEvent event3 = new SenseSkeletonSittingEvent(contextModel, timestampSkel2, 600, cameraAlex, skeleton2);
 		
 		Calendar timestampMic2 = (Calendar)timestampInit.clone();
 		timestampMic2.add(Calendar.MINUTE, ADVANCE_MIN_MIC);
 		timestampMic2.add(Calendar.SECOND, gap);
-		ProducerEvent event4 = new HasNoiseLevelEvent(contextModel, timestampMic2, 600, mic1, 80);
-		ProducerEvent event5 = new HasNoiseLevelEvent(contextModel, timestampMic2, 600, mic2, 80);
+		ContextEvent event4 = new HasNoiseLevelEvent(contextModel, timestampMic2, 600, mic1, 80);
+		ContextEvent event5 = new HasNoiseLevelEvent(contextModel, timestampMic2, 600, mic2, 80);
 		events.add(event2); events.add(event3); events.add(event4); events.add(event5);
 		
 		// round 3
@@ -228,115 +251,20 @@ public class PlayScenario {
 		timestampSkel3.add(Calendar.SECOND, gap);
 		Individual skeleton3 = scenarioModel.createIndividual(ScenarioInit.SCENARIO_NS + "skeleton3", 
 			contextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "Skeleton"));
-		ProducerEvent event6 = new SenseSkeletonSittingEvent(contextModel, timestampSkel3, 600, cameraAlex, skeleton1);
-		ProducerEvent event7 = new SenseSkeletonSittingEvent(contextModel, timestampSkel3, 600, cameraAlex, skeleton2);
-		ProducerEvent event8 = new SenseSkeletonSittingEvent(contextModel, timestampSkel3, 600, cameraAlex, skeleton3);
+		ContextEvent event6 = new SenseSkeletonSittingEvent(contextModel, timestampSkel3, 600, cameraAlex, skeleton1);
+		ContextEvent event7 = new SenseSkeletonSittingEvent(contextModel, timestampSkel3, 600, cameraAlex, skeleton2);
+		ContextEvent event8 = new SenseSkeletonSittingEvent(contextModel, timestampSkel3, 600, cameraAlex, skeleton3);
 		
 		Calendar timestampMic3 = (Calendar)timestampMic2.clone();
 		timestampMic3.add(Calendar.SECOND, gap);
-		ProducerEvent event9 = new HasNoiseLevelEvent(contextModel, timestampMic3, 600, mic1, 80);
-		ProducerEvent event10 = new HasNoiseLevelEvent(contextModel, timestampMic3, 600, mic2, 80);
+		ContextEvent event9 = new HasNoiseLevelEvent(contextModel, timestampMic3, 600, mic1, 80);
+		ContextEvent event10 = new HasNoiseLevelEvent(contextModel, timestampMic3, 600, mic2, 80);
 		
 		events.add(event6); events.add(event7); events.add(event8); events.add(event9); events.add(event10);
 		
-		ProducerEvent stopEvent = new StopEvent(contextModel, timestampMic3, 600);
-		events.add(stopEvent);
+		//ContextEvent stopEvent = new StopEvent(contextModel, timestampMic3, 600);
+		//events.add(stopEvent);
 		
 		return events;
-	}
-	
-	
-	private static class EventProducerThread extends Thread {
-		private static final int DELAY_MILLIS = 1000;
-		
-		private List<ProducerEvent> events;
-		private LinkedBlockingQueue<ProducerEvent> eventQueue;
-		
-		EventProducerThread(List<ProducerEvent> events, LinkedBlockingQueue<ProducerEvent> eventQueue) {
-			this.events = events;
-			this.eventQueue = eventQueue;
-		}
-		
-		
-		@Override
-		public void run() {
-			
-			while (!events.isEmpty()) {
-				Calendar nowSkel = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-				Calendar nowMic = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-				nowSkel.add(Calendar.MINUTE, ADVANCE_MIN_SKEL);
-				nowMic.add(Calendar.MINUTE, ADVANCE_MIN_MIC);
-				
-				int nrEvents = events.size();
-				System.out.println("Number of events: " + nrEvents);
-				
-				for (int i = 0; i < nrEvents; i++) {
-					ProducerEvent event = events.get(i);
-					if (event instanceof SenseSkeletonSittingEvent && event.timestamp.after(nowSkel)) {
-						break;
-					}
-					else if ((event instanceof HasNoiseLevelEvent || event instanceof StopEvent) 
-							&& event.timestamp.after(nowMic)) {
-						break;
-					}
-					else {
-						events.remove(i);
-						i--;
-						nrEvents--;
-						
-						//System.out.println("Enqueueing " + event);
-						eventQueue.add(event);
-					}
-				}
-				
-				try {
-					Thread.sleep(DELAY_MILLIS);
-				} 
-				catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			System.out.println("PRODUCER THREAD" + " stopping");
-		}
-	}
-	
-	
-	private static class EventConsumerThread extends Thread {
-		private LinkedBlockingQueue<ProducerEvent> eventQueue;
-		private Dataset contextStoreDataset;
-		
-		EventConsumerThread(LinkedBlockingQueue<ProducerEvent> eventQueue) {
-			this.eventQueue = eventQueue;
-			contextStoreDataset = Config.getContextStoreDataset();
-		}
-		
-		@Override
-		public void run() {
-			while(true) {
-				try {
-					ProducerEvent event = eventQueue.take();
-					
-					if (event != null) {
-						if (event instanceof StopEvent) {
-							break;
-						}
-						
-						handleEvent(event);
-					}
-					
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			System.out.println("CONSUMER THREAD" + " stopping");
-		}
-		
-		private void handleEvent(ProducerEvent event) {
-			System.out.println("Handling " + event);
-			event.execute(contextStoreDataset);
-		}
 	}
 }

@@ -8,7 +8,7 @@ import java.util.Set;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.ContextAssertionInfo;
 import org.aimas.ami.contextrep.model.ContextEntity;
-import org.aimas.ami.contextrep.utils.ContextAssertionUtils;
+import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
 import org.aimas.ami.contextrep.vocabulary.RDFVocabulary;
 import org.topbraid.spin.model.Element;
@@ -25,7 +25,6 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 public class ContextAssertionImpl extends NamedGraphImpl implements
 		ContextAssertion {
@@ -112,8 +111,7 @@ public class ContextAssertionImpl extends NamedGraphImpl implements
 					}
 					
 					// check if we have an assertion class
-					if (property.equals(ResourceFactory.createProperty(RDFVocabulary.TYPE)) && 
-							object != null && object.isURIResource()) {
+					if (property.equals(RDFVocabulary.TYPE) && object != null && object.isURIResource()) {
 						OntClass assertionClass = assertionModel.getOntClass(object.getURI());
 						
 						if (assertionClass != null) {
@@ -143,7 +141,7 @@ public class ContextAssertionImpl extends NamedGraphImpl implements
 			NamedGraph namedGraph, OntModel assertionModel, OntClass assertionClass, 
 			TriplePattern triple) {
 		ContextEntity contextEntity = new ContextEntityImpl(triple.getSubject());
-		ContextAssertionType assertionType = ContextAssertionUtils.getType(assertionClass, assertionModel);
+		ContextAssertionType assertionType = ContextAssertionUtil.getType(assertionClass, assertionModel);
 		
 		return new UnaryContextAssertionImpl(namedGraph.asNode(), (EnhGraph)namedGraph.getModel(), 
 				assertionType, 1, assertionClass, contextEntity);
@@ -157,7 +155,7 @@ public class ContextAssertionImpl extends NamedGraphImpl implements
 		ContextEntity subjectEntity = new ContextEntityImpl(triple.getSubject());
 		ContextEntity objectEntity = new ContextEntityImpl(triple.getObject());
 		
-		ContextAssertionType assertionType = ContextAssertionUtils.getType(assertionProperty, assertionModel);
+		ContextAssertionType assertionType = ContextAssertionUtil.getType(assertionProperty, assertionModel);
 		return new BinaryContextAssertionImpl(namedGraph.asNode(), (EnhGraph)namedGraph.getModel(), 
 				assertionType, 2, assertionProperty, subjectEntity, objectEntity);
 	}
@@ -166,7 +164,7 @@ public class ContextAssertionImpl extends NamedGraphImpl implements
 	private static ContextAssertionImpl createNaryContextAssertion(
 			NamedGraph namedGraph, OntModel assertionModel, OntClass assertionClass) {
 		
-		ContextAssertionType assertionType = ContextAssertionUtils.getType(assertionClass, assertionModel);
+		ContextAssertionType assertionType = ContextAssertionUtil.getType(assertionClass, assertionModel);
 		Map<OntProperty, ContextEntity> assertionRolesMap = new HashMap<OntProperty, ContextEntity>();
 		
 		List<Element> childElements = namedGraph.getElements();
