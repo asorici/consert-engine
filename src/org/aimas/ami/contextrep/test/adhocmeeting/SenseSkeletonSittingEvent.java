@@ -9,7 +9,6 @@ import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
-import org.aimas.ami.contextrep.vocabulary.RDFVocabulary;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
@@ -28,6 +27,7 @@ import com.hp.hpl.jena.sparql.modify.request.UpdateDataInsert;
 import com.hp.hpl.jena.update.Update;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class SenseSkeletonSittingEvent extends ContextEvent {
 	private static final String LOCAL_NAME = "SensesSkelInPosition";
@@ -59,7 +59,7 @@ public class SenseSkeletonSittingEvent extends ContextEvent {
 		OntProperty skeletonRole = contextModel.getOntProperty(ScenarioInit.AD_HOC_MEETING_NS + "skeletonRole");
 		OntProperty skelPositionRole = contextModel.getOntProperty(ScenarioInit.AD_HOC_MEETING_NS + "skelPositionRole");
 		
-		Quad q1 = Quad.create(graphURINode, bnode.asNode(), RDFVocabulary.TYPE.asNode(), assertionClass.asNode());
+		Quad q1 = Quad.create(graphURINode, bnode.asNode(), RDF.type.asNode(), assertionClass.asNode());
 		Quad q2 = Quad.create(graphURINode, bnode.asNode(), cameraRole.asNode(), camera.asNode());
 		Quad q3 = Quad.create(graphURINode, bnode.asNode(), skeletonRole.asNode(), skeleton.asNode());
 		Quad q4 = Quad.create(graphURINode, bnode.asNode(), skelPositionRole.asNode(), sittingPosition.asNode());

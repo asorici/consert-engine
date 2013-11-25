@@ -10,7 +10,6 @@ import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
-import org.aimas.ami.contextrep.vocabulary.RDFVocabulary;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaUtil;
 
@@ -33,6 +32,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.ReificationStyle;
 import com.hp.hpl.jena.tdb.TDB;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ScenarioInit {
 	public static final String AD_HOC_MEETING_BASE = "http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models";
@@ -289,19 +289,19 @@ public class ScenarioInit {
 		Model skeleton3Graph = dataset.getNamedModel(skeletonAssertionID3);
 		
 		// create first assertion
-		skeleton1Graph.add(bnode1, RDFVocabulary.TYPE, assertionClass);
+		skeleton1Graph.add(bnode1, RDF.type, assertionClass);
 		skeleton1Graph.add(bnode1, cameraRole, kinectCamera);
 		skeleton1Graph.add(bnode1, skeletonRole, skeleton1);
 		skeleton1Graph.add(bnode1, skelPositionRole, sittingPosition);
 		
 		// create second assertion
-		skeleton2Graph.add(bnode2, RDFVocabulary.TYPE, assertionClass);
+		skeleton2Graph.add(bnode2, RDF.type, assertionClass);
 		skeleton2Graph.add(bnode2, cameraRole, kinectCamera);
 		skeleton2Graph.add(bnode2, skeletonRole, skeleton2);
 		skeleton2Graph.add(bnode2, skelPositionRole, sittingPosition);
 		
 		// create third assertion
-		skeleton3Graph.add(bnode3, RDFVocabulary.TYPE, assertionClass);
+		skeleton3Graph.add(bnode3, RDF.type, assertionClass);
 		skeleton3Graph.add(bnode3, cameraRole, kinectCamera);
 		skeleton3Graph.add(bnode3, skeletonRole, skeleton3);
 		skeleton3Graph.add(bnode3, skelPositionRole, sittingPosition);

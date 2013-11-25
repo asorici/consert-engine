@@ -14,7 +14,6 @@ import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences.ContextInferenceResult;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
 import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
-import org.aimas.ami.contextrep.vocabulary.RDFVocabulary;
 import org.aimas.ami.contextrep.vocabulary.SPINVocabulary;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
@@ -44,6 +43,7 @@ import com.hp.hpl.jena.sparql.modify.request.UpdateDataInsert;
 import com.hp.hpl.jena.update.Update;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class CheckInferenceHook extends ContextUpdateHook {
 	
@@ -126,7 +126,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			// Use it to create a new UpdateRequest to be executed by the assertionInsertExecutor
 			
 			// step 1: identify the blank node that asserts the annotations
-			ResIterator annotationSubjectIt = newTriples.listSubjectsWithProperty(RDFVocabulary.TYPE, 
+			ResIterator annotationSubjectIt = newTriples.listSubjectsWithProperty(RDF.type, 
 				basicContextModel.getResource(ContextAssertionVocabulary.CONTEXT_ANNOTATION));
 			Resource annotationSubject = annotationSubjectIt.next();
 			
@@ -191,7 +191,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		
 		@Override
         public boolean test(Statement s) {
-			if (s.getSubject().equals(annotationSubject) && !s.getPredicate().equals(RDFVocabulary.TYPE)) {
+			if (s.getSubject().equals(annotationSubject) && !s.getPredicate().equals(RDF.type)) {
 				return true;
 			}
 			

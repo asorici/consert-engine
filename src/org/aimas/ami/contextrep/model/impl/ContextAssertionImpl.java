@@ -10,7 +10,6 @@ import org.aimas.ami.contextrep.model.ContextAssertionInfo;
 import org.aimas.ami.contextrep.model.ContextEntity;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
-import org.aimas.ami.contextrep.vocabulary.RDFVocabulary;
 import org.topbraid.spin.model.Element;
 import org.topbraid.spin.model.NamedGraph;
 import org.topbraid.spin.model.TriplePattern;
@@ -25,6 +24,7 @@ import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ContextAssertionImpl extends NamedGraphImpl implements
 		ContextAssertion {
@@ -111,7 +111,7 @@ public class ContextAssertionImpl extends NamedGraphImpl implements
 					}
 					
 					// check if we have an assertion class
-					if (property.equals(RDFVocabulary.TYPE) && object != null && object.isURIResource()) {
+					if (property.equals(RDF.type) && object != null && object.isURIResource()) {
 						OntClass assertionClass = assertionModel.getOntClass(object.getURI());
 						
 						if (assertionClass != null) {
