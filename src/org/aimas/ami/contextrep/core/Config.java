@@ -52,6 +52,9 @@ public class Config {
 	// ContextAssertion Derivation Rule Dictionary
 	private static DerivationRuleDictionary derivationRuleDictionary;
 	
+	// ContextAssertion Constraints Dictionary
+	private static ConstraintIndex constraintIndex;
+	
 	// ContextAssertion index
 	private static ContextAssertionIndex contextAssertionIndex;
 	
@@ -165,6 +168,7 @@ public class Config {
 		timestamp = System.currentTimeMillis();
 		
 		// TODO: compute constraint dictionary
+		constraintIndex = Loader.buildConstraintIndex(contextAssertionIndex, basicContextModel);
 		
 		// register custom TDB UpdateEgine to listen for ContextAssertion insertions
 		ContextAssertionUpdateEngine.register();

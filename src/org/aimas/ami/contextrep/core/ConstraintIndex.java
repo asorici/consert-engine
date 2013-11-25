@@ -8,10 +8,10 @@ import org.topbraid.spin.util.CommandWrapper;
 
 import com.hp.hpl.jena.ontology.OntResource;
 
-public class ConstraintDictionary {
+public class ConstraintIndex {
 	private Map<OntResource, List<CommandWrapper>> assertion2ConstraintMap;
 	
-	public ConstraintDictionary() {
+	public ConstraintIndex() {
 		assertion2ConstraintMap = new HashMap<>();
 	}
 	

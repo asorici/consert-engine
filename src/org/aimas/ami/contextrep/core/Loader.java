@@ -17,13 +17,13 @@ import org.aimas.ami.contextrep.utils.ContextAssertionFinder;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
 import org.topbraid.spin.model.Construct;
-import org.topbraid.spin.model.Element;
 import org.topbraid.spin.model.ElementList;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Template;
 import org.topbraid.spin.model.TemplateCall;
 import org.topbraid.spin.model.TripleTemplate;
 import org.topbraid.spin.util.CommandWrapper;
+import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.util.SPINQueryFinder;
 import org.topbraid.spin.vocabulary.SPIN;
 
@@ -44,6 +44,7 @@ import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.tdb.base.file.Location;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Loader {
 	private static Properties configProperties;
@@ -398,4 +399,30 @@ public class Loader {
 		
 		return dict;
 	}
+	
+	/**
+	 * Create an index of uniqueness or value constraints attached to a ContextAssertion. It provides a mapping
+	 * between a ContextAssertion and the list of constraints attached to it.
+	 * @param basicContextModel The ontology (with transitive inference enabled) that defines this context model
+	 * @return An {@link ContextAssertionIndex} instance that holds the index structure.
+	 */
+	public static ConstraintIndex buildConstraintIndex(ContextAssertionIndex contextAssertionIndex, OntModel basicContextModel) {
+	    List<ContextAssertionInfo> assertionList = contextAssertionIndex.getContextAssertions();
+	    for (ContextAssertionInfo assertionInfo : assertionList) {
+	    	if (assertionInfo.getAssertionArity() == ContextAssertion.BINARY) {
+	    		// for a binary assertion get the domain and range and see if they have any assigned constraints
+	    		// we do this because for binary assertions (i.e. OWL object- or datatype properties) we
+	    		// attach the constraints to one of the role playing Entities
+	    		OntResource assertionResource = assertionInfo.getAssertionOntologyResource();
+	    		Resource domain = assertionResource.getPropertyResourceValue(RDFS.domain);
+	    		Resource range = assertionResource.getPropertyResourceValue(RDFS.domain);
+	    		
+	    		if (domain.isURIResource()) {
+	    			// TODO
+	    		}
+	    	}
+	    }
+	    
+		return null;
+    }
 }
