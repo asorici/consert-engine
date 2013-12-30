@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
@@ -22,7 +23,6 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.modify.request.QuadDataAcc;
 import com.hp.hpl.jena.sparql.modify.request.UpdateCreate;
 import com.hp.hpl.jena.sparql.modify.request.UpdateDataInsert;
-import com.hp.hpl.jena.sparql.modify.request.UpdateModify;
 import com.hp.hpl.jena.update.Update;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
@@ -59,7 +59,7 @@ public class HasNoiseLevelEvent extends ContextEvent {
 		
 		Update createUpdate = new UpdateCreate(graphURINode);
 		Update assertionUpdate = new UpdateDataInsert(data);
-		Update annotationUpdate = createAnnotationUpdate(graphURINode, timestamp, validity);
+		Update annotationUpdate = createAnnotationUpdate(graphURINode, getTimestamp(), validity);
 		
 		request.add(createUpdate);
 		request.add(assertionUpdate);
@@ -100,7 +100,8 @@ public class HasNoiseLevelEvent extends ContextEvent {
 		Literal sourceAnn = ResourceFactory.createTypedLiteral(DEFAULT_SOURCE_URI, XSDDatatype.XSDanyURI);
 		
 		// create update quads
-		Node storeURINode = Node.createURI(Config.getStoreForAssertion(assertionProperty));
+		Node storeURINode = Node.createURI(
+				Config.getContextAssertionIndex().getAssertionFromResource(assertionProperty).getAssertionStoreURI());
 		OntProperty assertedBy = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_SOURCE);
 		OntProperty hasTimestamp = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_TIMESTAMP);
 		OntProperty validDuring = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_VALIDITY);
@@ -130,7 +131,7 @@ public class HasNoiseLevelEvent extends ContextEvent {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		
-		response += " timestamp: " + formatter.format(timestamp.getTime());
+		response += " timestamp: " + formatter.format(getTimestamp().getTime());
 		return response;
 	}
 }

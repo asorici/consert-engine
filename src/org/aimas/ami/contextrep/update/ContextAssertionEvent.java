@@ -1,10 +1,10 @@
 package org.aimas.ami.contextrep.update;
 
 import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.model.ContextAssertion;
 
 import com.hp.hpl.jena.graph.GraphEvents;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.ontology.OntResource;
 
 public class ContextAssertionEvent extends GraphEvents {
 	public static final String CONTEXT_ASSERTION_ADDED = "context-assertion-added"; 
@@ -18,8 +18,8 @@ public class ContextAssertionEvent extends GraphEvents {
 	    super(title, graphNode);
     }
 	
-	public OntResource getAssertionResource() {
+	public ContextAssertion getAssertion() {
 		Node graphNode = (Node)content;
-		return Config.getContextAssertionIndex().getResourceFromGraphUUID(graphNode);
+		return Config.getContextAssertionIndex().getAssertionFromGraphUUID(graphNode);
 	}
 }

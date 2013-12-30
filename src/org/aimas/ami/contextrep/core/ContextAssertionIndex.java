@@ -5,49 +5,49 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.aimas.ami.contextrep.model.ContextAssertionInfo;
+import org.aimas.ami.contextrep.model.ContextAssertion;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntResource;
 
 public class ContextAssertionIndex {
 	
-	private List<ContextAssertionInfo> staticContextAssertions;
-	private List<ContextAssertionInfo> profiledContextAssertions;
-	private List<ContextAssertionInfo> sensedContextAssertions;
-	private List<ContextAssertionInfo> derivedContextAssertions;
+	private List<ContextAssertion> staticContextAssertions;
+	private List<ContextAssertion> profiledContextAssertions;
+	private List<ContextAssertion> sensedContextAssertions;
+	private List<ContextAssertion> derivedContextAssertions;
 	
-	private Map<OntResource, String> assertion2StoreMap;
-	private Map<String, OntResource> graphURIBase2AssertionMap;
+	private Map<OntResource, ContextAssertion> assertionInfoMap;
+	private Map<String, ContextAssertion> graphURIBase2AssertionMap;
 	
-	public ContextAssertionIndex() {
+	ContextAssertionIndex() {
 		staticContextAssertions = new ArrayList<>();
 		profiledContextAssertions = new ArrayList<>();
 		sensedContextAssertions = new ArrayList<>();
 		derivedContextAssertions = new ArrayList<>();
 		
-		assertion2StoreMap = new HashMap<>();
+		assertionInfoMap = new HashMap<>();
 		graphURIBase2AssertionMap = new HashMap<>();
 	}
 
-	public List<ContextAssertionInfo> getStaticContextAssertions() {
+	public List<ContextAssertion> getStaticContextAssertions() {
 		return staticContextAssertions;
 	}
 
-	public List<ContextAssertionInfo> getProfiledContextAssertions() {
+	public List<ContextAssertion> getProfiledContextAssertions() {
 		return profiledContextAssertions;
 	}
 
-	public List<ContextAssertionInfo> getSensedContextAssertions() {
+	public List<ContextAssertion> getSensedContextAssertions() {
 		return sensedContextAssertions;
 	}
 
-	public List<ContextAssertionInfo> getDerivedContextAssertions() {
+	public List<ContextAssertion> getDerivedContextAssertions() {
 		return derivedContextAssertions;
 	}
 	
-	public List<ContextAssertionInfo> getContextAssertions() {
-		List<ContextAssertionInfo> allAssertions = new ArrayList<>();
+	public List<ContextAssertion> getContextAssertions() {
+		List<ContextAssertion> allAssertions = new ArrayList<>();
 		allAssertions.addAll(staticContextAssertions);
 		allAssertions.addAll(sensedContextAssertions);
 		allAssertions.addAll(profiledContextAssertions);
@@ -56,24 +56,29 @@ public class ContextAssertionIndex {
 		return allAssertions;
 	}
 	
-	public Map<OntResource, String> getAssertion2StoreMap() {
-		return assertion2StoreMap;
+	public Map<OntResource, ContextAssertion> getAssertionInfoMap() {
+		return assertionInfoMap;
 	}
 	
-	public Map<String, OntResource> getGraphURIBase2AssertionMap() {
+	public Map<String, ContextAssertion> getGraphURIBase2AssertionMap() {
 		return graphURIBase2AssertionMap;
 	}
 	
+	/*
 	public String getStoreForAssertion(OntResource assertionResource) {
 		if (assertionResource != null) {
-			return assertion2StoreMap.get(assertionResource);
+			return assertionInfoMap.get(assertionResource);
 		}
 		
 		return null;
 	}
+	*/
 	
+	public ContextAssertion getAssertionFromResource(OntResource assertionResource) {
+		return assertionInfoMap.get(assertionResource);
+	}
 	
-	public OntResource getResourceFromGraphStore(Node graphNode) {
+	public ContextAssertion getAssertionFromGraphStore(Node graphNode) {
 		// this works because of the way in which we create the 
 		// named graph stores for a particular ContextAssertion
 		String graphURI = graphNode.getURI();
@@ -88,7 +93,7 @@ public class ContextAssertionIndex {
 	}
 	
 	
-	public OntResource getResourceFromGraphUUID(Node graphUUIDNode) {
+	public ContextAssertion getAssertionFromGraphUUID(Node graphUUIDNode) {
 		// this works because of the way in which we generate the assertion 
 		// named graph UUIDs
 		
@@ -105,7 +110,7 @@ public class ContextAssertionIndex {
 	
 	
 	public boolean isContextAssertionUUID(Node graphNode) {
-		return getResourceFromGraphUUID(graphNode) != null;
+		return getAssertionFromGraphUUID(graphNode) != null;
 	}
 	
 	
@@ -134,11 +139,11 @@ public class ContextAssertionIndex {
 	
 	
 	public boolean containsAssertion(OntResource assertion) {
-		return assertion2StoreMap.containsKey(assertion);
+		return assertionInfoMap.containsKey(assertion);
 	}
 	
 	
-	public boolean containsAssertion(ContextAssertionInfo assertion) {
+	public boolean containsAssertion(ContextAssertion assertion) {
 		if (staticContextAssertions.contains(assertion)) {
 			return true;
 		}
@@ -159,29 +164,34 @@ public class ContextAssertionIndex {
 	}
 	
 	
-	public void addStaticContextAssertion(ContextAssertionInfo staticAssertion) {
+	public void addStaticContextAssertion(ContextAssertion staticAssertion) {
 		staticContextAssertions.add(staticAssertion);
+		assertionInfoMap.put(staticAssertion.getOntologyResource(), staticAssertion);
 	}
 	
-	public void addProfiledContextAssertion(ContextAssertionInfo profiledAssertion) {
-		staticContextAssertions.add(profiledAssertion);
+	public void addProfiledContextAssertion(ContextAssertion profiledAssertion) {
+		profiledContextAssertions.add(profiledAssertion);
+		assertionInfoMap.put(profiledAssertion.getOntologyResource(), profiledAssertion);
 	}
 	
-	public void addSensedContextAssertion(ContextAssertionInfo sensedAssertion) {
-		staticContextAssertions.add(sensedAssertion);
+	public void addSensedContextAssertion(ContextAssertion sensedAssertion) {
+		sensedContextAssertions.add(sensedAssertion);
+		assertionInfoMap.put(sensedAssertion.getOntologyResource(), sensedAssertion);
 	}
 	
-	public void addDerivedContextAssertion(ContextAssertionInfo derivedAssertion) {
-		staticContextAssertions.add(derivedAssertion);
+	public void addDerivedContextAssertion(ContextAssertion derivedAssertion) {
+		derivedContextAssertions.add(derivedAssertion);
+		assertionInfoMap.put(derivedAssertion.getOntologyResource(), derivedAssertion);
 	}
 	
-	public void mapAssertionStorage(OntResource assertion) {
-		String assertionURI = assertion.getURI();
+	
+	public void mapAssertionStorage(ContextAssertion assertion) {
+		String assertionURI = assertion.getOntologyResource().getURI();
 		assertionURI = assertionURI.replaceAll("#", "/");
 		
-		String assertionStoreURI = assertionURI + "Store";
+		//String assertionStoreURI = assertionURI + "Store";
+		//assertionInfoMap.put(assertion, assertionStoreURI);
 		
-		assertion2StoreMap.put(assertion, assertionStoreURI);
 		graphURIBase2AssertionMap.put(assertionURI, assertion);
 	}
 	

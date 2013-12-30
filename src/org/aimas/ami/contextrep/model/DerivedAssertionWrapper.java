@@ -1,25 +1,34 @@
 package org.aimas.ami.contextrep.model;
 
+import java.util.Map;
+
 import org.topbraid.spin.util.CommandWrapper;
 
-import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class DerivedAssertionWrapper {
 	
 	private CommandWrapper derivationCommand;
-	private OntResource derivedResource;
+	private ContextAssertion derivedAssertion;
+	private Map<String, RDFNode> commandBindings;
 	
-	public DerivedAssertionWrapper(OntResource derivedResource, CommandWrapper derivationCommand) {
-		this.derivedResource = derivedResource;
+	public DerivedAssertionWrapper(ContextAssertion derivedAssertion, CommandWrapper derivationCommand, 
+			Map<String, RDFNode> commandBindings) {
+		this.derivedAssertion = derivedAssertion;
 		this.derivationCommand = derivationCommand;
+		this.commandBindings = commandBindings;
     }
 
 	public CommandWrapper getDerivationCommand() {
 		return derivationCommand;
 	}
 
-	public OntResource getDerivedResource() {
-		return derivedResource;
+	public ContextAssertion getDerivedResource() {
+		return derivedAssertion;
+	}
+	
+	public Map<String, RDFNode> getCommandBindings() {
+		return commandBindings;
 	}
 	
 	@Override

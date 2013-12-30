@@ -1,13 +1,11 @@
 package org.aimas.ami.contextrep.model;
 
-import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public interface UnaryContextAssertion extends ContextAssertion {
-	
-	
 	/**
- 	 * Get the ContextEntity that fills the role of this ContextAssertion
-	 * @return the ContextEntity that fills the role of this ContextAssertion
+ 	 * Get the resource of the ContextEntity that fills the role of this ContextAssertion
+	 * @return The resource of the ContextEntity that fills the role of this ContextAssertion
 	 */
-	public ContextEntity getEntity();
+	public Resource getRoleEntityResource();
 }

@@ -36,6 +36,6 @@ public class ContextARQFactory extends ARQFactory {
 			return contextDataset;
 		}
 		
-		return Config.getContextStoreDataset();
+		return Config.getContextDataset();
 	}
 }

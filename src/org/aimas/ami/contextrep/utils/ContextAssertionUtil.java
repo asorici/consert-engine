@@ -9,15 +9,16 @@ import java.util.Set;
 
 import org.aimas.ami.contextrep.core.Config;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
+import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
 import org.aimas.ami.contextrep.update.ContextAssertionUpdateListener;
 import org.aimas.ami.contextrep.update.ContextAssertionUpdateListener.ContextUpdateHookWrapper;
-import org.aimas.ami.contextrep.update.ContextUpdateHook;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.graph.Graph;
+import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.HasValueRestriction;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
@@ -104,6 +105,27 @@ public class ContextAssertionUtil {
 	}
 	
 	
+	public static Resource getAssertionRoleEntity(OntModel contextModel, OntClass unaryAssertion,
+			OntProperty assertionRoleProperty) {
+		
+		Iterator<OntClass> supers = unaryAssertion.listSuperClasses(true);
+		for(;supers.hasNext();) {
+			OntClass sup = supers.next();
+			if (sup.isRestriction()) {
+				Restriction restriction = sup.asRestriction();
+				if (restriction.isAllValuesFromRestriction()) {
+					AllValuesFromRestriction avfr = restriction.asAllValuesFromRestriction();
+					if (avfr.onProperty(assertionRoleProperty)) {
+						return avfr.getAllValuesFrom();
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	
 	public static List<Statement> createAnnotationStatements(String graphURI, OntModel contextModel, 
 			ContextAssertionType assertionType, Calendar timestamp, CalendarIntervalList validity, 
 			double accuracy, String sourceURI) {
@@ -151,10 +173,10 @@ public class ContextAssertionUtil {
 		List<ContextAssertionUpdateListener> registeredContextStoreListeners = new ArrayList<>();
 		
 		ContextAssertionIndex contextAssertionIndex = Config.getContextAssertionIndex();
-		Map<OntResource, String> assertion2StoreMap = contextAssertionIndex.getAssertion2StoreMap();
+		Map<OntResource, ContextAssertion> assertionInfoMap = contextAssertionIndex.getAssertionInfoMap();
 		
-		for (OntResource res : assertion2StoreMap.keySet()) {
-			String assertionStoreURI = assertion2StoreMap.get(res);
+		for (OntResource res : assertionInfoMap.keySet()) {
+			String assertionStoreURI = assertionInfoMap.get(res).getAssertionStoreURI();
 			
 			// set a listener for the named graph store corresponding to this
 			// ContextAssertion

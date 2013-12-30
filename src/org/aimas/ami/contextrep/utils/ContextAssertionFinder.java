@@ -2,9 +2,10 @@ package org.aimas.ami.contextrep.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import org.aimas.ami.contextrep.model.ContextAssertion;
-import org.aimas.ami.contextrep.model.impl.ContextAssertionImpl;
+import org.aimas.ami.contextrep.model.ContextAssertionGraph;
+import org.aimas.ami.contextrep.model.impl.ContextAssertionGraphImpl;
 import org.topbraid.spin.model.Aggregation;
 import org.topbraid.spin.model.Bind;
 import org.topbraid.spin.model.Element;
@@ -35,15 +36,18 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class ContextAssertionFinder {
 	private Element rootElement;
 	private OntModel assertionModel;
+	private Map<String, RDFNode> templateBindings;
 	
-	private List<ContextAssertion> contextAssertions;
+	private List<ContextAssertionGraph> contextAssertions;
 	
 	private ElementWalker walker;
 	
-	public ContextAssertionFinder(Element rootElement, OntModel assertionModel) {
+	public ContextAssertionFinder(Element rootElement, OntModel assertionModel, Map<String, RDFNode> templateBindings) {
 		this.rootElement = rootElement;
 		this.assertionModel = assertionModel;
-		contextAssertions = new ArrayList<ContextAssertion>();
+		this.templateBindings = templateBindings;
+		
+		contextAssertions = new ArrayList<ContextAssertionGraph>();
 	}
 	
 	
@@ -53,7 +57,7 @@ public class ContextAssertionFinder {
 	}
 	
 	
-	public List<ContextAssertion> getResult() {
+	public List<ContextAssertionGraph> getResult() {
 		return contextAssertions;
 	}
 	
@@ -94,7 +98,7 @@ public class ContextAssertionFinder {
 		public void visit(NamedGraph namedGraph) {
 			//System.out.println("A NAMED GRAPH statement: " + namedGraph.getElements().size() + " subelements");
 			//System.out.println();
-			ContextAssertion assertion = ContextAssertionImpl.getFromNamedGraph(namedGraph, assertionModel);
+			ContextAssertionGraph assertion = ContextAssertionGraphImpl.getFromNamedGraph(namedGraph, assertionModel, templateBindings);
 			if (assertion != null) {
 				contextAssertions.add(assertion);
 			}

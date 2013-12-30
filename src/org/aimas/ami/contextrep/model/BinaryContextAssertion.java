@@ -1,8 +1,8 @@
 package org.aimas.ami.contextrep.model;
 
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public interface BinaryContextAssertion extends ContextAssertion {
-	
 	/**
 	 * Specifies whether this ContextAssertion binds two ContextEntities
 	 * @return true if the ContextAssertion binds two ContextEntities 
@@ -21,11 +21,11 @@ public interface BinaryContextAssertion extends ContextAssertion {
 	 * Get the ContextEntity that is the subject of this binary ContextAssertion
 	 * @return the ContextEntity that is the subject of this binary ContextAssertion
 	 */
-	public ContextEntity getSubjectEntity();
+	public Resource getDomainEntityResource();
 	
 	/**
 	 * Get the ContextEntity that is the object of this binary ContextAssertion
 	 * @return the ContextEntity that is the object of this binary ContextAssertion
 	 */
-	public ContextEntity getObjectEntity();
+	public Resource getRangeEntityResource();
 }

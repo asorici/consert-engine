@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.aimas.ami.contextrep.model.ContextAssertion;
+
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.GraphListener;
 import com.hp.hpl.jena.graph.Node;
@@ -14,9 +16,7 @@ public class ContextAssertionUpdateListener implements GraphListener {
 	private boolean updateRunning = false;
 	private ContextUpdateHookWrapper updateHookWrapper;
 	
-	public ContextAssertionUpdateListener() {
-		updateHookWrapper = new ContextUpdateHookWrapper();
-	}
+	public ContextAssertionUpdateListener() {}
 	
 	@Override
 	public void notifyAddTriple(Graph g, Triple t) {}
@@ -70,15 +70,19 @@ public class ContextAssertionUpdateListener implements GraphListener {
 					eventTitle.equals(ContextAssertionEvent.CONTEXT_ASSERTION_INFERRED)) {
 				Node contextAssertionUUID = (Node)event.getContent();
 				
-				// first check continuity 
+				// first set the assertion
+				updateHookWrapper.setAssertion(event.getAssertion());
+				
+				// then check continuity
+				System.out.println("============== ADDING HOOKS ==============");
 				updateHookWrapper.addContinuityHook(new CheckValidityContinuityHook(
-						event.getAssertionResource(), contextAssertionUUID));
+						event.getAssertion(), contextAssertionUUID));
 				
 				// then check the 
-				updateHookWrapper.addConstraintHook(new CheckConstraintHook(event.getAssertionResource()));
+				updateHookWrapper.addConstraintHook(new CheckConstraintHook(event.getAssertion()));
 				
 				// and lastly check if inference of a new ContextAssertion is applicable
-				updateHookWrapper.addInferenceHook(new CheckInferenceHook(event.getAssertionResource()));
+				updateHookWrapper.addInferenceHook(new CheckInferenceHook(event.getAssertion()));
 			}
 		}
 	}
@@ -88,6 +92,8 @@ public class ContextAssertionUpdateListener implements GraphListener {
 	}
 	
 	public static class ContextUpdateHookWrapper {
+		private ContextAssertion assertion;
+		
 		private List<CheckValidityContinuityHook> continuityHooks;
 		private List<CheckConstraintHook> constraintHooks;
 		private List<CheckInferenceHook> inferenceHooks;
@@ -97,6 +103,13 @@ public class ContextAssertionUpdateListener implements GraphListener {
 			constraintHooks = new ArrayList<>();
 			inferenceHooks = new ArrayList<>();
 		}
+		
+		ContextUpdateHookWrapper(ContextAssertion assertion) {
+			this();
+			this.assertion = assertion;
+		}
+		
+		
 		
 		void addContinuityHook(CheckValidityContinuityHook hook) {
 			continuityHooks.add(hook);
@@ -122,6 +135,14 @@ public class ContextAssertionUpdateListener implements GraphListener {
 			return inferenceHooks;
 		}
 		
+		public ContextAssertion getAssertion() {
+			return assertion;
+		}
+
+		public void setAssertion(ContextAssertion assertion) {
+			this.assertion = assertion;
+		}
+
 		public void extend(ContextUpdateHookWrapper other) {
 			continuityHooks.addAll(other.getContinuityHooks());
 			constraintHooks.addAll(other.getConstraintHooks());

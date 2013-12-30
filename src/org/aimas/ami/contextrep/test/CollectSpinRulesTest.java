@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.aimas.ami.contextrep.model.ContextAssertion;
+import org.aimas.ami.contextrep.model.ContextAssertionGraph;
 import org.aimas.ami.contextrep.utils.ContextAssertionFinder;
 import org.apache.log4j.PropertyConfigurator;
 import org.topbraid.spin.arq.ARQFactory;
@@ -123,13 +123,13 @@ public class CollectSpinRulesTest {
 				//myElemWalker.visit(elements);
 				
 				OntModel contextBasicInfModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_TRANS_INF, contextModel);
-				ContextAssertionFinder finder = new ContextAssertionFinder(elements, contextBasicInfModel);
+				ContextAssertionFinder finder = new ContextAssertionFinder(elements, contextBasicInfModel, initialTemplateBindings.get(cmd));
 				finder.run();
-				List<ContextAssertion> contextAssertions = finder.getResult();
+				List<ContextAssertionGraph> contextAssertions = finder.getResult();
 				
 				System.out.println("Found " + contextAssertions.size() + " ContextAssertions!!!");
-				for (ContextAssertion assertion : contextAssertions) {
-					System.out.println(assertion.getAssertionResource().getURI() + ": " + assertion.getAssertionType());
+				for (ContextAssertionGraph assertion : contextAssertions) {
+					System.out.println(assertion.getAssertionResource().getURI());
 				}
 				
 				/*

@@ -3,9 +3,8 @@ package org.aimas.ami.contextrep.core;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.aimas.ami.contextrep.exceptions.ConfigException;
@@ -28,18 +27,21 @@ import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.function.FunctionRegistry;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.tdb.base.file.Location;
-import com.hp.hpl.jena.update.UpdateRequest;
 
 public class Config {
-	// Path to context store
+	// Path to context store for persistance
 	private static Location contextStoreLocation;
+	
+	// In memory dataset 
+	//private static Dataset contextDataset;
+	
+	// URI for the entity store 
 	private static String entityStoreURI;
 	
 	// Domain Context Model
@@ -59,9 +61,8 @@ public class Config {
 	private static ContextAssertionIndex contextAssertionIndex;
 	
 	// Execution: ContextAssertion insertion and ContextAssertion insertion-hook execution
-	private static ExecutorService assertionInsertExecutor;
-	private static ExecutorService assertionInferenceExecutor;
-	private static LinkedBlockingQueue<UpdateRequest> assertionEventQueue;
+	private static ThreadPoolExecutor assertionInsertExecutor;
+	private static ThreadPoolExecutor assertionInferenceExecutor;
 	
 	/**
 	 * Do configuration setup:
@@ -84,9 +85,12 @@ public class Config {
 		}
 		timestamp = System.currentTimeMillis();
 		
-		// create the contextStore
+		// create the in-memory TDB contextStore dataset
 		contextStoreLocation = Loader.createOrOpenTDB();
-		Dataset contextStoreDataset = TDBFactory.createDataset(contextStoreLocation); 
+		
+		//contextDataset = GraphStoreFactory.create().toDataset();
+		Dataset contextDataset = TDBFactory.createDataset(contextStoreLocation);
+		
 		if (printDurations) {
 			System.out.println("Task: create the contextStore. Duration: " + 
 				(System.currentTimeMillis() - timestamp) + " ms");
@@ -99,7 +103,7 @@ public class Config {
 		// load context model
 		basicContextModel = Loader.getBasicContextModel();
 		if (printDurations) {
-			System.out.println("Task: load context model. Duration: " + 
+			System.out.println("Task: load context model " + contextModelBaseURI +  ". Duration: " + 
 				(System.currentTimeMillis() - timestamp) + " ms");
 		}
 		timestamp = System.currentTimeMillis();
@@ -147,7 +151,7 @@ public class Config {
 		
 		
 		// create the named graph for ContextEntities and EntityDescriptions
-		entityStoreURI = Loader.createEntityStoreGraph(contextStoreDataset);
+		entityStoreURI = Loader.createEntityStoreGraph(contextDataset);
 		
 		// create the named graph ContextAssertion Stores
 		contextAssertionIndex = Loader.createContextAssertionIndex(transitiveContextModel);
@@ -158,7 +162,7 @@ public class Config {
 		timestamp = System.currentTimeMillis();
 		
 		// compute derivation rule dictionary
-		derivationRuleDictionary = Loader.buildAssertionDictionary(basicContextModel);
+		derivationRuleDictionary = Loader.buildDerivationRuleDictionary(transitiveContextModel);
 		if (printDurations) {
 			System.out.println("Task: compute derivation rule dictionary. Duration: " + 
 				(System.currentTimeMillis() - timestamp) + " ms");
@@ -167,16 +171,15 @@ public class Config {
 		System.out.println(derivationRuleDictionary.getAssertion2QueryMap());
 		timestamp = System.currentTimeMillis();
 		
-		// TODO: compute constraint dictionary
-		constraintIndex = Loader.buildConstraintIndex(contextAssertionIndex, basicContextModel);
+		// compute constraint dictionary
+		constraintIndex = Loader.buildConstraintIndex(contextAssertionIndex, rdfsContextModel);
 		
 		// register custom TDB UpdateEgine to listen for ContextAssertion insertions
 		ContextAssertionUpdateEngine.register();
 		
 		// lastly create the assertion execution services
-		assertionInsertExecutor = Executors.newSingleThreadExecutor();
-		assertionInferenceExecutor = Executors.newSingleThreadExecutor();
-		assertionEventQueue = new LinkedBlockingQueue<>();
+		assertionInsertExecutor = createInsertionExecutor();
+		assertionInferenceExecutor = createInferenceExecutor();
 	}
 	
 
@@ -206,15 +209,9 @@ public class Config {
 	 * Close context model and sync TDB-backed dataset before closing
 	 */
 	public static void close() {
-		Dataset contextStoreDataset = TDBFactory.createDataset(contextStoreLocation); 
 		
-		owlContextModel.close();
-		rdfsContextModel.close();
-		transitiveContextModel.close();
-		basicContextModel.close();
-		
+		//Dataset contextStoreDataset = TDBFactory.createDataset(contextStoreLocation); 
 		// shutdown the executors and await their task termination
-		
 		assertionInsertExecutor.shutdown();
 		assertionInferenceExecutor.shutdown();
 		
@@ -226,39 +223,56 @@ public class Config {
 	        e.printStackTrace();
         }
 		
-		contextStoreDataset.close();
+		assertionInsertExecutor.shutdownNow();
+		assertionInferenceExecutor.shutdownNow();
 		
+		owlContextModel.close();
+		rdfsContextModel.close();
+		transitiveContextModel.close();
+		basicContextModel.close();
+		
+		//contextStoreDataset.close();
 	}
 	
-	public static ExecutorService assertionInsertExecutor() {
+	private static ThreadPoolExecutor createInsertionExecutor() {
+		return (ThreadPoolExecutor)Executors.newFixedThreadPool(1, new ContextInsertThreadFactory());
+	}
+	
+	private static ThreadPoolExecutor createInferenceExecutor() {
+		return (ThreadPoolExecutor)Executors.newFixedThreadPool(1, new ContextInferenceThreadFactory());
+	}
+	
+	
+	public static ThreadPoolExecutor assertionInsertExecutor() {
 		if (assertionInsertExecutor == null) {
-			assertionInsertExecutor = Executors.newSingleThreadExecutor();
+			assertionInsertExecutor = createInsertionExecutor();
 		}
 		
 		return assertionInsertExecutor;
 	}
 	
 	
-	public static ExecutorService assertionInferenceExecutor() {
+	public static ThreadPoolExecutor assertionInferenceExecutor() {
 		if (assertionInferenceExecutor == null) {
-			assertionInferenceExecutor = Executors.newSingleThreadExecutor();
+			assertionInferenceExecutor = createInferenceExecutor();
 		}
 		
 		return assertionInferenceExecutor;
 	}
 	
 	
-	public static LinkedBlockingQueue<UpdateRequest> getAssertionEventQueue() {
-		return assertionEventQueue;
+	public static Dataset getPersistentContextStore() {
+		return TDBFactory.createDataset(contextStoreLocation);
 	}
 	
 	
-	public static Dataset getContextStoreDataset() {
+	public static Dataset getContextDataset() {
 		/*
 		 *  We're doing it like this such that every thread that asks for the dataset will
 		 *  get its own object. Synchronization happens on TDB.sync()
 		 */
 		return TDBFactory.createDataset(contextStoreLocation);
+		//return contextDataset;
 	}
 	
 	public static String getContextModelBaseURI() {
@@ -293,16 +307,13 @@ public class Config {
 		return contextAssertionIndex;
 	}
 	
-	public static String getEntityStoreURI() {
-		return entityStoreURI;
+	public static ConstraintIndex getConstraintIndex() {
+		return constraintIndex;
 	}
 	
-	public static String getStoreForAssertion(OntResource contextAssertion) {
-		if (contextAssertionIndex != null) {
-			return contextAssertionIndex.getStoreForAssertion(contextAssertion);
-		}
-		
-		return null;
+	
+	public static String getEntityStoreURI() {
+		return entityStoreURI;
 	}
 	
 	

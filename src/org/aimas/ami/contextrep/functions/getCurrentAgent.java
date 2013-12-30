@@ -1,6 +1,6 @@
 package org.aimas.ami.contextrep.functions;
 
-import org.aimas.ami.contextrep.test.adhocmeeting.ContextEvent;
+import org.aimas.ami.contextrep.test.ContextEvent;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.sparql.expr.NodeValue;

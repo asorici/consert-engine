@@ -5,26 +5,25 @@ import java.util.Map;
 import org.aimas.ami.contextrep.model.ContextEntity;
 import org.aimas.ami.contextrep.model.NaryContextAssertion;
 
-import com.hp.hpl.jena.enhanced.EnhGraph;
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Resource;
 
-public class NaryContextAssertionImpl extends ContextAssertionImpl implements NaryContextAssertion {
-	private Map<OntProperty, ContextEntity> assertionRolesMap;
+public class NaryContextAssertionImpl extends ContextAssertionImpl implements
+        NaryContextAssertion {
 	
-	public NaryContextAssertionImpl(Node node, EnhGraph graph,
-			ContextAssertionType assertionType, int assertionArity,
-			OntResource assertionOntologyResource, Map<OntProperty, ContextEntity> assertionRolesMap) {
-		
-		super(node, graph, assertionType, assertionArity, assertionOntologyResource);
-		this.assertionRolesMap = assertionRolesMap;
-		
+	private Map<OntProperty, Resource> assertionRoleMap;
+	
+	public NaryContextAssertionImpl(ContextAssertionType assertionType,
+	        int assertionArity, OntResource assertionOntologyResource, 
+	        Map<OntProperty, Resource> assertionRoleMap) {
+		super(assertionType, assertionArity, assertionOntologyResource);
+		this.assertionRoleMap = assertionRoleMap;
 	}
-
+	
 	@Override
-	public Map<OntProperty, ContextEntity> getAssertionRoles() {
-		return assertionRolesMap;
+	public Map<OntProperty, Resource> getAssertionRoles() {
+		return assertionRoleMap;
 	}
-
+	
 }

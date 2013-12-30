@@ -1,32 +1,53 @@
 package org.aimas.ami.contextrep.update;
 
+import java.util.concurrent.Callable;
+
 import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.model.ContextAssertion;
+import org.aimas.ami.contextrep.test.performance.RunTest;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 
 
-public class ContextInferenceExecutionWrapper implements Runnable {
+public class ContextInferenceExecutionWrapper implements Callable<AssertionInferenceResult> {
 	private CheckInferenceHook inferenceHook;
+	private int assertionInsertID;	// the ID corresponding to the assertion insert that triggered this inference hook
 	
-	public ContextInferenceExecutionWrapper(CheckInferenceHook inferenceHook) {
+	public ContextInferenceExecutionWrapper(CheckInferenceHook inferenceHook, int assertionInsertID) {
 		this.inferenceHook = inferenceHook;
+		this.assertionInsertID = assertionInsertID;
 	}
 	
 	@Override
-	public void run() {
+	public AssertionInferenceResult call() {
+		long start = System.currentTimeMillis();
+		
+		InferenceHookResult inferenceHookResult = null;
+		
+		// for test purposes increment atomic counter
+		RunTest.enqueuedInferenceTracker.getAndIncrement();
+		
 		// STEP 1: start a new READ transaction on the contextStoreDataset
-		Dataset contextStoreDataset = Config.getContextStoreDataset();
-		contextStoreDataset.begin(ReadWrite.READ);
+		Dataset contextDataset = Config.getContextDataset();
+		contextDataset.begin(ReadWrite.READ);
+		//contextDataset.getLock().enterCriticalSection(true);
 		
 		try {
 			// STEP 2: execute inference hook
-			if (!inferenceHook.exec(contextStoreDataset)) {
+			inferenceHookResult = inferenceHook.exec(contextDataset);
+			
+			if (inferenceHookResult.hasError()) {
 				System.out.println("Inference ERROR!");
 			}
 		}
 		finally {
-			contextStoreDataset.end();
+			contextDataset.end();
+			//contextDataset.getLock().leaveCriticalSection();
 		}
+		
+		long end = System.currentTimeMillis();
+		return new AssertionInferenceResult(assertionInsertID, start, end- start, 
+				inferenceHook.getContextAssertion(), inferenceHookResult);
 	}
 }

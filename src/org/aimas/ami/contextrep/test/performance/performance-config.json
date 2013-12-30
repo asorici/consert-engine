@@ -1,0 +1,58 @@
+{
+    "contextEntities" : {
+        "nrTypes" : 10,
+        "nrInstances" : 50
+    },
+    "contextAssertions" : {
+        "unary" : {
+            "nrTypes" : 10,
+            "nrDerived" : 2,
+            "nrInstances" : 50,
+            "annotation" : {
+                "accuracy" : "random",
+                "duration" : 1,
+                "assertedBy" : "http://pervasive.semanticweb.org/ont/2013/11/test/performance#room-coordinator"
+            }
+        },
+        "binary" : {
+            "nrTypes" : 10,
+            "nrDerived" : 2,
+            "nrInstances" : 50,
+            "annotation" : {
+                "accuracy" : "random",
+                "duration" : 1,
+                "assertedBy" : "http://pervasive.semanticweb.org/ont/2013/11/test/performance#room-coordinator"
+            }
+        },
+        "nary" : {
+            "nrTypes" : 10,
+            "nrDerived" : 2,
+            "nrInstances" : 50,
+            "annotation" : {
+                "accuracy" : "random",
+                "duration" : 1,
+                "assertedBy" : "http://pervasive.semanticweb.org/ont/2013/11/test/performance#room-coordinator"
+            }
+        }
+    },
+    "derivationRules" : {
+        "schemeUnary" : {
+            "unary" : { "nr": 1, "derivedAllowed" : "true" },
+            "binary" : { "nr": 1, "derivedAllowed" : "true" },
+            "nary" : { "nr": 1, "derivedAllowed" : "true" },
+            "uri" : "http://pervasive.semanticweb.org/ont/2013/11/test/performance#SchemeUnary"  
+        },
+        "schemeBinary" : {
+            "unary" : { "nr": 1, "derivedAllowed" : "true" },
+            "binary" : { "nr": 1, "derivedAllowed" : "true" },
+            "nary" : { "nr": 1, "derivedAllowed" : "true" },
+            "uri" : "http://pervasive.semanticweb.org/ont/2013/11/test/performance#SchemeBinary"  
+        },
+        "schemeNary" : {
+            "unary" : { "nr": 1, "derivedAllowed" : "true" },
+            "binary" : { "nr": 1, "derivedAllowed" : "true" },
+            "nary" : { "nr": 1, "derivedAllowed" : "true" },
+            "uri" : "http://pervasive.semanticweb.org/ont/2013/11/test/performance#SchemeNary"  
+        }
+    } 
+}

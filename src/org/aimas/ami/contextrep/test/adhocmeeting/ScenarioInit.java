@@ -6,6 +6,7 @@ import java.util.TimeZone;
 
 import org.aimas.ami.contextrep.core.Config;
 import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
+import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
@@ -211,7 +212,8 @@ public class ScenarioInit {
 		TDB.sync(dataset);
 		
 		// ======== create annotations and insert them in the appropriate named graphs in the dataset ========
-		String deviceRoomSectionGraphURI = Config.getStoreForAssertion(deviceRoomSection);
+		String deviceRoomSectionGraphURI = 
+			Config.getContextAssertionIndex().getAssertionFromResource(deviceRoomSection).getAssertionStoreURI();
 		Model deviceRoomSectionGraph = dataset.getNamedModel(deviceRoomSectionGraphURI);
 		
 		Calendar timestamp = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -276,7 +278,8 @@ public class ScenarioInit {
 		String skeletonAssertionID3 = 
 			GraphUUIDGenerator.createUUID(ScenarioInit.AD_HOC_MEETING_BASE, assertionClass.getLocalName());
 		
-		String sensesSkeletonGraphURI = Config.getStoreForAssertion(assertionClass);
+		String sensesSkeletonGraphURI = 
+			Config.getContextAssertionIndex().getAssertionFromResource(assertionClass).getAssertionStoreURI();
 		Model sensesSkeletonGraph = dataset.getNamedModel(sensesSkeletonGraphURI);
 		
 		Individual sittingPosition = contextModel.getIndividual(ScenarioInit.AD_HOC_MEETING_NS + "sitting");
@@ -348,7 +351,8 @@ public class ScenarioInit {
 		String hasNoiseLevelID2 = 
 			GraphUUIDGenerator.createUUID(ScenarioInit.AD_HOC_MEETING_BASE, assertionProperty.getLocalName());
 		
-		String hasNoiseLevelGraphURI = Config.getStoreForAssertion(assertionProperty);
+		String hasNoiseLevelGraphURI = 
+			Config.getContextAssertionIndex().getAssertionFromResource(assertionProperty).getAssertionStoreURI();
 		Model hasNoiseLevelGraph = dataset.getNamedModel(hasNoiseLevelGraphURI);
 		
 		Model hasNoiseLevel1Graph = dataset.getNamedModel(hasNoiseLevelID1);

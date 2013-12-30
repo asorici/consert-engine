@@ -1,29 +1,22 @@
 package org.aimas.ami.contextrep.model.impl;
 
-import org.aimas.ami.contextrep.model.ContextEntity;
 import org.aimas.ami.contextrep.model.UnaryContextAssertion;
 
-import com.hp.hpl.jena.enhanced.EnhGraph;
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class UnaryContextAssertionImpl extends ContextAssertionImpl implements UnaryContextAssertion {
+	private Resource roleEntityResource;
 	
-	private ContextEntity contextEntity;
-	
-	
-	protected UnaryContextAssertionImpl(Node node, EnhGraph graph,
-			ContextAssertionType assertionType, int assertionArity,
-			OntResource assertionOntologyResource, ContextEntity contextEntity) {
-		super(node, graph, assertionType, assertionArity, assertionOntologyResource);
-		this.contextEntity = contextEntity;
+	public UnaryContextAssertionImpl(ContextAssertionType assertionType,
+	        int assertionArity, OntResource assertionOntologyResource, Resource roleEntityResource) {
+		super(assertionType, assertionArity, assertionOntologyResource);
+		this.roleEntityResource = roleEntityResource;
 	}
-
 
 	@Override
-	public ContextEntity getEntity() {
-		return contextEntity;
-	}
-
-
+    public Resource getRoleEntityResource() {
+	    return roleEntityResource;
+    }
+	
 }

@@ -6,7 +6,7 @@ public class ContextAssertionVocabulary {
 	public final static String FUNCTIONS = BASE_URI + "/functions";
 	public final static String FUNCTIONS_NS = FUNCTIONS + "#";
 	
-	public final static String CONTEXT_ASSERTION_ENTITY = NS + "ContextEntity";
+	public final static String CONTEXT_ENTITY = NS + "ContextEntity";
 	
 	public final static String ENTITY_RELATION_ASSERTION = NS + "entityRelationAssertion";
 	public final static String STATIC_RELATION_ASSERTION = NS + "staticRelationAssertion";

@@ -1,18 +1,23 @@
 package org.aimas.ami.contextrep.core;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.topbraid.spin.util.CommandWrapper;
-
-import com.hp.hpl.jena.ontology.OntResource;
+import org.aimas.ami.contextrep.model.ConstraintsWrapper;
+import org.aimas.ami.contextrep.model.ContextAssertion;
 
 public class ConstraintIndex {
-	private Map<OntResource, List<CommandWrapper>> assertion2ConstraintMap;
+	private Map<ContextAssertion, ConstraintsWrapper> assertion2ConstraintMap;
 	
-	public ConstraintIndex() {
+	ConstraintIndex() {
 		assertion2ConstraintMap = new HashMap<>();
 	}
 	
+	public void addAssertionConstraint(ContextAssertion assertion, ConstraintsWrapper constraints) {
+		assertion2ConstraintMap.put(assertion, constraints);
+	}
+	
+	public ConstraintsWrapper getConstraints(ContextAssertion assertion) {
+		return assertion2ConstraintMap.get(assertion);
+	}
 }

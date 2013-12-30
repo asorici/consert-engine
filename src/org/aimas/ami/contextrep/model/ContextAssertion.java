@@ -1,15 +1,8 @@
 package org.aimas.ami.contextrep.model;
 
-import org.topbraid.spin.model.NamedGraph;
-
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.Resource;
 
-public interface ContextAssertion extends NamedGraph {
-	public static final int UNARY = 1;
-	public static final int BINARY = 2;
-	public static final int NARY = 3;
-	
+public interface ContextAssertion {
 	public static enum ContextAssertionType {
 		Static("http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Static"), 
 		Sensed("http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Sensed"), 
@@ -26,6 +19,10 @@ public interface ContextAssertion extends NamedGraph {
 			return typeURI;
 		}
 	}
+	
+	public static final int UNARY = 1;
+	public static final int BINARY = 2;
+	public static final int NARY = 3;
 	
 	/**
 	 * Get the type of the ContextAssertion
@@ -44,19 +41,20 @@ public interface ContextAssertion extends NamedGraph {
 	 * @return the <a>com.hp.hpl.jena.ontology.OntResource</a> that defines
 	 * this instance of a ContextAssertion  
 	 */
-	public OntResource getAssertionResource();
+	public OntResource getOntologyResource();
 	
 	/**
-	 * Gets the URI Resource or Variable that holds the identifier of this
-	 * ContextAssertion.  If it's a Variable, then this method will typecast
-	 * it into an instance of Variable.
-	 * @return a URI Resource or Variable identifying this ContextAssertion 
+	 * Get the URI of the named graph that stores annotation information about an instance of
+	 * this ContextAssertion.
+	 * @return The URI of the named graph that stores annotation information about an instance of
+	 * this ContextAssertion.
 	 */
-	public Resource getAssertionIdentifier();
+	public String getAssertionStoreURI();
 	
-	/**
-	 * Gets assertion type, arity and resource definition as a bundle
-	 * @return assertion type, arity and resource definition as a bundle
-	 */
-	public ContextAssertionInfo getInfo();
+	
+	public boolean isUnary();
+	
+	public boolean isBinary();
+	
+	public boolean isNary();
 }

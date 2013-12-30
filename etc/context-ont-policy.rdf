@@ -257,4 +257,31 @@
     <prefix    rdf:datatype="&xsd;string">cfn</prefix>
 </OntologySpec>
 
+
+<!-- ###################### TestPerformance Domain specific ontology URI specifications ###################### -->
+<OntologySpec>
+    <!-- URI specification for the TestPerformance domain ontology -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance" />
+    <altURL    rdf:resource="file:etc/ontologies/PerformanceTest/performanceGen.rdf" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">performance</prefix>
+</OntologySpec>
+
+<OntologySpec>
+    <!-- URI specification for the TestPerformance domain ontology -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performanceSeed" />
+    <altURL    rdf:resource="file:etc/ontologies/PerformanceTest/performance.rdf" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">performance</prefix>
+</OntologySpec>
+
+
+<OntologySpec>
+    <!-- URI specification for the TestPerformance template ontology -->
+    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performanceTpl" />
+    <altURL    rdf:resource="file:etc/ontologies/PerformanceTest/performanceTpl.spin.rdf" />
+    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
+    <prefix    rdf:datatype="&xsd;string">performanceTpl</prefix>
+</OntologySpec>
+
 </rdf:RDF>

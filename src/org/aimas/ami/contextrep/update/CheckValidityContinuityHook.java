@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.aimas.ami.contextrep.core.Config;
-import org.aimas.ami.contextrep.core.ContextAssertionIndex;
+import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
@@ -15,7 +15,6 @@ import org.topbraid.spin.system.SPINModuleRegistry;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -35,26 +34,26 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 	
 	private Node contextAssertionUUID;
 	
-	public CheckValidityContinuityHook(OntResource contextAssertionResource, Node contextAssertionUUID) {
-		super(contextAssertionResource);
+	public CheckValidityContinuityHook(ContextAssertion contextAssertion, Node contextAssertionUUID) {
+		super(contextAssertion);
 		this.contextAssertionUUID = contextAssertionUUID;
 	}
 	
 	@Override
-	public boolean exec(Dataset contextStoreDataset) {
-		System.out.println("======== CHECKING CONTINUITY AVAILABALE FOR assertion <"
-		        + contextAssertionResource + ">. "
+	public ContinuityHookResult exec(Dataset contextStoreDataset) {
+		long start = System.currentTimeMillis();
+		
+		System.out.println("======== CHECKING CONTINUITY AVAILABALE FOR assertion <" + contextAssertion + ">. "
 		        + "AssertionUUID: " + contextAssertionUUID);
 		
 		// get access to the datastore and the assertionIndex
 		OntModel contextModel = Config.getBasicContextModel();
-		ContextAssertionIndex assertionIndex = Config.getContextAssertionIndex();
 		
 		// find the property that states the validity interval
 		Property validDuringProp = contextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_VALIDITY);
 		
 		// get context assertion store URI
-		String assertionStoreURI = assertionIndex.getStoreForAssertion(contextAssertionResource);
+		String assertionStoreURI = contextAssertion.getAssertionStoreURI();
 		Resource newAssertionUUIDResource = ResourceFactory.createResource(contextAssertionUUID.getURI());
 		
 		// create a list of available (assertionUUID, assertionValidity) pairs 
@@ -85,7 +84,7 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 			
 			// set the value of the arguments
 			QuerySolutionMap arqBindings = new QuerySolutionMap();
-			arqBindings.add("contextAssertionResource", ResourceFactory.createResource(contextAssertionResource.getURI()));
+			arqBindings.add("contextAssertionResource", ResourceFactory.createResource(contextAssertion.getOntologyResource().getURI()));
 			arqBindings.add("contextAssertionStore", ResourceFactory.createResource(assertionStoreURI));
 			arqBindings.add("newAssertionUUID", ResourceFactory.createResource(contextAssertionUUID.getURI()));
 			arqBindings.add("newValidityPeriod", newValidityPeriod);
@@ -108,8 +107,7 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 					RDFNode assertionUUID = qs.get("assertionUUID");
 					RDFNode validity = qs.get("validity");
 					
-					System.out.println("CONTINUITY AVAILABALE FOR assertion <"
-					        + contextAssertionResource + ">. "
+					System.out.println("CONTINUITY AVAILABALE FOR assertion <" + contextAssertion + ">. "
 					        + "AssertionUUID: " + assertionUUID
 					        + ", for duration: " + validity);
 					
@@ -119,6 +117,9 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
+				long end = System.currentTimeMillis();
+				return new ContinuityHookResult(start, end - start, true, false);
+				
 			}
 			finally {
 				qexec.close();
@@ -164,12 +165,16 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 			StmtIterator newAssertionStatements = newAssertionStoreModel
 					.listStatements(newAssertionUUIDResource, null, (RDFNode) null);
 			newAssertionStoreModel.remove(newAssertionStatements);
+			
+			long end = System.currentTimeMillis();
+			return new ContinuityHookResult(start, end - start, false, true);
 		}
 		
 		// finally sync the changes
 		TDB.sync(contextStoreDataset);
 		
-		return true;
+		long end = System.currentTimeMillis();
+		return new ContinuityHookResult(start, end - start, false, false);
 	}
 
 	
@@ -177,7 +182,7 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 	public String toString() {
 		String response = "";
 		
-		response += "Executing CHECK_VALIDITIY_CONTINUITY for contextAssertionResource: " + contextAssertionResource 
+		response += "Executing CHECK_VALIDITIY_CONTINUITY for contextAssertionResource: " + contextAssertion 
 				 + " in graphUUID: " + contextAssertionUUID.getURI();
 		
 		return response;

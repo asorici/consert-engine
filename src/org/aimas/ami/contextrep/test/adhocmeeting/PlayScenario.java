@@ -13,6 +13,7 @@ import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
 import org.aimas.ami.contextrep.exceptions.ConfigException;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
+import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.update.ContextUpdateExecutionWrapper;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
@@ -58,7 +59,7 @@ public class PlayScenario {
 			Config.init(configurationFile, true);
 			Config.cleanDataset();
 			
-			Dataset dataset = Config.getContextStoreDataset();
+			Dataset dataset = Config.getContextDataset();
 			OntModel basicContextModel = Config.getBasicContextModel();
 			OntModel basicScenarioModel = ScenarioInit.initScenario(dataset, basicContextModel);
 			
@@ -78,10 +79,10 @@ public class PlayScenario {
 				
 				for (int i = 0; i < nrEvents; i++) {
 					ContextEvent event = scenarioEvents.get(i);
-					if (event instanceof SenseSkeletonSittingEvent && event.timestamp.after(nowSkel)) {
+					if (event instanceof SenseSkeletonSittingEvent && event.getTimestamp().after(nowSkel)) {
 						break;
 					}
-					else if (event instanceof HasNoiseLevelEvent && event.timestamp.after(nowMic)) {
+					else if (event instanceof HasNoiseLevelEvent && event.getTimestamp().after(nowMic)) {
 						break;
 					}
 					else {
@@ -91,7 +92,7 @@ public class PlayScenario {
 						
 						// wrap event for execution and send it to insert executor
 						System.out.println("GENERATING EVENT: " + event);
-						Config.assertionInsertExecutor().execute(new ContextUpdateExecutionWrapper(event.getUpdateRequest()));
+						Config.assertionInsertExecutor().submit(new ContextUpdateExecutionWrapper(event.getUpdateRequest()));
 					}
 				}
 				
@@ -116,7 +117,7 @@ public class PlayScenario {
 			
 			
 			System.out.println("######## DATASTORE ########");
-			dataset = Config.getContextStoreDataset();
+			dataset = Config.getContextDataset();
 			
 			dataset.begin(ReadWrite.READ);
 			Iterator<String> dataStoreNameIt = dataset.listNames();
@@ -158,7 +159,8 @@ public class PlayScenario {
 		// Create Model for inferred triples
 		Model newTriples = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
 		
-		List<DerivedAssertionWrapper> derivationCommands = ruleDict.getDerivationsForAssertion(hasNoiseLevelProperty);
+		List<DerivedAssertionWrapper> derivationCommands = 
+			ruleDict.getDerivationsForAssertion(Config.getContextAssertionIndex().getAssertionFromResource(hasNoiseLevelProperty));
 		Map<Resource, List<CommandWrapper>> cls2Query = new HashMap<>();
 		Map<Resource, List<CommandWrapper>> cls2Constructor = new HashMap<>();
 		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = 

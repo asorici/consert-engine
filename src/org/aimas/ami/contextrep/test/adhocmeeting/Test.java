@@ -50,7 +50,7 @@ public class Test {
 			// init configuration
 			Config.init(configurationFile, true);
 			
-			Dataset dataset = Config.getContextStoreDataset();
+			Dataset dataset = Config.getContextDataset();
 			OntModel basicContextModel = Config.getBasicContextModel();
 			
 			attempSPINInference(dataset, basicContextModel);
@@ -82,7 +82,8 @@ public class Test {
 		// Create Model for inferred triples
 		Model newTriples = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
 		
-		List<DerivedAssertionWrapper> derivationCommands = ruleDict.getDerivationsForAssertion(hasNoiseLevelProperty);
+		List<DerivedAssertionWrapper> derivationCommands = 
+			ruleDict.getDerivationsForAssertion(Config.getContextAssertionIndex().getAssertionFromResource(hasNoiseLevelProperty));
 		Map<Resource, List<CommandWrapper>> cls2Query = new HashMap<>();
 		Map<Resource, List<CommandWrapper>> cls2Constructor = new HashMap<>();
 		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = 

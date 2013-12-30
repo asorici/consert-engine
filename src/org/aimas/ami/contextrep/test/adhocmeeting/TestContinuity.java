@@ -47,7 +47,7 @@ public class TestContinuity {
 			// init configuration
 			Config.init(configurationFile, true);
 			
-			Dataset dataset = Config.getContextStoreDataset();
+			Dataset dataset = Config.getContextDataset();
 			OntModel basicContextModel = Config.getBasicContextModel();
 			
 			attemptContinuityDeduction(dataset, basicContextModel);
@@ -67,7 +67,8 @@ public class TestContinuity {
 		Property validDuringProp = contextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_VALIDITY);
 		
 		// get context assertion store URI
-		String assertionStoreURI = assertionIndex.getStoreForAssertion(contextAssertionResource);
+		String assertionStoreURI = 
+			assertionIndex.getAssertionFromResource(contextAssertionResource).getAssertionStoreURI();
 		Resource newAssertionUUIDResource = ResourceFactory.createResource(contextAssertionUUID);
 		
 		// create a list of available (assertionUUID, assertionValidity) pairs 

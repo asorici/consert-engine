@@ -1,19 +1,21 @@
 package org.aimas.ami.contextrep.update;
 
+import org.aimas.ami.contextrep.model.ContextAssertion;
+
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Dataset;
 
 public abstract class ContextUpdateHook {
-	protected OntResource contextAssertionResource;
+	protected ContextAssertion contextAssertion;
 	
 	
-	public ContextUpdateHook(OntResource contextAssertionResource) {
-		this.contextAssertionResource = contextAssertionResource;
+	public ContextUpdateHook(ContextAssertion contextAssertion) {
+		this.contextAssertion = contextAssertion;
 	}
 	
-	public OntResource getContextAssertionResource() {
-		return contextAssertionResource;
+	public ContextAssertion getContextAssertion() {
+		return contextAssertion;
 	}
 	
-	public abstract boolean exec(Dataset contextStoreDataset);
+	public abstract HookResult exec(Dataset contextStoreDataset);
 }

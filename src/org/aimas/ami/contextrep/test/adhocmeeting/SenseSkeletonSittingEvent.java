@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
@@ -72,7 +73,7 @@ public class SenseSkeletonSittingEvent extends ContextEvent {
 		
 		Update createUpdate = new UpdateCreate(graphURINode);
 		Update assertionUpdate = new UpdateDataInsert(data);
-		Update annotationUpdate = createAnnotationUpdate(graphURINode, timestamp, validity);
+		Update annotationUpdate = createAnnotationUpdate(graphURINode, getTimestamp(), validity);
 		
 		request.add(createUpdate);
 		request.add(assertionUpdate);
@@ -112,7 +113,8 @@ public class SenseSkeletonSittingEvent extends ContextEvent {
 		Literal sourceAnn = ResourceFactory.createTypedLiteral(DEFAULT_SOURCE_URI, XSDDatatype.XSDanyURI);
 		
 		// create update quads
-		Node storeURINode = Node.createURI(Config.getStoreForAssertion(assertionClass));
+		Node storeURINode = Node.createURI(
+			Config.getContextAssertionIndex().getAssertionFromResource(assertionClass).getAssertionStoreURI());
 		OntProperty assertedBy = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_SOURCE);
 		OntProperty hasTimestamp = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_TIMESTAMP);
 		OntProperty validDuring = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_VALIDITY);
@@ -140,7 +142,7 @@ public class SenseSkeletonSittingEvent extends ContextEvent {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 		
-		response += " timestamp: " + formatter.format(timestamp.getTime());
+		response += " timestamp: " + formatter.format(getTimestamp().getTime());
 		return response;
 	}
 }

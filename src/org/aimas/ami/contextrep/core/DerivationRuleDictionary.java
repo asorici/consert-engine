@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
 
 import com.hp.hpl.jena.ontology.OntResource;
@@ -13,16 +14,15 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class DerivationRuleDictionary {
 	private Map<Resource, List<DerivedAssertionWrapper>> entity2RuleMap;
 	private Map<DerivedAssertionWrapper, Resource> rule2EntityMap;
-	private Map<OntResource, List<DerivedAssertionWrapper>> assertion2RuleMap;
+	private Map<ContextAssertion, List<DerivedAssertionWrapper>> assertion2RuleMap;
 	
-	
-	public DerivationRuleDictionary() {
+	DerivationRuleDictionary() {
 		entity2RuleMap = new HashMap<>();
 		assertion2RuleMap = new HashMap<>();
 		rule2EntityMap = new HashMap<>();
 	}
 	
-	public Map<OntResource, List<DerivedAssertionWrapper>> getAssertion2QueryMap() {
+	public Map<ContextAssertion, List<DerivedAssertionWrapper>> getAssertion2QueryMap() {
 		return assertion2RuleMap;
 	}
 	
@@ -34,7 +34,7 @@ public class DerivationRuleDictionary {
 		return entity2RuleMap.get(entity);
 	}
 	
-	public List<DerivedAssertionWrapper> getDerivationsForAssertion(OntResource assertion) {
+	public List<DerivedAssertionWrapper> getDerivationsForAssertion(ContextAssertion assertion) {
 		return assertion2RuleMap.get(assertion);
 	}
 	
@@ -58,7 +58,7 @@ public class DerivationRuleDictionary {
 		rule2EntityMap.put(derivationWrapper, entityResource);
 	}
 	
-	public void addDerivationForAssertion(OntResource assertion, DerivedAssertionWrapper derivedWrapper) {
+	public void addDerivationForAssertion(ContextAssertion assertion, DerivedAssertionWrapper derivedWrapper) {
 		List<DerivedAssertionWrapper> assertionCommands = assertion2RuleMap.get(assertion);
 		if (assertionCommands == null) {
 			assertionCommands = new ArrayList<DerivedAssertionWrapper>();
@@ -74,7 +74,7 @@ public class DerivationRuleDictionary {
 		entity2RuleMap.putAll(map);
 	}
 	
-	public void appendAssertionQueryMap(Map<OntResource, List<DerivedAssertionWrapper>> map) {
+	public void appendAssertionQueryMap(Map<ContextAssertion, List<DerivedAssertionWrapper>> map) {
 		assertion2RuleMap.putAll(map);
 	}
 	

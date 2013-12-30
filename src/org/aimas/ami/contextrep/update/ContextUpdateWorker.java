@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.aimas.ami.contextrep.core.Config;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
+import org.aimas.ami.contextrep.model.ContextAssertion;
+import org.aimas.ami.contextrep.test.performance.RunTest;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
@@ -73,8 +75,8 @@ public class ContextUpdateWorker extends UpdateEngineWorker {
 		// ContextAssertion named graph UUID. If it is, then we are dealing with a 
 		// ContextAssertion insertion
 		if (assertionIndex.isContextAssertionUUID(graphNode)) {
-			OntResource assertionResource = assertionIndex.getResourceFromGraphUUID(graphNode);
-			String assertionStoreURI = assertionIndex.getStoreForAssertion(assertionResource);
+			ContextAssertion assertion = assertionIndex.getAssertionFromGraphUUID(graphNode);
+			String assertionStoreURI = assertion.getAssertionStoreURI();
         	Graph assertionStoreGraph = graphStore.getGraph(Node.createURI(assertionStoreURI));
         	
         	// signal the context assertion insertion
@@ -86,9 +88,9 @@ public class ContextUpdateWorker extends UpdateEngineWorker {
 		// alternatively, test to see if we have a ContextAnnotation insertion
 		if (assertionIndex.isContextAssertionStore(graphNode)) {
 			Node assertionUUID = firstQuad.getSubject();
-			OntResource assertionResource = assertionIndex.getResourceFromGraphUUID(assertionUUID);
+			ContextAssertion assertion = assertionIndex.getAssertionFromGraphUUID(assertionUUID);
 			
-			if (assertionResource != null) {
+			if (assertion != null) {
 	        	Graph assertionStoreGraph = graphStore.getGraph(graphNode);
 	        	
 	        	// signal the context annotation insertion
@@ -102,6 +104,7 @@ public class ContextUpdateWorker extends UpdateEngineWorker {
 	
 	@Override
 	protected void execInsert(List<Quad> quads, Node dftGraph, Iterator<Binding> bindings) {
+		
 		// We are only interested in the insert quads because we know that for Context SPIN
      	// Inferences we are only going to add assertions, not remove them.
      	// Removal from the ACTIVE contextStoreDataset will be done either based on continuity checks 
@@ -132,8 +135,8 @@ public class ContextUpdateWorker extends UpdateEngineWorker {
 			// ContextAssertion named graph UUID. If it is, then we are dealing with a 
 			// ContextAssertion insertion
 			if (assertionIndex.isContextAssertionUUID(graphNode)) {
-				OntResource assertionResource = assertionIndex.getResourceFromGraphUUID(graphNode);
-				String assertionStoreURI = assertionIndex.getStoreForAssertion(assertionResource);
+				ContextAssertion assertion = assertionIndex.getAssertionFromGraphUUID(graphNode);
+				String assertionStoreURI = assertion.getAssertionStoreURI();
 	        	Graph assertionStoreGraph = graphStore.getGraph(Node.createURI(assertionStoreURI));
 	        	
 	        	// signal the context assertion insertion
@@ -146,9 +149,9 @@ public class ContextUpdateWorker extends UpdateEngineWorker {
 			if (assertionIndex.isContextAssertionStore(graphNode)) {
 				Quad firstQuad = updatedGraphNodeMap.get(graphNode);
 				Node assertionUUID = firstQuad.getSubject();
-				OntResource assertionResource = assertionIndex.getResourceFromGraphUUID(assertionUUID);
+				ContextAssertion assertion = assertionIndex.getAssertionFromGraphUUID(assertionUUID);
 				
-				if (assertionResource != null) {
+				if (assertion != null) {
 		        	Graph assertionStoreGraph = graphStore.getGraph(graphNode);
 		        	
 		        	// signal the context annotation insertion
