@@ -9,7 +9,7 @@ public class InferenceHookResult extends HookResult {
 	private boolean inferencePossible;
 	private boolean inferred;
 	
-	public InferenceHookResult(long startTime, long duration, boolean error, 
+	public InferenceHookResult(long startTime, int duration, boolean error, 
 			List<ContextAssertion> inferredAssertions, boolean inferencePossible, boolean inferred) {
 	    super(startTime, duration, error);
 	    

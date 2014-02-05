@@ -22,6 +22,7 @@ public class PerformanceConfig {
 		public int nrDerived;
 		public int nrInstances;
 		public AnnotationConfig annotation;
+		public int pushrate;
 	}
 	
 	public static class AnnotationConfig {

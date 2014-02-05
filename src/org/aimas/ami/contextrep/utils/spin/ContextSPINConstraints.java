@@ -147,6 +147,6 @@ public class ContextSPINConstraints {
             ContextAssertion assertion, String newAssertionIdURI,
             String conflictingAssertionIdURI, Resource source) {
 	    
-		return new ContextConstraintViolation(assertion, newAssertionIdURI, conflictingAssertionIdURI, source);
+		return new ContextUniquenessConstraintViolation(assertion, source, newAssertionIdURI, conflictingAssertionIdURI);
     }
 }

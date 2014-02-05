@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.aimas.ami.contextrep.core.Config;
 
-import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -19,14 +18,14 @@ import com.hp.hpl.jena.update.Update;
 
 public class ContextUpdateUtil {
 	/**
-	 * Gets all Graphs that are potentially updated in a given Update request.
+	 * Gets all graph nodes that are potentially updated in a given Update request.
 	 * @param update  the Update (UpdateData, UpdateModify and UpdateDeleteWhere are supported)
 	 * @param dataset  the Dataset to get the Graphs from
-	 * @return the Graphs
+	 * @return the graphs nodes
 	 */
-	public static Collection<Graph> getUpdatedGraphs(Update update, Dataset dataset, 
+	public static Collection<Node> getUpdatedGraphs(Update update, Dataset dataset, 
 			Map<String,RDFNode> templateBindings, boolean storesOnly) {
-		Set<Graph> results = new HashSet<Graph>();
+		Set<Node> results = new HashSet<Node>();
 		
 		if (update instanceof UpdateData) {
 			addUpdatedGraphs(results, (UpdateData)update, dataset, templateBindings, storesOnly);
@@ -41,34 +40,34 @@ public class ContextUpdateUtil {
 	}
 
 	
-	private static void addUpdatedGraphs(Set<Graph> results, UpdateData update, Dataset dataset, 
+	private static void addUpdatedGraphs(Set<Node> results, UpdateData update, Dataset dataset, 
 			Map<String, RDFNode> templateBindings, boolean storesOnly) {
 		addUpdatedGraphs(results, update.getQuads(), dataset, templateBindings, storesOnly);
     }
 
 
-	private static void addUpdatedGraphs(Set<Graph> results, UpdateDeleteWhere update, 
+	private static void addUpdatedGraphs(Set<Node> results, UpdateDeleteWhere update, 
 			Dataset dataset, Map<String,RDFNode> templateBindings, boolean storesOnly) {
 		addUpdatedGraphs(results, update.getQuads(), dataset, templateBindings, storesOnly);
 	}
 	
 	
-	private static void addUpdatedGraphs(Set<Graph> results, UpdateModify update, Dataset dataset, 
+	private static void addUpdatedGraphs(Set<Node> results, UpdateModify update, Dataset dataset, 
 			Map<String,RDFNode> templateBindings, boolean storesOnly) {
 		Node withIRI = update.getWithIRI();
 		if(withIRI != null) {
-			results.add(dataset.getNamedModel(withIRI.getURI()).getGraph());
+			results.add(withIRI);
 		}
 		addUpdatedGraphs(results, update.getDeleteQuads(), dataset, templateBindings, storesOnly);
 		addUpdatedGraphs(results, update.getInsertQuads(), dataset, templateBindings, storesOnly);
 	}
 
 	
-	private static void addUpdatedGraphs(Set<Graph> results, Iterable<Quad> quads, Dataset graphStore, 
+	private static void addUpdatedGraphs(Set<Node> results, Iterable<Quad> quads, Dataset graphStore, 
 			Map<String,RDFNode> templateBindings, boolean storesOnly) {
 		for(Quad quad : quads) {
 			if(quad.isDefaultGraph()) {
-				results.add(graphStore.getDefaultModel().getGraph());
+				results.add(quad.getGraph());
 			}
 			else if(quad.getGraph().isVariable()) {
 				if(templateBindings != null) {
@@ -76,20 +75,20 @@ public class ContextUpdateUtil {
 					RDFNode binding = templateBindings.get(varName);
 					if(binding != null && binding.isURIResource()) {
 						if (storesOnly && Config.getContextAssertionIndex().isContextStore(binding.asNode())) {
-							results.add(graphStore.getNamedModel(binding.asNode().getURI()).getGraph());
+							results.add(binding.asNode());
 						}
 						else if (!storesOnly) {
-							results.add(graphStore.getNamedModel(binding.asNode().getURI()).getGraph());
+							results.add(binding.asNode());
 						}
 					}
 				}
 			}
 			else {
 				if (storesOnly && Config.getContextAssertionIndex().isContextStore(quad.getGraph())) {
-					results.add(graphStore.getNamedModel(quad.getGraph().getURI()).getGraph());
+					results.add(quad.getGraph());
 				}
 				else if (!storesOnly) {
-					results.add(graphStore.getNamedModel(quad.getGraph().getURI()).getGraph());
+					results.add(quad.getGraph());
 				}
 			}
 		}

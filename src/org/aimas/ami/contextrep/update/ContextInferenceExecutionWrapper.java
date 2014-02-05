@@ -3,7 +3,6 @@ package org.aimas.ami.contextrep.update;
 import java.util.concurrent.Callable;
 
 import org.aimas.ami.contextrep.core.Config;
-import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.test.performance.RunTest;
 
 import com.hp.hpl.jena.query.Dataset;
@@ -47,7 +46,7 @@ public class ContextInferenceExecutionWrapper implements Callable<AssertionInfer
 		}
 		
 		long end = System.currentTimeMillis();
-		return new AssertionInferenceResult(assertionInsertID, start, end- start, 
+		return new AssertionInferenceResult(assertionInsertID, start, (int)(end - start), 
 				inferenceHook.getContextAssertion(), inferenceHookResult);
 	}
 }

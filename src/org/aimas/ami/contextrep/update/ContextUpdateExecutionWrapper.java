@@ -9,13 +9,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
 import org.aimas.ami.contextrep.model.ContextAssertion;
+import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
 import org.aimas.ami.contextrep.test.performance.RunTest;
 import org.aimas.ami.contextrep.update.ContextAssertionUpdateListener.ContextUpdateHookWrapper;
-import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.utils.ContextUpdateUtil;
 
-import com.hp.hpl.jena.graph.Graph;
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -51,37 +52,57 @@ public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertRe
 		// STEP 1: start a new WRITE transaction on the contextStoreDataset
 		Dataset contextDataset = Config.getContextDataset();
 		contextDataset.begin(ReadWrite.WRITE);
+		
 		//contextDataset.getLock().enterCriticalSection(false);
 		
-		ContextUpdateHookWrapper contextUpdateHooks = null;
+		List<ContextAssertion> insertedContextAssertions = new LinkedList<>();
+		List<CheckValidityContinuityHook> continuityChecks = new LinkedList<>();
+		List<CheckConstraintHook> constraintChecks = new LinkedList<>();
+		List<CheckInferenceHook> inferenceChecks = new LinkedList<>();
 		
-		ContextAssertion contextAssertion = null;
 		List<ContinuityHookResult> continuityResults = null;
 		List<ConstraintHookResult> constraintResults = null;
 		
+		// STEP 2: analyze request
+		List<Node> updatedContextStores = new ArrayList<>(analyzeRequest(contextDataset, null));
+		
 		try {
-			// STEP 2: analyze request
-			List<Graph> updatedContextStores = new ArrayList<>(analyzeRequest(contextDataset, null));
+			// STEP 3: determine the inserted ContextAssertion based on the request analysis - the updates context stores
+			// 		   since for each update there is only one corresponding ContextAssertion we can break at the first
+			//		   match
+			for (Node graphNode : updatedContextStores) {
+				if (Config.getContextAssertionIndex().isContextAssertionUUID(graphNode)) {
+					// get the inserted assertion
+					ContextAssertion assertion = Config.getContextAssertionIndex().getAssertionFromGraphUUID(graphNode);
+					insertedContextAssertions.add(assertion);
+					
+					// add continuity checks for it
+					continuityChecks.add(new CheckValidityContinuityHook(assertion, graphNode));
+					
+					// add constraint checks for it
+					constraintChecks.add(new CheckConstraintHook(assertion));
+					
+					// add inference checks for it
+					DerivationRuleDictionary ruleDict = Config.getDerivationRuleDictionary();
+					if (ruleDict.getDerivationsForAssertion(assertion) != null) {
+						inferenceChecks.add(new CheckInferenceHook(assertion));
+					}
+				}
+			}
 			
-			// STEP 3: register listeners for updatedContextStores
-			List<ContextAssertionUpdateListener> updateListeners = ContextAssertionUtil.registerContextAssertionStoreListeners(updatedContextStores);
+			//for (Node graphNode : updatedContextStores) {
+			//	contextDataset.asDatasetGraph().getGraph(graphNode).getTransactionHandler().begin();
+			//}
 			
-			// STEP 3: execute updates
+			// STEP 4: execute updates
 			GraphStore graphStore = GraphStoreFactory.create(contextDataset);
 			UpdateAction.execute(request, graphStore);
 			
-			// STEP 5: collect detected hooks and separate it according to their type to collect individual results
-			// for each
-			contextUpdateHooks = ContextAssertionUtil.collectContextUpdateHooks(updateListeners);
+			// STEP 5: execute VALIDITY_CONTINUITY and CONSTRAINT HOOKS
+			continuityResults = execContinuityHooks(continuityChecks, contextDataset);
+			constraintResults = execConstraintHooks(constraintChecks, contextDataset);
 			
-			// STEP 6: execute VALIDITY_CONTINUITY and CONSTRAINT HOOKS
-			if (contextUpdateHooks != null) {
-				contextAssertion = contextUpdateHooks.getAssertion();
-				continuityResults = execContinuityHooks(contextUpdateHooks.getContinuityHooks(), contextDataset);
-				constraintResults = execConstraintHooks(contextUpdateHooks.getConstraintHooks(), contextDataset);
-			}
-			
-			// STEP 7: commit transaction
+			// STEP 6: commit transaction
 			contextDataset.commit();
 		} 
 		catch (Exception ex) {
@@ -92,26 +113,26 @@ public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertRe
 			//contextDataset.getLock().leaveCriticalSection();
 		}
 		
-		// STEP 8: enqueue detected INFERENCE HOOK to assertionInferenceExecutor
-		if (contextUpdateHooks != null) {
-			enqueueInferenceHooks(contextUpdateHooks.getInferenceHooks(), assertionInsertID);
-		}
+		// STEP 7: enqueue detected INFERENCE HOOK to assertionInferenceExecutor
+		enqueueInferenceHooks(inferenceChecks, assertionInsertID);
+		
 		
 		long end = System.currentTimeMillis();
 		
-		return new AssertionInsertResult(assertionInsertID, start, end - start, contextAssertion, continuityResults, constraintResults);
+		return new AssertionInsertResult(assertionInsertID, start, (int)(end - start), insertedContextAssertions, 
+				continuityResults, constraintResults);
     }
 	
 	
-	protected Collection<Graph> analyzeRequest(Dataset dataset, Map<String, RDFNode> templateBindings) {
-		Collection<Graph> updatedContextStores = null;
+	protected Collection<Node> analyzeRequest(Dataset dataset, Map<String, RDFNode> templateBindings) {
+		Collection<Node> updatedContextStores = null;
 		
 		for (Update up : request.getOperations()) {
 			if (updatedContextStores == null) {
-				updatedContextStores = ContextUpdateUtil.getUpdatedGraphs(up, dataset, templateBindings, true);
+				updatedContextStores = ContextUpdateUtil.getUpdatedGraphs(up, dataset, templateBindings, false);
 			}
 			else {
-				updatedContextStores.addAll(ContextUpdateUtil.getUpdatedGraphs(up, dataset, templateBindings, true));
+				updatedContextStores.addAll(ContextUpdateUtil.getUpdatedGraphs(up, dataset, templateBindings, false));
 			}
 		}
 		
@@ -158,6 +179,8 @@ public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertRe
 	private void enqueueInferenceHooks(List<CheckInferenceHook> inferenceHooks, int assertionInsertID) {
 	    for (CheckInferenceHook hook : inferenceHooks) {
 	    	Future<AssertionInferenceResult> result = Config.assertionInferenceExecutor().submit(new ContextInferenceExecutionWrapper(hook, assertionInsertID));
+	    	
+	    	RunTest.inferenceTaskEnqueueTime.put(assertionInsertID, System.currentTimeMillis());
 	    	RunTest.inferenceResults.put(assertionInsertID, result);
 	    }
     }

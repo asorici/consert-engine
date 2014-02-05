@@ -12,6 +12,7 @@ import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
+import org.aimas.ami.contextrep.test.adhocmeeting.ScenarioInit;
 import org.aimas.ami.contextrep.test.performance.RunTest;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences;
@@ -59,7 +60,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 	
 	@Override
 	public InferenceHookResult exec(Dataset contextDataset) {
-		System.out.println("======== CHECKING INFERENCE FOR assertion <" + contextAssertion + ">. ");
+		//System.out.println("======== CHECKING INFERENCE FOR assertion <" + contextAssertion + ">. ");
 		
 		// get the context model
 		OntModel basicContextModel = Config.getBasicContextModel();
@@ -103,20 +104,22 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			if (!inferredContext.isEmpty()) {
 				for (ContextUpdateExecutionWrapper inferredAssertion : inferredContext) {
 					Future<AssertionInsertResult> result = Config.assertionInsertExecutor().submit(inferredAssertion);
+					
+					RunTest.insertionTaskEnqueueTime.put(inferredAssertion.getAssertionInsertID(), System.currentTimeMillis());
 					RunTest.insertionResults.put(inferredAssertion.getAssertionInsertID(), result);
 				}
 				
 				long end = System.currentTimeMillis();
-				return new InferenceHookResult(start, end - start, false, inferredContextAssertions, true, true);
+				return new InferenceHookResult(start, (int)(end - start), false, inferredContextAssertions, true, true);
 			}
 			else {
 				long end = System.currentTimeMillis();
-				return new InferenceHookResult(start, end - start, false, null, true, false);
+				return new InferenceHookResult(start, (int)(end - start), false, null, true, false);
 			}
 		}
 		
 		long end = System.currentTimeMillis();
-		return new InferenceHookResult(start, end - start, false, null, false, false);
+		return new InferenceHookResult(start, (int)(end - start), false, null, false, false);
 	}
 	
 	
@@ -146,14 +149,15 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		// perform inference
 		long timestamp = System.currentTimeMillis();
 		ARQFactory.set(new ContextARQFactory(contextDataset));
-		ContextInferenceResult inferenceResult = ContextSPINInferences.run(queryModel, newTriples,
-		        cls2Query, cls2Constructor, initialTemplateBindings, null,
-		        null, true, SPINVocabulary.deriveAssertionRule, comparator,
-		        null);
+		ContextInferenceResult inferenceResult = ContextSPINInferences.runContextInference(queryModel, newTriples,
+		        cls2Query, cls2Constructor, initialTemplateBindings, null, 
+		        SPINVocabulary.deriveAssertionRule, comparator);
 		
 		if (inferenceResult != null && inferenceResult.isInferred()) {
-			System.out.println("[INFO] WE HAVE DEDUCED A NEW CONTEXT-ASSERTION following insertion of " + contextAssertion 
-				+ ". Duration: " + (System.currentTimeMillis() - timestamp) );
+			//System.out.println("[INFO] WE HAVE DEDUCED A NEW CONTEXT-ASSERTION following insertion of " + contextAssertion 
+			//+ ". Duration: " + (System.currentTimeMillis() - timestamp) );
+			
+			//ScenarioInit.printStatements(newTriples);
 			
 			// for testing purpose only count number of inferred assertions
 			RunTest.numInferredAssertions.getAndIncrement();
@@ -232,7 +236,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			}
 		}
 		else if (inferenceResult != null && !inferenceResult.isInferred()) {
-			System.out.println("[INFO] NO INFERENCE RESULT ");
+			//System.out.println("[INFO] NO INFERENCE RESULT ");
 		}
 		
 		

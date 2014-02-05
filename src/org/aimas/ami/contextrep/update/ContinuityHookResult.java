@@ -4,7 +4,7 @@ public class ContinuityHookResult extends HookResult {
 	
 	private boolean hasContinuity;
 	
-	public ContinuityHookResult(long startTime, long duration, boolean error, boolean hasContinuity) {
+	public ContinuityHookResult(long startTime, int duration, boolean error, boolean hasContinuity) {
 	    super(startTime, duration, error);
 	    this.hasContinuity = hasContinuity;
     }

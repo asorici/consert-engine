@@ -5,20 +5,20 @@ import org.aimas.ami.contextrep.model.ContextAssertion;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class ContextConstraintViolation {
+	/*
+	 * The context assertion for which the constraint is expressed
+	 */
 	private ContextAssertion constrainedAssertion;
+	
+	/*
+	 * The resource identifying the direct query or template call that expresses the constraint
+	 */
 	private Resource constraintSource;
 	
-	private String newAssertionIdURI;
-	private String conflictingAssertionIdURI;
-	
-	
-	public ContextConstraintViolation(ContextAssertion constrainedAssertion,
-            String newAssertionIdURI, String conflictingAssertionIdURI, Resource constraintSource) {
+	public ContextConstraintViolation(ContextAssertion constrainedAssertion, Resource constraintSource) {
 	    
 		this.constrainedAssertion = constrainedAssertion;
 	    this.constraintSource = constraintSource;
-	    this.newAssertionIdURI = newAssertionIdURI;
-	    this.conflictingAssertionIdURI = conflictingAssertionIdURI;
     }
 
 
@@ -29,15 +29,5 @@ public class ContextConstraintViolation {
 
 	public Resource getConstraintSource() {
 		return constraintSource;
-	}
-
-
-	public String getNewAssertionIdURI() {
-		return newAssertionIdURI;
-	}
-
-
-	public String getConflictingAssertionIdURI() {
-		return conflictingAssertionIdURI;
 	}
 }

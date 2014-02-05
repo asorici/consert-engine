@@ -29,6 +29,7 @@ import org.topbraid.spin.model.TemplateCall;
 import org.topbraid.spin.model.TripleTemplate;
 import org.topbraid.spin.util.CommandWrapper;
 import org.topbraid.spin.util.SPINQueryFinder;
+import org.topbraid.spin.util.SPINUtil;
 import org.topbraid.spin.vocabulary.SPIN;
 
 import com.hp.hpl.jena.ontology.OntClass;
@@ -85,6 +86,31 @@ public class Loader {
 		
 		return contextModelURI;
 	}
+	
+	
+	public static int getInsertThreadPoolSize() throws ConfigException {
+		String sizeStr = configProperties.getProperty("context.impl.insertion.threadpool.size", "1");
+		
+		try {
+			return Integer.parseInt(sizeStr);
+		}
+		catch(NumberFormatException e) {
+			throw new ConfigException("Illegal specification for integer size of insertion thread pool", e);
+		}
+	}
+	
+	
+	public static int getInferenceThreadPoolSize() throws ConfigException {
+		String sizeStr = configProperties.getProperty("context.impl.inference.threadpool.size", "1");
+		
+		try {
+			return Integer.parseInt(sizeStr);
+		}
+		catch(NumberFormatException e) {
+			throw new ConfigException("Illegal specification for integer size of inference thread pool", e);
+		}
+	}
+	
 	
 	/** Create or connect to an in-memory dataset that contains:
 	 * <ul>
@@ -387,7 +413,16 @@ public class Loader {
 				for (TripleTemplate tpl : constructedTriples) {
 					if (tpl.getPredicate().equals(
 							transitiveContextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_RESOURCE))) {
-						OntResource derivedAssertionResource = transitiveContextModel.getOntResource(tpl.getObjectResource());
+						
+						RDFNode assertionRes = tpl.getObjectResource();
+						if (SPINFactory.isVariable(assertionRes)) {
+							String varName = SPINFactory.asVariable(assertionRes).getName();
+							if (templateBindings != null && templateBindings.get(varName) != null) { 
+								assertionRes = templateBindings.get(varName);
+							}
+						}
+						
+						OntResource derivedAssertionResource = transitiveContextModel.getOntResource(assertionRes.asResource());
 						derivedAssertion = assertionIndex.getAssertionFromResource(derivedAssertionResource);
 					}
 				}
@@ -437,27 +472,29 @@ public class Loader {
 	    		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = 
 	    				new HashMap<CommandWrapper, Map<String,RDFNode>>();
 	    		
-	    		Map<Resource, List<CommandWrapper>> constraintsMap = null;
-	    		Resource anchorResource = null;
+	    		Map<Resource, List<CommandWrapper>> constraintsMap = new HashMap<>();
 	    		if (domain != null && domain.isURIResource()) {
-	    			anchorResource = domain;
-	    			constraintsMap = ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, 
-	    					anchorResource, SPIN.constraint, true, initialTemplateBindings, true);
+	    			Resource anchorResource = domain;
+	    			constraintsMap.putAll(ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, 
+	    					anchorResource, SPIN.constraint, true, initialTemplateBindings, true));
 	    		}
 	    		
 	    		if (range != null && range.isURIResource() && (constraintsMap == null || constraintsMap.isEmpty())) {
-	    			constraintsMap = ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, 
-	    					anchorResource, SPIN.constraint, true, initialTemplateBindings, true);
+	    			Resource anchorResource = range;
+	    			constraintsMap.putAll(ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, 
+	    					anchorResource, SPIN.constraint, true, initialTemplateBindings, true));
 	    		}
 	    		
 	    		if (constraintsMap != null && !constraintsMap.isEmpty()) {
-	    			List<CommandWrapper> constraints = constraintsMap.get(anchorResource);
-	    			List<CommandWrapper> filteredConstraints = 
-	    					filterBinaryConstraintsFor(constraints, binaryAssertion, rdfsContextModel, initialTemplateBindings);
-	    			
-	    			ConstraintsWrapper constraintsWrapper = 
-	    					new ConstraintsWrapper(filteredConstraints, anchorResource, initialTemplateBindings);
-    				constraintIndex.addAssertionConstraint(binaryAssertion, constraintsWrapper);
+	    			for (Resource anchorResource : constraintsMap.keySet()) {
+		    			List<CommandWrapper> constraints = constraintsMap.get(anchorResource);
+		    			List<CommandWrapper> filteredConstraints = 
+		    				filterBinaryConstraintsFor(constraints, binaryAssertion, rdfsContextModel, initialTemplateBindings);
+		    			
+		    			ConstraintsWrapper constraintsWrapper = 
+		    				new ConstraintsWrapper(filteredConstraints, anchorResource, initialTemplateBindings);
+	    				constraintIndex.addAssertionConstraint(binaryAssertion, constraintsWrapper);
+	    			}
 	    		}
 	    	}
 	    	else {

@@ -7,21 +7,21 @@ import org.aimas.ami.contextrep.model.ContextAssertion;
 public class AssertionInsertResult implements Comparable<AssertionInsertResult> {
 	private int referenceID;
 	private long startTime;
-	private long duration;
+	private int duration;
 	
-	private ContextAssertion assertion;
+	private List<ContextAssertion> insertedAssertions;
 	
 	private List<ContinuityHookResult> continuityResults;
 	private List<ConstraintHookResult> constraintResults;
 	
 	
-	public AssertionInsertResult(int referenceID, long startTime, long duration, ContextAssertion assertion, 
+	public AssertionInsertResult(int referenceID, long startTime, int duration, List<ContextAssertion> insertedAssertions, 
 			List<ContinuityHookResult> continuityResults, List<ConstraintHookResult> constraintResults) {
 	    this.referenceID = referenceID;
 	    this.startTime = startTime;
 	    this.duration = duration;
-	    this.assertion = assertion;
 	    
+	    this.insertedAssertions = insertedAssertions;
 	    this.continuityResults = continuityResults;
 	    this.constraintResults = constraintResults;
     }
@@ -34,12 +34,12 @@ public class AssertionInsertResult implements Comparable<AssertionInsertResult> 
 		return startTime;
 	}
 
-	public long getDuration() {
+	public int getDuration() {
 		return duration;
 	}
 
-	public ContextAssertion getAssertion() {
-		return assertion;
+	public List<ContextAssertion> getInsertedAssertions() {
+		return insertedAssertions;
 	}
 	
 	public List<ContinuityHookResult> continuityResults() {

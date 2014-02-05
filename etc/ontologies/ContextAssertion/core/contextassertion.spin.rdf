@@ -80,11 +80,6 @@
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >The ContextAnnotation class is used during inferencing to mark the statements in the result of a SPIN inference CONSTRUCT that are annotations of the newly deduced assertion.</rdfs:comment>
   </owl:Class>
-  <owl:Class rdf:ID="QualityParameter">
-    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >ContextFact quality parameter</rdfs:label>
-  </owl:Class>
   <owl:Class rdf:ID="ContextEntity">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >the Entity that plays a role in a ContextFact</rdfs:label>
@@ -112,11 +107,6 @@
         >Derived ContextFact</rdfs:label>
       </ContextAssertionType>
     </owl:oneOf>
-  </owl:Class>
-  <owl:Class rdf:ID="QualityMetric">
-    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Quality parameter metric</rdfs:label>
   </owl:Class>
   <owl:Class rdf:about="#NaryContextAssertion">
     <rdfs:subClassOf>

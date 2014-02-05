@@ -469,6 +469,61 @@
       </sp:Select>
     </spin:body>
   </spin:SelectTemplate>
+  <spin:Function rdf:ID="validityIntervalExceeds">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Returns true if the span of at least one of the time intervals included in the validity interval set of a ContextAssertion exceeds the length in seconds given by arg2.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="contextassertion:intervalListType"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >validityIntervalExceeds</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spl#MiscFunctions"/>
+  </spin:Function>
+  <spin:Function rdf:ID="validityIntervalTotalExceeds">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Returns true if the total span of all intervals in the validity set of a ContextAssertion exceeds the length in seconds given by arg2.</rdfs:comment>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="contextassertion:intervalListType"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >validityIntervalTotalExceeds</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spl#MiscFunctions"/>
+  </spin:Function>
+  <spin:Function rdf:ID="validityIntervalContains">
+    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spl#MiscFunctions"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >validityIntervalContains</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+        <spl:valueType rdf:resource="contextassertion:intervalListType"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+      </spl:Argument>
+    </spin:constraint>
+  </spin:Function>
   <spin:Function rdf:ID="timestampJoinOp">
     <spin:constraint>
       <spl:Argument>
@@ -756,11 +811,11 @@
     <spin:returnType rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
   </spin:Function>
   <spl:Argument rdf:nodeID="A0">
-    <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
+    <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
     <spl:valueType rdf:resource="contextassertion:intervalListType"/>
   </spl:Argument>
   <spl:Argument rdf:nodeID="A1">
-    <spl:predicate rdf:resource="http://spinrdf.org/sp#arg1"/>
+    <spl:predicate rdf:resource="http://spinrdf.org/sp#arg2"/>
     <spl:valueType rdf:resource="contextassertion:intervalListType"/>
   </spl:Argument>
   <spin:Function rdf:ID="validityIntervalsCloseEnough">
@@ -769,8 +824,8 @@
     >Verifies if two validity annotations contain 'close enough' intervals</rdfs:comment>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >validityIntervalsCloseEnough</rdfs:label>
-    <spin:constraint rdf:nodeID="A1"/>
     <spin:constraint rdf:nodeID="A0"/>
+    <spin:constraint rdf:nodeID="A1"/>
     <spin:returnType rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
   </spin:Function>
 </rdf:RDF>

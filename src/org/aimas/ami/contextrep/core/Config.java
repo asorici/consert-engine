@@ -60,7 +60,10 @@ public class Config {
 	// ContextAssertion index
 	private static ContextAssertionIndex contextAssertionIndex;
 	
-	// Execution: ContextAssertion insertion and ContextAssertion insertion-hook execution
+	// Execution: ContextAssertion insertion and ContextAssertion inference-hook execution
+	private static int assertionInsertThreadPoolSize;
+	private static int assertionInferenceThreadPoolSize; 
+
 	private static ThreadPoolExecutor assertionInsertExecutor;
 	private static ThreadPoolExecutor assertionInferenceExecutor;
 	
@@ -167,8 +170,8 @@ public class Config {
 			System.out.println("Task: compute derivation rule dictionary. Duration: " + 
 				(System.currentTimeMillis() - timestamp) + " ms");
 		}
-		System.out.println("#### Derivation Rule Map : ");
-		System.out.println(derivationRuleDictionary.getAssertion2QueryMap());
+		//System.out.println("#### Derivation Rule Map : ");
+		//System.out.println(derivationRuleDictionary.getAssertion2QueryMap());
 		timestamp = System.currentTimeMillis();
 		
 		// compute constraint dictionary
@@ -235,11 +238,26 @@ public class Config {
 	}
 	
 	private static ThreadPoolExecutor createInsertionExecutor() {
-		return (ThreadPoolExecutor)Executors.newFixedThreadPool(1, new ContextInsertThreadFactory());
+		try {
+	        assertionInsertThreadPoolSize = Loader.getInsertThreadPoolSize();
+        }
+        catch (ConfigException e) {
+	        assertionInsertThreadPoolSize = 1;
+        }
+		
+		return (ThreadPoolExecutor)Executors.newFixedThreadPool(assertionInsertThreadPoolSize, 
+				new ContextInsertThreadFactory());
 	}
 	
 	private static ThreadPoolExecutor createInferenceExecutor() {
-		return (ThreadPoolExecutor)Executors.newFixedThreadPool(1, new ContextInferenceThreadFactory());
+		try {
+	        assertionInferenceThreadPoolSize = Loader.getInferenceThreadPoolSize();
+        }
+        catch (ConfigException e) {
+        	assertionInferenceThreadPoolSize = 1;
+        }
+		return (ThreadPoolExecutor)Executors.newFixedThreadPool(assertionInferenceThreadPoolSize, 
+				new ContextInferenceThreadFactory());
 	}
 	
 	
@@ -260,6 +278,16 @@ public class Config {
 		return assertionInferenceExecutor;
 	}
 	
+	
+	public static int getAssertionInsertThreadPoolSize() {
+		return assertionInsertThreadPoolSize;
+	}
+
+
+	public static int getAssertionInferenceThreadPoolSize() {
+		return assertionInferenceThreadPoolSize;
+	}
+
 	
 	public static Dataset getPersistentContextStore() {
 		return TDBFactory.createDataset(contextStoreLocation);

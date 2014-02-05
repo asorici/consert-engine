@@ -1,18 +1,16 @@
 package org.aimas.ami.contextrep.update;
 
-import java.util.List;
-
 import org.aimas.ami.contextrep.model.ContextAssertion;
 
 public class AssertionInferenceResult {
 	private int referenceID;
 	private long startTime;
-	private long duration;
+	private int duration;
 	
 	private ContextAssertion assertion;
 	private InferenceHookResult inferenceHookResult;
 	
-	public AssertionInferenceResult(int referenceID, long startTime, long duration, 
+	public AssertionInferenceResult(int referenceID, long startTime, int duration, 
 			ContextAssertion assertion, InferenceHookResult inferenceHookResult) {
 	    this.referenceID = referenceID;
 	    this.startTime = startTime;
@@ -29,7 +27,7 @@ public class AssertionInferenceResult {
 		return startTime;
 	}
 
-	public long getDuration() {
+	public int getDuration() {
 		return duration;
 	}
 

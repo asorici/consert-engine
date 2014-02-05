@@ -37,18 +37,18 @@ public class CheckConstraintHook extends ContextUpdateHook {
 			
 			if (!constraintViolations.isEmpty()) {
 				// TODO: do something useful with the detected violations
-				System.out.println("[INFO] Constraint violations detected for assertion: " + contextAssertion);
+				//System.out.println("[INFO] Constraint violations detected for assertion: " + contextAssertion);
 			
 				long end = System.currentTimeMillis();
-				return new ConstraintHookResult(start, end - start, false, true, true);
+				return new ConstraintHookResult(start, (int)(end - start), false, true, true);
 			}
 			else {
 				long end = System.currentTimeMillis();
-				return new ConstraintHookResult(start, end - start, false, true, false);
+				return new ConstraintHookResult(start, (int)(end - start), false, true, false);
 			}
 		}
 		
 		long end = System.currentTimeMillis();
-		return new ConstraintHookResult(start, end - start, false, false, false);
+		return new ConstraintHookResult(start, (int)(end - start), false, false, false);
 	}
 }

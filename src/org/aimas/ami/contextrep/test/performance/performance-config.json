@@ -1,38 +1,41 @@
 {
     "contextEntities" : {
         "nrTypes" : 10,
-        "nrInstances" : 50
+        "nrInstances" : 30
     },
     "contextAssertions" : {
         "unary" : {
-            "nrTypes" : 10,
+            "nrTypes" : 50,
             "nrDerived" : 2,
             "nrInstances" : 50,
             "annotation" : {
                 "accuracy" : "random",
-                "duration" : 1,
+                "duration" : 1000,
                 "assertedBy" : "http://pervasive.semanticweb.org/ont/2013/11/test/performance#room-coordinator"
-            }
+            },
+            "pushrate" : 10
         },
         "binary" : {
-            "nrTypes" : 10,
+            "nrTypes" : 50,
             "nrDerived" : 2,
             "nrInstances" : 50,
             "annotation" : {
                 "accuracy" : "random",
-                "duration" : 1,
+                "duration" : 1000,
                 "assertedBy" : "http://pervasive.semanticweb.org/ont/2013/11/test/performance#room-coordinator"
-            }
+            },
+            "pushrate" : 10
         },
         "nary" : {
-            "nrTypes" : 10,
+            "nrTypes" : 50,
             "nrDerived" : 2,
             "nrInstances" : 50,
             "annotation" : {
                 "accuracy" : "random",
-                "duration" : 1,
+                "duration" : 1000,
                 "assertedBy" : "http://pervasive.semanticweb.org/ont/2013/11/test/performance#room-coordinator"
-            }
+            },
+            "pushrate" : 10
         }
     },
     "derivationRules" : {
@@ -54,5 +57,5 @@
             "nary" : { "nr": 1, "derivedAllowed" : "true" },
             "uri" : "http://pervasive.semanticweb.org/ont/2013/11/test/performance#SchemeNary"  
         }
-    } 
+    }
 }

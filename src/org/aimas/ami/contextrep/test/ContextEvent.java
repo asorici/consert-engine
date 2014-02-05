@@ -29,7 +29,7 @@ public abstract class ContextEvent implements Comparable<ContextEvent> {
 	 * timestamp of event creation
 	 */
 	private Calendar timestamp;
-	
+
 	/**
 	 * validity of the event in seconds
 	 */
@@ -81,6 +81,13 @@ public abstract class ContextEvent implements Comparable<ContextEvent> {
     public Calendar getTimestamp() {
 	    return timestamp;
     }
+    
+    
+    public void setTimestamp(Calendar timestamp) {
+		this.timestamp = timestamp;
+		this.request = createUpdateRequest();
+	}
+    
     
     protected Update createAnnotationUpdate(Node graphURINode, ContextAssertion assertion) {
 		Calendar validTo = Calendar.getInstance();

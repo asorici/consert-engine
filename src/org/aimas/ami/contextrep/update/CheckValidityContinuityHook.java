@@ -43,8 +43,8 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 	public ContinuityHookResult exec(Dataset contextStoreDataset) {
 		long start = System.currentTimeMillis();
 		
-		System.out.println("======== CHECKING CONTINUITY AVAILABALE FOR assertion <" + contextAssertion + ">. "
-		        + "AssertionUUID: " + contextAssertionUUID);
+		//System.out.println("======== CHECKING CONTINUITY AVAILABALE FOR assertion <" + contextAssertion + ">. "
+		//        + "AssertionUUID: " + contextAssertionUUID);
 		
 		// get access to the datastore and the assertionIndex
 		OntModel contextModel = Config.getBasicContextModel();
@@ -107,9 +107,9 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 					RDFNode assertionUUID = qs.get("assertionUUID");
 					RDFNode validity = qs.get("validity");
 					
-					System.out.println("CONTINUITY AVAILABALE FOR assertion <" + contextAssertion + ">. "
-					        + "AssertionUUID: " + assertionUUID
-					        + ", for duration: " + validity);
+					//System.out.println("CONTINUITY AVAILABALE FOR assertion <" + contextAssertion + ">. "
+					//        + "AssertionUUID: " + assertionUUID
+					//        + ", for duration: " + validity);
 					
 					availableContinuityPairs.add(new ContinuityWrapper(
 					        assertionUUID, validity));
@@ -118,7 +118,7 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 			catch (Exception ex) {
 				ex.printStackTrace();
 				long end = System.currentTimeMillis();
-				return new ContinuityHookResult(start, end - start, true, false);
+				return new ContinuityHookResult(start, (int)(end - start), true, false);
 				
 			}
 			finally {
@@ -167,14 +167,14 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 			newAssertionStoreModel.remove(newAssertionStatements);
 			
 			long end = System.currentTimeMillis();
-			return new ContinuityHookResult(start, end - start, false, true);
+			return new ContinuityHookResult(start, (int)(end - start), false, true);
 		}
 		
 		// finally sync the changes
 		TDB.sync(contextStoreDataset);
 		
 		long end = System.currentTimeMillis();
-		return new ContinuityHookResult(start, end - start, false, false);
+		return new ContinuityHookResult(start, (int)(end - start), false, false);
 	}
 
 	

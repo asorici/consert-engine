@@ -21,10 +21,10 @@
   <rdf:Property rdf:about="http://spinrdf.org/arg#entityR2">
     <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/sp#arg"/>
   </rdf:Property>
-  <rdf:Property rdf:about="http://spinrdf.org/arg#nary_e1">
+  <rdf:Property rdf:about="http://spinrdf.org/arg#timestamp">
     <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/sp#arg"/>
   </rdf:Property>
-  <rdf:Property rdf:about="http://spinrdf.org/arg#timestamp">
+  <rdf:Property rdf:about="http://spinrdf.org/arg#nary_e1">
     <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/sp#arg"/>
   </rdf:Property>
   <rdf:Property rdf:about="http://spinrdf.org/arg#binary_e1">
@@ -123,7 +123,212 @@
   <spin:ConstructTemplate rdf:ID="SchemeBinary">
     <spin:constraint>
       <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#unary_a1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#domainClass"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#unary_e1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_e1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#binaryAssertion"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:body>
+      <sp:Construct>
+        <sp:limit rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</sp:limit>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >range</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >binaryAssertion</sp:varName>
+            </sp:predicate>
+            <sp:subject rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >domain</sp:varName>
+            </sp:subject>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A0"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >binaryAssertion</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
+            <sp:subject rdf:nodeID="A0"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+            <sp:subject rdf:nodeID="A0"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >timestamp</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
+            <sp:subject rdf:nodeID="A0"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >accuracy</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
+            <sp:subject rdf:nodeID="A0"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >valid</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
+            <sp:subject rdf:nodeID="A0"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >assertedBy</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
+            <sp:subject rdf:nodeID="A0"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <sp:NamedGraph>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >ts</sp:varName>
+                </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
+                <sp:subject rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >binary_g1</sp:varName>
+                </sp:subject>
+              </rdf:Description>
+            </sp:elements>
+            <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance/BinaryA6Store"/>
+          </sp:NamedGraph>
+          <sp:NamedGraph>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >range</sp:varName>
+                </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#BinaryA6"/>
+                <sp:subject rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >domain</sp:varName>
+                </sp:subject>
+              </rdf:Description>
+            </sp:elements>
+            <sp:graphNameNode rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >binary_g1</sp:varName>
+            </sp:graphNameNode>
+          </sp:NamedGraph>
+          <sp:Bind>
+            <sp:expression>
+              <afn:now/>
+            </sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >timestamp</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+          <sp:Bind>
+            <sp:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+            >1.0</sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >accuracy</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+          <sp:Bind>
+            <sp:expression>
+              <cfn:getCurrentAgent/>
+            </sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >assertedBy</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+          <sp:Bind>
+            <sp:expression>
+              <cfn:makeValidityInterval>
+                <sp:arg2>
+                  <cfn:datetimeDelay>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >1</sp:arg2>
+                    <sp:arg1>
+                      <afn:now/>
+                    </sp:arg1>
+                  </cfn:datetimeDelay>
+                </sp:arg2>
+                <sp:arg1>
+                  <afn:now/>
+                </sp:arg1>
+              </cfn:makeValidityInterval>
+            </sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >valid</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_e1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_a1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r1"/>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
       </spl:Argument>
     </spin:constraint>
@@ -135,169 +340,11 @@
     </spin:constraint>
     <spin:constraint>
       <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#unary_a1"/>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
       </spl:Argument>
     </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r2"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#unary_e1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:body>
-      <sp:Construct>
-        <spin:thisUnbound rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</spin:thisUnbound>
-        <sp:where rdf:parseType="Collection">
-          <sp:NamedGraph>
-            <sp:graphNameNode rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >binary_g1</sp:varName>
-            </sp:graphNameNode>
-            <sp:elements rdf:parseType="Collection">
-              <rdf:Description>
-                <sp:subject rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >domain</sp:varName>
-                </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#BinaryA6"/>
-                <sp:object rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >range</sp:varName>
-                </sp:object>
-              </rdf:Description>
-            </sp:elements>
-          </sp:NamedGraph>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >timestamp</sp:varName>
-            </sp:variable>
-            <sp:expression>
-              <afn:now/>
-            </sp:expression>
-          </sp:Bind>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >accuracy</sp:varName>
-            </sp:variable>
-            <sp:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
-            >1.0</sp:expression>
-          </sp:Bind>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >assertedBy</sp:varName>
-            </sp:variable>
-            <sp:expression>
-              <cfn:getCurrentAgent/>
-            </sp:expression>
-          </sp:Bind>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >valid</sp:varName>
-            </sp:variable>
-            <sp:expression>
-              <cfn:makeValidityInterval>
-                <sp:arg1>
-                  <afn:now/>
-                </sp:arg1>
-                <sp:arg2>
-                  <cfn:datetimeDelay>
-                    <sp:arg1>
-                      <afn:now/>
-                    </sp:arg1>
-                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                    >1</sp:arg2>
-                  </cfn:datetimeDelay>
-                </sp:arg2>
-              </cfn:makeValidityInterval>
-            </sp:expression>
-          </sp:Bind>
-        </sp:where>
-        <sp:templates rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >domain</sp:varName>
-            </sp:subject>
-            <sp:predicate rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >binaryAssertion</sp:varName>
-            </sp:predicate>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >range</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A0"/>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A0"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >binaryAssertion</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A0"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A0"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >timestamp</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A0"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >accuracy</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A0"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >valid</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A0"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >assertedBy</sp:varName>
-            </sp:object>
-          </rdf:Description>
-        </sp:templates>
-      </sp:Construct>
-    </spin:body>
+    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#ConstructTemplates"/>
     <spin:constraint>
       <spl:Argument>
         <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_e2"/>
@@ -306,43 +353,12 @@
     </spin:constraint>
     <spin:constraint>
       <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_a1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#binaryAssertion"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_e1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#ConstructTemplates"/>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#domainClass"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_e1"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r3"/>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
       </spl:Argument>
     </spin:constraint>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >SchemeBinary</rdfs:label>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r3"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
   </spin:ConstructTemplate>
   <contextassertion:ContextAgent rdf:ID="room-coordinator">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -352,206 +368,8 @@
   <spin:ConstructTemplate rdf:ID="SchemeUnary">
     <spin:constraint>
       <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#unary_e1"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#unaryAssertion"/>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#unary_a1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:body>
-      <sp:Construct>
-        <spin:thisUnbound rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</spin:thisUnbound>
-        <sp:where rdf:parseType="Collection">
-          <sp:NamedGraph>
-            <sp:graphNameNode rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >unary_g1</sp:varName>
-            </sp:graphNameNode>
-            <sp:elements rdf:parseType="Collection">
-              <rdf:Description>
-                <sp:subject rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >entity</sp:varName>
-                </sp:subject>
-                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#UnaryA4"/>
-              </rdf:Description>
-            </sp:elements>
-          </sp:NamedGraph>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >timestamp</sp:varName>
-            </sp:variable>
-            <sp:expression>
-              <afn:now/>
-            </sp:expression>
-          </sp:Bind>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >accuracy</sp:varName>
-            </sp:variable>
-            <sp:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
-            >1.0</sp:expression>
-          </sp:Bind>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >assertedBy</sp:varName>
-            </sp:variable>
-            <sp:expression>
-              <cfn:getCurrentAgent/>
-            </sp:expression>
-          </sp:Bind>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >valid</sp:varName>
-            </sp:variable>
-            <sp:expression>
-              <cfn:makeValidityInterval>
-                <sp:arg1>
-                  <afn:now/>
-                </sp:arg1>
-                <sp:arg2>
-                  <cfn:datetimeDelay>
-                    <sp:arg1>
-                      <afn:now/>
-                    </sp:arg1>
-                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                    >1</sp:arg2>
-                  </cfn:datetimeDelay>
-                </sp:arg2>
-              </cfn:makeValidityInterval>
-            </sp:expression>
-          </sp:Bind>
-        </sp:where>
-        <sp:templates rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >entity</sp:varName>
-            </sp:subject>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >unaryAssertion</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A1"/>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A1"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >unaryAssertion</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A1"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A1"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >timestamp</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A1"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >accuracy</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A1"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >valid</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A1"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >assertedBy</sp:varName>
-            </sp:object>
-          </rdf:Description>
-        </sp:templates>
-      </sp:Construct>
-    </spin:body>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_e1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_a1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_e2"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >SchemeUnary</rdfs:label>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r2"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r3"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#ConstructTemplates"/>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_e2"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#entityClass"/>
       </spl:Argument>
     </spin:constraint>
     <spin:constraint>
@@ -562,7 +380,221 @@
     </spin:constraint>
     <spin:constraint>
       <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#unaryAssertion"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#unary_e1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_e2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_e1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >SchemeUnary</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#entityClass"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#ConstructTemplates"/>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_e2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#unary_a1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_a1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:body>
+      <sp:Construct>
+        <sp:limit rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</sp:limit>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >unaryAssertion</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >entity</sp:varName>
+            </sp:subject>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >unaryAssertion</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
+            <sp:subject rdf:nodeID="A1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+            <sp:subject rdf:nodeID="A1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >timestamp</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
+            <sp:subject rdf:nodeID="A1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >accuracy</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
+            <sp:subject rdf:nodeID="A1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >valid</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
+            <sp:subject rdf:nodeID="A1"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >assertedBy</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
+            <sp:subject rdf:nodeID="A1"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <sp:NamedGraph>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >ts</sp:varName>
+                </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
+                <sp:subject rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >unary_g1</sp:varName>
+                </sp:subject>
+              </rdf:Description>
+            </sp:elements>
+            <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance/UnaryA4Store"/>
+          </sp:NamedGraph>
+          <sp:NamedGraph>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#UnaryA4"/>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <sp:subject rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >entity</sp:varName>
+                </sp:subject>
+              </rdf:Description>
+            </sp:elements>
+            <sp:graphNameNode rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >unary_g1</sp:varName>
+            </sp:graphNameNode>
+          </sp:NamedGraph>
+          <sp:Bind>
+            <sp:expression>
+              <afn:now/>
+            </sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >timestamp</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+          <sp:Bind>
+            <sp:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+            >1.0</sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >accuracy</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+          <sp:Bind>
+            <sp:expression>
+              <cfn:getCurrentAgent/>
+            </sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >assertedBy</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+          <sp:Bind>
+            <sp:expression>
+              <cfn:makeValidityInterval>
+                <sp:arg2>
+                  <cfn:datetimeDelay>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >1</sp:arg2>
+                    <sp:arg1>
+                      <afn:now/>
+                    </sp:arg1>
+                  </cfn:datetimeDelay>
+                </sp:arg2>
+                <sp:arg1>
+                  <afn:now/>
+                </sp:arg1>
+              </cfn:makeValidityInterval>
+            </sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >valid</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r3"/>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
       </spl:Argument>
     </spin:constraint>
@@ -577,217 +609,12 @@
     <spin:constraint>
       <spl:Argument>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#naryAssertion_role3"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
         <spl:predicate rdf:resource="http://spinrdf.org/arg#naryAssertion_role1"/>
       </spl:Argument>
     </spin:constraint>
-    <spin:body>
-      <sp:Construct>
-        <spin:thisUnbound rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-        >true</spin:thisUnbound>
-        <sp:where rdf:parseType="Collection">
-          <sp:NamedGraph>
-            <sp:graphNameNode rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >nary_g1</sp:varName>
-            </sp:graphNameNode>
-            <sp:elements rdf:parseType="Collection">
-              <rdf:Description>
-                <sp:subject rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >?0</sp:varName>
-                </sp:subject>
-                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#NaryA8"/>
-              </rdf:Description>
-              <rdf:Description>
-                <sp:subject rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >?0</sp:varName>
-                </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#NaryA8_R1"/>
-                <sp:object rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >entityR1</sp:varName>
-                </sp:object>
-              </rdf:Description>
-              <rdf:Description>
-                <sp:subject rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >?0</sp:varName>
-                </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#NaryA8_R2"/>
-                <sp:object rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >entityR2</sp:varName>
-                </sp:object>
-              </rdf:Description>
-              <rdf:Description>
-                <sp:subject rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >?0</sp:varName>
-                </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#NaryA8_R3"/>
-                <sp:object rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >entityR3</sp:varName>
-                </sp:object>
-              </rdf:Description>
-            </sp:elements>
-          </sp:NamedGraph>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >timestamp</sp:varName>
-            </sp:variable>
-            <sp:expression>
-              <afn:now/>
-            </sp:expression>
-          </sp:Bind>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >accuracy</sp:varName>
-            </sp:variable>
-            <sp:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
-            >1.0</sp:expression>
-          </sp:Bind>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >assertedBy</sp:varName>
-            </sp:variable>
-            <sp:expression>
-              <cfn:getCurrentAgent/>
-            </sp:expression>
-          </sp:Bind>
-          <sp:Bind>
-            <sp:variable rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >valid</sp:varName>
-            </sp:variable>
-            <sp:expression>
-              <cfn:makeValidityInterval>
-                <sp:arg1>
-                  <afn:now/>
-                </sp:arg1>
-                <sp:arg2>
-                  <cfn:datetimeDelay>
-                    <sp:arg1>
-                      <afn:now/>
-                    </sp:arg1>
-                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                    >1</sp:arg2>
-                  </cfn:datetimeDelay>
-                </sp:arg2>
-              </cfn:makeValidityInterval>
-            </sp:expression>
-          </sp:Bind>
-        </sp:where>
-        <sp:templates rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A2"/>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >naryAssertion</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A2"/>
-            <sp:predicate rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >naryAssertion_role1</sp:varName>
-            </sp:predicate>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >entityR1</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A2"/>
-            <sp:predicate rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >naryAssertion_role2</sp:varName>
-            </sp:predicate>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >entityR2</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A2"/>
-            <sp:predicate rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >naryAssertion_role3</sp:varName>
-            </sp:predicate>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >entityR3</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A3"/>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A3"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >naryAssertion</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A3"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A3"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >timestamp</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A3"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >accuracy</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A3"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >valid</sp:varName>
-            </sp:object>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:subject rdf:nodeID="A3"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >assertedBy</sp:varName>
-            </sp:object>
-          </rdf:Description>
-        </sp:templates>
-      </sp:Construct>
-    </spin:body>
-    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#ConstructTemplates"/>
     <spin:constraint>
       <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_e2"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_e1"/>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
       </spl:Argument>
     </spin:constraint>
@@ -797,38 +624,7 @@
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
       </spl:Argument>
     </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >SchemeNary</rdfs:label>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_a1"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#entityR3Class"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#naryAssertion_role2"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_e3"/>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
+    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#ConstructTemplates"/>
     <spin:constraint>
       <spl:Argument>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
@@ -837,14 +633,8 @@
     </spin:constraint>
     <spin:constraint>
       <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r3"/>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      </spl:Argument>
-    </spin:constraint>
-    <spin:constraint>
-      <spl:Argument>
-        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#entityR1Class"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#entityR3Class"/>
       </spl:Argument>
     </spin:constraint>
     <spin:constraint>
@@ -856,12 +646,270 @@
     <spin:constraint>
       <spl:Argument>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#entityR1Class"/>
+      </spl:Argument>
+    </spin:constraint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >SchemeNary</rdfs:label>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_e2"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_e3"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
         <spl:predicate rdf:resource="http://spinrdf.org/arg#entityR2Class"/>
       </spl:Argument>
     </spin:constraint>
     <spin:constraint>
       <spl:Argument>
-        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_e1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#naryAssertion_role2"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r3"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#nary_a1_r1"/>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#naryAssertion_role3"/>
+      </spl:Argument>
+    </spin:constraint>
+    <spin:body>
+      <sp:Construct>
+        <sp:limit rdf:datatype="http://www.w3.org/2001/XMLSchema#long"
+        >1</sp:limit>
+        <sp:templates rdf:parseType="Collection">
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >naryAssertion</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A2"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >entityR1</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >naryAssertion_role1</sp:varName>
+            </sp:predicate>
+            <sp:subject rdf:nodeID="A2"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >entityR2</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >naryAssertion_role2</sp:varName>
+            </sp:predicate>
+            <sp:subject rdf:nodeID="A2"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >entityR3</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >naryAssertion_role3</sp:varName>
+            </sp:predicate>
+            <sp:subject rdf:nodeID="A2"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A3"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >naryAssertion</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
+            <sp:subject rdf:nodeID="A3"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+            <sp:subject rdf:nodeID="A3"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >timestamp</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
+            <sp:subject rdf:nodeID="A3"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >accuracy</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
+            <sp:subject rdf:nodeID="A3"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >valid</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
+            <sp:subject rdf:nodeID="A3"/>
+          </rdf:Description>
+          <rdf:Description>
+            <sp:object rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >assertedBy</sp:varName>
+            </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
+            <sp:subject rdf:nodeID="A3"/>
+          </rdf:Description>
+        </sp:templates>
+        <sp:where rdf:parseType="Collection">
+          <sp:NamedGraph>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >ts</sp:varName>
+                </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
+                <sp:subject rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >nary_g1</sp:varName>
+                </sp:subject>
+              </rdf:Description>
+            </sp:elements>
+            <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance/NaryA8Store"/>
+          </sp:NamedGraph>
+          <sp:NamedGraph>
+            <sp:elements rdf:parseType="Collection">
+              <rdf:Description>
+                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#NaryA8"/>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                <sp:subject rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >?0</sp:varName>
+                </sp:subject>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:object rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >entityR1</sp:varName>
+                </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#NaryA8_R1"/>
+                <sp:subject rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >?0</sp:varName>
+                </sp:subject>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:object rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >entityR2</sp:varName>
+                </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#NaryA8_R2"/>
+                <sp:subject rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >?0</sp:varName>
+                </sp:subject>
+              </rdf:Description>
+              <rdf:Description>
+                <sp:object rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >entityR3</sp:varName>
+                </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/11/test/performance#NaryA8_R3"/>
+                <sp:subject rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >?0</sp:varName>
+                </sp:subject>
+              </rdf:Description>
+            </sp:elements>
+            <sp:graphNameNode rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >nary_g1</sp:varName>
+            </sp:graphNameNode>
+          </sp:NamedGraph>
+          <sp:Bind>
+            <sp:expression>
+              <afn:now/>
+            </sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >timestamp</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+          <sp:Bind>
+            <sp:expression rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+            >1.0</sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >accuracy</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+          <sp:Bind>
+            <sp:expression>
+              <cfn:getCurrentAgent/>
+            </sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >assertedBy</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+          <sp:Bind>
+            <sp:expression>
+              <cfn:makeValidityInterval>
+                <sp:arg2>
+                  <cfn:datetimeDelay>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >1</sp:arg2>
+                    <sp:arg1>
+                      <afn:now/>
+                    </sp:arg1>
+                  </cfn:datetimeDelay>
+                </sp:arg2>
+                <sp:arg1>
+                  <afn:now/>
+                </sp:arg1>
+              </cfn:makeValidityInterval>
+            </sp:expression>
+            <sp:variable rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >valid</sp:varName>
+            </sp:variable>
+          </sp:Bind>
+        </sp:where>
+      </sp:Construct>
+    </spin:body>
+    <spin:constraint>
+      <spl:Argument>
+        <spl:predicate rdf:resource="http://spinrdf.org/arg#binary_a1"/>
         <spl:valueType rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
       </spl:Argument>
     </spin:constraint>

@@ -5,7 +5,7 @@ public class ConstraintHookResult extends HookResult {
 	private boolean hasConstraint;
 	private boolean hasViolation;
 	
-	public ConstraintHookResult(long startTime, long duration, boolean error, 
+	public ConstraintHookResult(long startTime, int duration, boolean error, 
 			boolean hasConstraint, boolean hasViolation) {
 	    super(startTime, duration, error);
 	    this.hasConstraint = hasConstraint;

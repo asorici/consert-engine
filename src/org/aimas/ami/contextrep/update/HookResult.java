@@ -2,11 +2,11 @@ package org.aimas.ami.contextrep.update;
 
 public class HookResult {
 	long startTime;
-	long duration;
+	int duration;
 	
 	boolean error;
 
-	public HookResult(long startTime, long duration, boolean error) {
+	public HookResult(long startTime, int duration, boolean error) {
 	    this.startTime = startTime;
 	    this.duration = duration;
 	    this.error = error;
@@ -16,7 +16,7 @@ public class HookResult {
 		return startTime;
 	}
 
-	public long getDuration() {
+	public int getDuration() {
 		return duration;
 	}
 

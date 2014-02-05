@@ -11,16 +11,13 @@ import java.util.Set;
 
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.SPINConstructors;
-import org.topbraid.spin.inference.SPINExplanations;
 import org.topbraid.spin.inference.SPINInferencesOptimizer;
 import org.topbraid.spin.inference.SPINRuleComparator;
-import org.topbraid.spin.progress.ProgressMonitor;
 import org.topbraid.spin.statistics.SPINStatistics;
 import org.topbraid.spin.system.SPINLabels;
 import org.topbraid.spin.util.CommandWrapper;
 import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.util.QueryWrapper;
-import org.topbraid.spin.util.SPINQueryFinder;
 import org.topbraid.spin.util.SPINUtil;
 import org.topbraid.spin.util.UpdateUtil;
 import org.topbraid.spin.util.UpdateWrapper;
@@ -104,18 +101,15 @@ public class ContextSPINInferences {
 	 * @param monitor  an optional ProgressMonitor
 	 * @return a {@link ContextInferenceResult} wrapper with the result of the inference
 	 */
-	public static ContextInferenceResult run(
+	public static ContextInferenceResult runContextInference(
 			Model queryModel,
 			Model newTriples,
 			Map<Resource, List<CommandWrapper>> class2Query,
 			Map<Resource, List<CommandWrapper>> class2Constructor,
 			Map<CommandWrapper, Map<String, RDFNode>> templateBindings,
-			SPINExplanations explanations,
 			List<SPINStatistics> statistics,
-			boolean singlePass,
 			Property rulePredicate,
-			SPINRuleComparator comparator,
-			ProgressMonitor monitor) {
+			SPINRuleComparator comparator) {
 		
 		// Run optimizers (if available)
 		for(SPINInferencesOptimizer optimizer : optimizers) {
@@ -141,93 +135,48 @@ public class ContextSPINInferences {
 			rulePredicate = queryModel.getProperty(rulePredicate.getURI());
 		}
 		
-		// Iterate
-		int iteration = 1;
-		boolean changed;
-		do {
-			Set<Statement> newRules = new HashSet<Statement>();
-			changed = false;
-			for(CommandWrapper arqWrapper : rulesList) {
-				
-				// Skip rule if needed
-				if(arqWrapper.getStatement() != null) {
-					Property predicate = arqWrapper.getStatement().getPredicate();
-					Integer maxIterationCount = JenaUtil.getIntegerProperty(predicate, SPIN.rulePropertyMaxIterationCount);
-					if(maxIterationCount != null) {
-						if(iteration > maxIterationCount) {
-							continue;
-						}
-					}
-				}
-				
-				Resource cls = rule2Class.get(arqWrapper);
-					
-				if(monitor != null) {
-					
-					if(monitor.isCanceled()) {
-						return new ContextInferenceResult(iteration - 1, false);
-					}
-					
-					StringBuffer sb = new StringBuffer("TopSPIN iteration ");
-					sb.append(iteration);
-					sb.append(" at ");
-					sb.append(SPINLabels.get().getLabel(cls));
-					sb.append(", rule ");
-					sb.append(arqWrapper.getLabel() != null ? arqWrapper.getLabel() : arqWrapper.getText());
-					monitor.subTask(sb.toString());
-				}
-
-				StringBuffer sb = new StringBuffer();
-				sb.append("Inferred by ");
-				sb.append(SPINLabels.get().getLabel(rulePredicate));
-				sb.append(" at class ");
-				sb.append(SPINLabels.get().getLabel(cls));
-				sb.append(":\n\n" + arqWrapper.getText());
-				String explanationText = sb.toString();
-				Map<String,RDFNode> initialBindings = templateBindings.get(arqWrapper);
-				boolean thisUnbound = arqWrapper.isThisUnbound();
-				changed |= runCommandOnClass(arqWrapper, arqWrapper.getLabel(), queryModel, newTriples, cls, true, class2Constructor, templateBindings, initialBindings, statistics, explanations, explanationText, newRules, thisUnbound, monitor);
-				if(!SPINUtil.isRootClass(cls) && !thisUnbound) {
-					Set<Resource> subClasses = JenaUtil.getAllSubClasses(cls);
-					for(Resource subClass : subClasses) {
-						changed |= runCommandOnClass(arqWrapper, arqWrapper.getLabel(), queryModel, newTriples, subClass, true, class2Constructor, templateBindings, initialBindings, statistics, explanations, explanationText, newRules, thisUnbound, monitor);
-					}
-				}
-			}
-			iteration++;
+		// Single iteration needed for Context Inference - single pass rule execution
+		
+		boolean inferred = false;
+		for (CommandWrapper arqWrapper : rulesList) {
 			
-			if(!newRules.isEmpty() && !singlePass) {
-				for(Statement s : newRules) {
-					SPINQueryFinder.add(class2Query, queryModel.asStatement(s.asTriple()), queryModel, true, templateBindings, false);
+			Resource cls = rule2Class.get(arqWrapper);
+			Map<String, RDFNode> initialBindings = templateBindings.get(arqWrapper);
+			boolean thisUnbound = arqWrapper.isThisUnbound();
+			
+			inferred |= runContextInferenceCommandOnClass(arqWrapper, arqWrapper.getLabel(),
+			        queryModel, newTriples, cls, class2Constructor,
+			        templateBindings, initialBindings, statistics, thisUnbound);
+			if (!SPINUtil.isRootClass(cls) && !thisUnbound) {
+				Set<Resource> subClasses = JenaUtil.getAllSubClasses(cls);
+				for (Resource subClass : subClasses) {
+					inferred |= runContextInferenceCommandOnClass(arqWrapper,
+					        arqWrapper.getLabel(), queryModel, newTriples,
+					        subClass, class2Constructor,
+					        templateBindings, initialBindings, statistics, thisUnbound);
 				}
 			}
 		}
-		while(!singlePass && changed);
 		
-		return new ContextInferenceResult(iteration - 1,  changed);
+		return new ContextInferenceResult(inferred);
 	}
 
 	
-	private static boolean runCommandOnClass(
+	private static boolean runContextInferenceCommandOnClass(
 			CommandWrapper commandWrapper, 
 			String queryLabel, 
 			final Model queryModel, 
 			Model newTriples, 
-			Resource cls, 
-			boolean checkContains, 
+			Resource cls,
 			Map<Resource, List<CommandWrapper>> class2Constructor,
 			Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings,
 			Map<String,RDFNode> initialBindings, 
 			List<SPINStatistics> statistics, 
-			SPINExplanations explanations, 
-			String explanationText, 
-			Set<Statement> newRules, 
-			boolean thisUnbound, 
-			ProgressMonitor monitor) {
+			boolean thisUnbound) {
 		
 		// Check if query is needed at all
 		if(thisUnbound || SPINUtil.isRootClass(cls) || queryModel.contains(null, RDF.type, cls)) {
-			boolean changed = false;
+			boolean inferred = false;
 			QuerySolutionMap bindings = new QuerySolutionMap();
 			boolean needsClass = !SPINUtil.isRootClass(cls) && !thisUnbound;
 			if(initialBindings != null) {
@@ -261,30 +210,15 @@ public class ContextSPINInferences {
 						bindings.add(SPINUtil.TYPE_CLASS_VAR_NAME, cls);
 					}
 					QueryExecution qexec = ARQFactory.get().createQueryExecution(arq, queryModel, bindings);
+					
 					cm = qexec.execConstruct();
 					qexec.close();
 				}
-				StmtIterator cit = cm.listStatements();
-				while(cit.hasNext()) {
-					Statement s = cit.nextStatement();
-					if(!checkContains || !queryModel.contains(s)) {
-						changed = true;
-						newTriples.add(s);
-						if(explanations != null && commandWrapper.getStatement() != null) {
-							Resource source = commandWrapper.getStatement().getSubject();
-							explanations.put(s.asTriple(), explanationText, source.asNode());
-						}
-						
-						// New rdf:type triple -> run constructors later
-						if(RDF.type.equals(s.getPredicate()) && s.getObject().isResource()) {
-							Resource subject = s.getSubject().inModel(queryModel);
-							newInstances.put(subject, s.getResource());
-						}
-						
-						if(SPIN.rule.equals(s.getPredicate())) {
-							newRules.add(s);
-						}
-					}
+				
+				// if the inferred model is not empty, it means the rule fired and produced a result
+				if (!cm.isEmpty()) {
+					inferred = true;
+					newTriples.add(cm);
 				}
 			}
 			else {
@@ -311,7 +245,7 @@ public class ContextSPINInferences {
 				}
 				
 				for(ControlledCtxUpdateGraph cug : cugs.getControlledUpdateGraphs()) {
-					changed |= cug.isChanged();
+					inferred |= cug.isChanged();
 					for(Triple triple : cug.getAddedTriples()) {
 						if(RDF.type.asNode().equals(triple.getPredicate()) && !triple.getObject().isLiteral()) {
 							Resource subject = (Resource) queryModel.asRDFNode(triple.getSubject());
@@ -341,11 +275,11 @@ public class ContextSPINInferences {
 						class2Constructor,
 						initialTemplateBindings,
 						statistics,
-						explanations, 
-						monitor);
+						null, 
+						null);
 			}
 			
-			return changed;
+			return inferred;
 		}
 		else {
 			return false;
@@ -354,7 +288,7 @@ public class ContextSPINInferences {
 
 	
 	/**
-	 * Runs a given Jena Query on a given instance and adds the inferred triples
+	 * Runs a given Jena CONSTRUCT Inference query on a given instance and adds the inferred triples
 	 * to a given Model.
 	 * @param arq  the CONSTRUCT query to execute
 	 * @param queryModel  the query Model
@@ -364,8 +298,8 @@ public class ContextSPINInferences {
 	 * @param initialBindings  the initial bindings for arq or null
 	 * @return true if changes were done (only meaningful if checkContains == true)
 	 */
-	public static boolean runQueryOnInstance(Query arq, Model queryModel, Model newTriples, Resource instance, boolean checkContains, Map<String,RDFNode> initialBindings) {
-		boolean changed = false;
+	public static boolean runInferenceQueryOnInstance(Query arq, Model queryModel, Model newTriples, Resource instance, boolean checkContains, Map<String,RDFNode> initialBindings) {
+		boolean inferred = false;
 		QueryExecution qexec = ARQFactory.get().createQueryExecution(arq, queryModel);
 		QuerySolutionMap bindings = new QuerySolutionMap();
 		bindings.add(SPIN.THIS_VAR_NAME, instance);
@@ -376,32 +310,24 @@ public class ContextSPINInferences {
 			}
 		}
 		qexec.setInitialBinding(bindings);
+		
 		Model cm = qexec.execConstruct();
-		StmtIterator cit = cm.listStatements();
-		while(cit.hasNext()) {
-			Statement s = cit.nextStatement();
-			if(!checkContains || !queryModel.contains(s)) {
-				changed = true;
-				newTriples.add(s);
-			}
+		if (!cm.isEmpty()) {
+			inferred = true;
+			newTriples.add(cm);
 		}
-		return changed;
+		
+		return inferred;
 	}
 	
 	
 	public static class ContextInferenceResult {
-		int iterations;
 		boolean inferred;
 		
-		public ContextInferenceResult(int iterations, boolean inferred) {
-	        this.iterations = iterations;
+		public ContextInferenceResult(boolean inferred) {
 	        this.inferred = inferred;
         }
-
-		public int getIterations() {
-			return iterations;
-		}
-
+		
 		public boolean isInferred() {
 			return inferred;
 		}
