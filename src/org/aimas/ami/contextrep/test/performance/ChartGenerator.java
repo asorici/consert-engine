@@ -1,5 +1,6 @@
 package org.aimas.ami.contextrep.test.performance;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.BufferedWriter;
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,22 +26,23 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
-import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.xy.ClusteredXYBarRenderer;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.chart.renderer.xy.XYItemRendererState;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYBarDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.TextAnchor;
+import org.jfree.util.PaintUtilities;
+import org.jfree.util.ShapeUtilities;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -66,7 +70,7 @@ public class ChartGenerator {
 				System.out.println("## Generating charts for config: " + testConfigFolder.getName());
 				
 				Map<String, PerformanceMeasure> collectedResults = getCollectedResults(resultFiles);
-				createGeneralCharts(collectedResults, testConfigFolder);
+				//createGeneralCharts(collectedResults, testConfigFolder);
 				createHistoryCharts(collectedResults, testConfigFolder);
 			}
 		}
@@ -289,27 +293,36 @@ public class ChartGenerator {
 	
 	
 	private static void createHistoryCharts(Map<String, PerformanceMeasure> collectedResults, File configFolder) throws IOException {
-	    for (String resultName : collectedResults.keySet()) {
+	    int skipRate = 20;
+		int phase = 0;
+	    
+		for (String resultName : collectedResults.keySet()) {
 	    	PerformanceMeasure measure = collectedResults.get(resultName);
 	    	
 	    	XYSeriesCollection insertionDatasetCollection = new XYSeriesCollection();
 	    	XYSeriesCollection inferenceDatasetCollection = new XYSeriesCollection();
-	    	XYBarDataset inferenceBarDataset = new XYBarDataset(inferenceDatasetCollection, 3);
+	    	XYBarDataset inferenceBarDataset = new XYBarDataset(inferenceDatasetCollection, 16);
+	    	//CategoryDataset infereceBarDataset = new DefaultCategoryDataset();
 	    	
 	    	XYSeriesCollection deductionCycleDatasetCollection = new XYSeriesCollection();
-	    	XYBarDataset deductionBarDataset = new XYBarDataset(deductionCycleDatasetCollection, 3);
+	    	XYBarDataset deductionBarDataset = new XYBarDataset(deductionCycleDatasetCollection, 8);
 	    	
 	    	// ============ create the insertion series ============
 	    	XYSeries insertionDelaySeries = new XYSeries("Insert Delay", true);
 	    	XYSeries insertionDurationSeries = new XYSeries("Insert Processing", true);
 	    	
-	    	for (int insertionID : measure.performanceResult.insertionDelayHistory.keySet()) {
-	    		int insertionDelayValue = measure.performanceResult.insertionDelayHistory.get(insertionID);
-	    		int insertionDurationValue = measure.performanceResult.insertionDurationHistory.get(insertionID);
-	    		
-	    		insertionDelaySeries.add(insertionID, insertionDelayValue);
-	    		insertionDurationSeries.add(insertionID, insertionDurationValue);
-	    	}
+	    	List<Integer> sortedInsertionIDs = new ArrayList<Integer>(measure.performanceResult.insertionDelayHistory.keySet());  
+	    	Collections.sort(sortedInsertionIDs);
+	    	
+	    	for (int insertionID : sortedInsertionIDs) {
+	    		if ((insertionID + phase) % skipRate == 0) {
+	    			int insertionDelayValue = measure.performanceResult.insertionDelayHistory.get(insertionID);
+	    			int insertionDurationValue = measure.performanceResult.insertionDurationHistory.get(insertionID);
+    		
+	    			insertionDelaySeries.add(insertionID, insertionDelayValue);
+	    			insertionDurationSeries.add(insertionID, insertionDurationValue);
+	    		}
+    		}
 	    	
 	    	insertionDatasetCollection.addSeries(insertionDelaySeries);
 	    	insertionDatasetCollection.addSeries(insertionDurationSeries);
@@ -318,6 +331,7 @@ public class ChartGenerator {
 	    	XYSeries inferenceDelaySeries = new XYSeries("Inference Delay", true);
 	    	XYSeries inferenceDurationSeries = new XYSeries("Inference Processing", true);
 	    	
+	    	
 	    	for (Integer insertionID : measure.performanceResult.insertionDelayHistory.keySet()) {
 	    		Integer inferenceDelayValue = measure.performanceResult.inferenceDelayHistory.get(insertionID);
 	    		Integer inferenceDurationValue = measure.performanceResult.inferenceDurationHistory.get(insertionID);
@@ -325,15 +339,9 @@ public class ChartGenerator {
 	    		if (inferenceDelayValue != null) {
 	    			inferenceDelaySeries.add(insertionID, inferenceDelayValue);
 	    		}
-	    		else {
-	    			inferenceDelaySeries.add(insertionID, new Integer(0));
-	    		}
 	    		
 	    		if (inferenceDurationValue != null) {
 	    			inferenceDurationSeries.add(insertionID, inferenceDurationValue);
-	    		}
-	    		else {
-	    			inferenceDurationSeries.add(insertionID, new Integer(0));
 	    		}
 	    	}
 	    	
@@ -346,9 +354,6 @@ public class ChartGenerator {
 	    		Integer deductionDurationValue = measure.performanceResult.deductionCycleHistory.get(insertionID);
 	    		if (deductionDurationValue != null) {
 	    			deductionSeries.add(insertionID, deductionDurationValue);
-	    		}
-	    		else {
-	    			deductionSeries.add(insertionID, new Integer(0));
 	    		}
 	    	}
 	    	
@@ -382,14 +387,22 @@ public class ChartGenerator {
 		
 		NumberAxis insertionRangeAxis = new NumberAxis("ms");
 		insertionRangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		XYItemRenderer insertionRenderer = new StandardXYItemRenderer(StandardXYItemRenderer.LINES);
+		XYItemRenderer insertionRenderer = new StandardXYItemRenderer(StandardXYItemRenderer.SHAPES_AND_LINES);
 		XYPlot insertionPlot = new XYPlot(insertionDataset, null, insertionRangeAxis, insertionRenderer);
 		insertionPlot.setDomainGridlinesVisible(true);
+		insertionRenderer.setSeriesStroke(0, new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 0, 
+				new float[] {4, 4}, 0));
+		insertionRenderer.setSeriesStroke(1, new BasicStroke(1));
+		insertionRenderer.setSeriesShape(0, ShapeUtilities.createRegularCross(2, 2));
+		insertionRenderer.setSeriesShape(1, ShapeUtilities.createUpTriangle(4));
 		
 		NumberAxis inferenceRangeAxis = new NumberAxis("ms");
 		inferenceRangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		XYBarRenderer inferenceRenderer = new XYBarRenderer();
+		ClusteredXYBarRenderer inferenceRenderer = new ClusteredXYBarRenderer();
 		inferenceRenderer.setShadowVisible(false);
+		inferenceRenderer.setSeriesPaint(0, PaintUtilities.stringToColor("orange"));
+		inferenceRenderer.setSeriesPaint(1, PaintUtilities.stringToColor("black"));
+		
 		//inferenceRenderer.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
         XYPlot inferencePlot = new XYPlot(inferenceDataset, null, inferenceRangeAxis, inferenceRenderer);
         inferencePlot.setDomainGridlinesVisible(true);
@@ -397,7 +410,9 @@ public class ChartGenerator {
         NumberAxis deductionRangeAxis = new NumberAxis("ms");
 		deductionRangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		XYBarRenderer deductionRenderer = new XYBarRenderer();
+		deductionRenderer.setSeriesShape(0, ShapeUtilities.createDiamond(2));
 		deductionRenderer.setShadowVisible(false);
+		deductionRenderer.setSeriesPaint(0, PaintUtilities.stringToColor("magenta"));
 		//deductionRenderer.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator());
         XYPlot deductionPlot = new XYPlot(deductionDataset, null, deductionRangeAxis, deductionRenderer);
         deductionPlot.setDomainGridlinesVisible(true);
