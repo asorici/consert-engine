@@ -4,7 +4,7 @@ import org.aimas.ami.contextrep.core.Config;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
 import org.aimas.ami.contextrep.exceptions.ConfigException;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
-import org.openjena.atlas.logging.Log;
+import org.apache.jena.atlas.logging.LogCtl;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.model.Template;
@@ -41,7 +41,7 @@ public class TestContinuity {
 	public static void main(String[] args) {
 		// PropertyConfigurator.configure("log4j.properties");
 		String configurationFile = "src/org/aimas/ami/contextrep/test/adhocmeeting/config.properties";
-		Log.setLog4j();
+		LogCtl.setLog4j();
 		
 		try {
 			// init configuration

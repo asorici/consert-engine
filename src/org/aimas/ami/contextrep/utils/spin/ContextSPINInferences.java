@@ -106,14 +106,15 @@ public class ContextSPINInferences {
 			Model newTriples,
 			Map<Resource, List<CommandWrapper>> class2Query,
 			Map<Resource, List<CommandWrapper>> class2Constructor,
-			Map<CommandWrapper, Map<String, RDFNode>> templateBindings,
+			//Map<CommandWrapper, Map<String, RDFNode>> templateBindings,
 			List<SPINStatistics> statistics,
 			Property rulePredicate,
 			SPINRuleComparator comparator) {
 		
 		// Run optimizers (if available)
 		for(SPINInferencesOptimizer optimizer : optimizers) {
-			class2Query = optimizer.optimize(class2Query, templateBindings);
+			//class2Query = optimizer.optimize(class2Query, templateBindings);
+			class2Query = optimizer.optimize(class2Query);
 		}
 		
 		// Get sorted list of Rules and remember where they came from
@@ -141,19 +142,25 @@ public class ContextSPINInferences {
 		for (CommandWrapper arqWrapper : rulesList) {
 			
 			Resource cls = rule2Class.get(arqWrapper);
-			Map<String, RDFNode> initialBindings = templateBindings.get(arqWrapper);
 			boolean thisUnbound = arqWrapper.isThisUnbound();
 			
+			//Map<String, RDFNode> initialBindings = templateBindings.get(arqWrapper);
+			
+			//inferred |= runContextInferenceCommandOnClass(arqWrapper, arqWrapper.getLabel(),
+			//        queryModel, newTriples, cls, class2Constructor, templateBindings, initialBindings, statistics, thisUnbound);
+			
 			inferred |= runContextInferenceCommandOnClass(arqWrapper, arqWrapper.getLabel(),
-			        queryModel, newTriples, cls, class2Constructor,
-			        templateBindings, initialBindings, statistics, thisUnbound);
+			        queryModel, newTriples, cls, class2Constructor, statistics, thisUnbound);
+			
 			if (!SPINUtil.isRootClass(cls) && !thisUnbound) {
 				Set<Resource> subClasses = JenaUtil.getAllSubClasses(cls);
 				for (Resource subClass : subClasses) {
+					//inferred |= runContextInferenceCommandOnClass(arqWrapper,
+					//        arqWrapper.getLabel(), queryModel, newTriples, subClass, class2Constructor,
+					//        templateBindings, initialBindings, statistics, thisUnbound);
+					
 					inferred |= runContextInferenceCommandOnClass(arqWrapper,
-					        arqWrapper.getLabel(), queryModel, newTriples,
-					        subClass, class2Constructor,
-					        templateBindings, initialBindings, statistics, thisUnbound);
+					        arqWrapper.getLabel(), queryModel, newTriples, subClass, class2Constructor, statistics, thisUnbound);
 				}
 			}
 		}
@@ -169,22 +176,26 @@ public class ContextSPINInferences {
 			Model newTriples, 
 			Resource cls,
 			Map<Resource, List<CommandWrapper>> class2Constructor,
-			Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings,
-			Map<String,RDFNode> initialBindings, 
+			//Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings,
+			//Map<String,RDFNode> initialBindings, 
 			List<SPINStatistics> statistics, 
 			boolean thisUnbound) {
 		
 		// Check if query is needed at all
 		if(thisUnbound || SPINUtil.isRootClass(cls) || queryModel.contains(null, RDF.type, cls)) {
 			boolean inferred = false;
+			
 			QuerySolutionMap bindings = new QuerySolutionMap();
 			boolean needsClass = !SPINUtil.isRootClass(cls) && !thisUnbound;
+			Map<String,RDFNode> initialBindings = commandWrapper.getTemplateBinding();
+			
 			if(initialBindings != null) {
 				for(String varName : initialBindings.keySet()) {
 					RDFNode value = initialBindings.get(varName);
 					bindings.add(varName, value);
 				}
 			}
+			
 			long startTime = System.currentTimeMillis();
 			final Map<Resource,Resource> newInstances = new HashMap<Resource,Resource>();
 			if(commandWrapper instanceof QueryWrapper) {
@@ -223,7 +234,9 @@ public class ContextSPINInferences {
 			}
 			else {
 				UpdateWrapper updateWrapper = (UpdateWrapper) commandWrapper;
-				Map<String,RDFNode> templateBindings = initialTemplateBindings.get(commandWrapper);
+				//Map<String,RDFNode> templateBindings = initialTemplateBindings.get(commandWrapper);
+				Map<String,RDFNode> templateBindings = commandWrapper.getTemplateBinding();
+				
 				Dataset dataset = ARQFactory.get().getDataset(queryModel);
 				Iterable<Graph> updateGraphs = UpdateUtil.getUpdatedGraphs(updateWrapper.getUpdate(), dataset, templateBindings);
 				ControlledCtxUpdateGraphStore cugs = new ControlledCtxUpdateGraphStore(dataset, updateGraphs);
@@ -273,7 +286,7 @@ public class ContextSPINInferences {
 						newTriples, 
 						new HashSet<Resource>(), 
 						class2Constructor,
-						initialTemplateBindings,
+						//initialTemplateBindings,
 						statistics,
 						null, 
 						null);
@@ -303,6 +316,7 @@ public class ContextSPINInferences {
 		QueryExecution qexec = ARQFactory.get().createQueryExecution(arq, queryModel);
 		QuerySolutionMap bindings = new QuerySolutionMap();
 		bindings.add(SPIN.THIS_VAR_NAME, instance);
+		
 		if(initialBindings != null) {
 			for(String varName : initialBindings.keySet()) {
 				RDFNode value = initialBindings.get(varName);

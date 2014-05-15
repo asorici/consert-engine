@@ -11,11 +11,10 @@ import java.util.Map;
 import org.aimas.ami.contextrep.core.Config;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
 import org.aimas.ami.contextrep.model.ContextAssertion;
-import org.aimas.ami.contextrep.test.performance.RunTest;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.engine.binding.Binding;
 import com.hp.hpl.jena.sparql.modify.UpdateEngineWorker;
@@ -77,7 +76,7 @@ public class ContextUpdateWorker extends UpdateEngineWorker {
 		if (assertionIndex.isContextAssertionUUID(graphNode)) {
 			ContextAssertion assertion = assertionIndex.getAssertionFromGraphUUID(graphNode);
 			String assertionStoreURI = assertion.getAssertionStoreURI();
-        	Graph assertionStoreGraph = graphStore.getGraph(Node.createURI(assertionStoreURI));
+        	Graph assertionStoreGraph = graphStore.getGraph(NodeFactory.createURI(assertionStoreURI));
         	
         	// signal the context assertion insertion
         	ContextAssertionEvent addContextAssertion = 
@@ -137,7 +136,7 @@ public class ContextUpdateWorker extends UpdateEngineWorker {
 			if (assertionIndex.isContextAssertionUUID(graphNode)) {
 				ContextAssertion assertion = assertionIndex.getAssertionFromGraphUUID(graphNode);
 				String assertionStoreURI = assertion.getAssertionStoreURI();
-	        	Graph assertionStoreGraph = graphStore.getGraph(Node.createURI(assertionStoreURI));
+	        	Graph assertionStoreGraph = graphStore.getGraph(NodeFactory.createURI(assertionStoreURI));
 	        	
 	        	// signal the context assertion insertion
 	        	ContextAssertionEvent addContextAssertion = 

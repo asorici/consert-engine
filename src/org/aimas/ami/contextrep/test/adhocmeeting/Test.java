@@ -13,7 +13,7 @@ import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
 import org.aimas.ami.contextrep.vocabulary.SPINVocabulary;
-import org.openjena.atlas.logging.Log;
+import org.apache.jena.atlas.logging.LogCtl;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
 import org.topbraid.spin.inference.SPINInferences;
@@ -29,7 +29,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
-import com.hp.hpl.jena.shared.ReificationStyle;
 import com.hp.hpl.jena.tdb.TDB;
 
 public class Test {
@@ -44,7 +43,7 @@ public class Test {
 	public static void main(String[] args) {
 		// PropertyConfigurator.configure("log4j.properties");
 		String configurationFile = "src/org/aimas/ami/contextrep/test/adhocmeeting/config.properties";
-		Log.setLog4j();
+		LogCtl.setLog4j();
 		
 		try {
 			// init configuration
@@ -80,7 +79,8 @@ public class Test {
 		//ScenarioInit.printStatements(queryModel);
 		
 		// Create Model for inferred triples
-		Model newTriples = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
+		//Model newTriples = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
+		Model newTriples = ModelFactory.createDefaultModel();
 		
 		List<DerivedAssertionWrapper> derivationCommands = 
 			ruleDict.getDerivationsForAssertion(Config.getContextAssertionIndex().getAssertionFromResource(hasNoiseLevelProperty));
@@ -118,7 +118,8 @@ public class Test {
 		
 		//ARQ.setExecutionLogging(Explain.InfoLevel.FINE);
 		ARQFactory.set(new ContextARQFactory());
-		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, true, SPINVocabulary.deriveAssertionRule, comparator, null);
+		//SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, true, SPINVocabulary.deriveAssertionRule, comparator, null);
+		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, null, null, true, SPINVocabulary.deriveAssertionRule, comparator, null);
 		
 		System.out.println("[INFO] Ran SPIN Inference. Duration: " + 
 			(System.currentTimeMillis() - timestamp) );

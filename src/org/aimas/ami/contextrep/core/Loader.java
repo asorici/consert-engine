@@ -29,7 +29,6 @@ import org.topbraid.spin.model.TemplateCall;
 import org.topbraid.spin.model.TripleTemplate;
 import org.topbraid.spin.util.CommandWrapper;
 import org.topbraid.spin.util.SPINQueryFinder;
-import org.topbraid.spin.util.SPINUtil;
 import org.topbraid.spin.vocabulary.SPIN;
 
 import com.hp.hpl.jena.ontology.OntClass;
@@ -362,10 +361,13 @@ public class Loader {
 		 * Collect spin:deriveassertion rules in basicContextModel
 		 */
 		Property deriveAssertionProp = ResourceFactory.createProperty(SPIN.NS + "deriveassertion");
-		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = 
-				new HashMap<CommandWrapper, Map<String,RDFNode>>();
+		
+		//Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
+		//Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(
+		//		transitiveContextModel, transitiveContextModel, deriveAssertionProp, false, initialTemplateBindings, false);
+		
 		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(
-				transitiveContextModel, transitiveContextModel, deriveAssertionProp, false, initialTemplateBindings, false);
+				transitiveContextModel, transitiveContextModel, deriveAssertionProp, false, false);
 		
 		
 		// build map for ContextAssertion to SPIN:Rule list
@@ -398,7 +400,8 @@ public class Loader {
 				ElementList whereElements = constructCommand.getWhere();
 				List<TripleTemplate> constructedTriples = constructCommand.getTemplates();
 				
-				Map<String, RDFNode> templateBindings = initialTemplateBindings.get(cmd);
+				//Map<String, RDFNode> templateBindings = initialTemplateBindings.get(cmd);
+				Map<String, RDFNode> templateBindings = cmd.getTemplateBinding();
 				ContextAssertion derivedAssertion = null; 
 				
 				ContextAssertionFinder ruleBodyFinder = 
@@ -469,30 +472,33 @@ public class Loader {
 	    		Resource domain = binaryAssertion.getDomainEntityResource();
 	    		Resource range = binaryAssertion.getRangeEntityResource();
 	    		
-	    		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = 
-	    				new HashMap<CommandWrapper, Map<String,RDFNode>>();
+	    		//Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
 	    		
 	    		Map<Resource, List<CommandWrapper>> constraintsMap = new HashMap<>();
 	    		if (domain != null && domain.isURIResource()) {
 	    			Resource anchorResource = domain;
+	    			//constraintsMap.putAll(ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, 
+	    			//		anchorResource, SPIN.constraint, true, initialTemplateBindings, true));
 	    			constraintsMap.putAll(ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, 
-	    					anchorResource, SPIN.constraint, true, initialTemplateBindings, true));
+	    					anchorResource, SPIN.constraint, true, true));
 	    		}
 	    		
 	    		if (range != null && range.isURIResource() && (constraintsMap == null || constraintsMap.isEmpty())) {
 	    			Resource anchorResource = range;
+	    			//constraintsMap.putAll(ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, 
+	    			//		anchorResource, SPIN.constraint, true, initialTemplateBindings, true));
 	    			constraintsMap.putAll(ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, 
-	    					anchorResource, SPIN.constraint, true, initialTemplateBindings, true));
+	    					anchorResource, SPIN.constraint, true, true));
 	    		}
 	    		
 	    		if (constraintsMap != null && !constraintsMap.isEmpty()) {
 	    			for (Resource anchorResource : constraintsMap.keySet()) {
 		    			List<CommandWrapper> constraints = constraintsMap.get(anchorResource);
-		    			List<CommandWrapper> filteredConstraints = 
-		    				filterBinaryConstraintsFor(constraints, binaryAssertion, rdfsContextModel, initialTemplateBindings);
+		    			//List<CommandWrapper> filteredConstraints = filterBinaryConstraintsFor(constraints, binaryAssertion, rdfsContextModel, initialTemplateBindings);
+		    			List<CommandWrapper> filteredConstraints = filterBinaryConstraintsFor(constraints, binaryAssertion, rdfsContextModel);
 		    			
-		    			ConstraintsWrapper constraintsWrapper = 
-		    				new ConstraintsWrapper(filteredConstraints, anchorResource, initialTemplateBindings);
+		    			//ConstraintsWrapper constraintsWrapper = new ConstraintsWrapper(filteredConstraints, anchorResource, initialTemplateBindings);
+		    			ConstraintsWrapper constraintsWrapper = new ConstraintsWrapper(filteredConstraints, anchorResource);
 	    				constraintIndex.addAssertionConstraint(binaryAssertion, constraintsWrapper);
 	    			}
 	    		}
@@ -501,16 +507,18 @@ public class Loader {
 	    		// we have a Unary or Nary assertion. Both are ontology classes, so the constraint can be directly
 	    		// attached to them
 	    		Resource anchorResource = assertion.getOntologyResource();
-	    		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
+	    		//Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
 	    		
+	    		//Map<Resource, List<CommandWrapper>> constraintsMap = 
+	    		//	ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, anchorResource, SPIN.constraint, true, initialTemplateBindings, true);
 	    		Map<Resource, List<CommandWrapper>> constraintsMap = 
-	    				ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, 
-    					anchorResource, SPIN.constraint, true, initialTemplateBindings, true);
+	    			ContextSPINQueryFinder.getClass2QueryMap(rdfsContextModel, rdfsContextModel, anchorResource, SPIN.constraint, true, true);
+	    		
 	    		
 	    		if (constraintsMap != null && !constraintsMap.isEmpty()) {
 	    			List<CommandWrapper> constraints = constraintsMap.get(anchorResource);
-	    			ConstraintsWrapper constraintsWrapper = 
-	    					new ConstraintsWrapper(constraints, anchorResource, initialTemplateBindings);
+	    			//ConstraintsWrapper constraintsWrapper = new ConstraintsWrapper(constraints, anchorResource, initialTemplateBindings);
+	    			ConstraintsWrapper constraintsWrapper = new ConstraintsWrapper(constraints, anchorResource);
     				constraintIndex.addAssertionConstraint(assertion, constraintsWrapper);
 	    		}
 	    	}
@@ -526,8 +534,7 @@ public class Loader {
 	 * the ones who do not relate to <code>binaryAssertion</code>.
 	 */
 	private static List<CommandWrapper> filterBinaryConstraintsFor(List<CommandWrapper> constraints,
-            BinaryContextAssertion binaryAssertion, OntModel rdfsContextModel, 
-            Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings) {
+            BinaryContextAssertion binaryAssertion, OntModel rdfsContextModel) {
 		List<CommandWrapper> filteredConstraints = new ArrayList<>();
 		
 		for (CommandWrapper cmd : constraints) {
@@ -550,7 +557,8 @@ public class Loader {
 			 */
 			Construct constructCommand =  spinCommand.as(Construct.class);
 			ElementList whereElements = constructCommand.getWhere();
-			Map<String, RDFNode> templateBindings = initialTemplateBindings.get(cmd);
+			//Map<String, RDFNode> templateBindings = initialTemplateBindings.get(cmd);
+			Map<String, RDFNode> templateBindings = cmd.getTemplateBinding();
 			
 			ContextAssertionFinder ruleBodyFinder = new ContextAssertionFinder(whereElements, rdfsContextModel, templateBindings);
 			
@@ -559,13 +567,13 @@ public class Loader {
 			List<ContextAssertionGraph> bodyContextAssertions = ruleBodyFinder.getResult();
 			
 			// see if the list of collected context assertions contains our binaryAssertion
-			initialTemplateBindings.remove(cmd);							// attempted remove of bindings for cmd
+			//initialTemplateBindings.remove(cmd);							// attempted remove of bindings for cmd
 			for (ContextAssertionGraph assertionGraph : bodyContextAssertions) {
 				if (assertionGraph.getAssertionResource().equals(binaryAssertion.getOntologyResource())) {
 					// if the collected assertions really include our binaryAssertion
 					filteredConstraints.add(cmd);							// add the command to the filtered ones
-					initialTemplateBindings.put(cmd, templateBindings);		// and add the mapping back to
-					break;													// the template bindings
+					//initialTemplateBindings.put(cmd, templateBindings);		// and add the mapping back to the template bindings
+					break;
 				}
 			}
 		}

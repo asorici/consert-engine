@@ -29,26 +29,27 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ContextSPINConstraints {
 	
-	public static List<ContextConstraintViolation> check(OntModel infContextModel, ContextAssertion assertion, ConstraintsWrapper constraints, 
-			List<SPINStatistics> stats) {
+	public static List<ContextConstraintViolation> check(OntModel infContextModel, ContextAssertion assertion, ConstraintsWrapper constraints, List<SPINStatistics> stats) {
 		
 		Resource anchorResource = constraints.getAnchorResource();
 		List<CommandWrapper> constraintCommands = constraints.getConstraintCommands();
-		Map<CommandWrapper, Map<String, RDFNode>> templateBindings = constraints.getConstraintTemplateBindings();
+		//Map<CommandWrapper, Map<String, RDFNode>> templateBindings = constraints.getConstraintTemplateBindings();
 		
-		return run(infContextModel, assertion, anchorResource, constraintCommands, templateBindings, stats);
+		//return run(infContextModel, assertion, anchorResource, constraintCommands, templateBindings, stats);
+		return run(infContextModel, assertion, anchorResource, constraintCommands, stats);
 	}
 	
 	private static List<ContextConstraintViolation> run(OntModel infContextModel, ContextAssertion assertion, 
 			Resource anchorResource, List<CommandWrapper> constraintCommands,
-			Map<CommandWrapper, Map<String, RDFNode>> templateBindings,
+			//Map<CommandWrapper, Map<String, RDFNode>> templateBindings,
 			List<SPINStatistics> stats) {
 		
 		List<ContextConstraintViolation> results = new LinkedList<>();
 		
 		for(CommandWrapper arqConstraint : constraintCommands) {
 			QueryWrapper queryConstraintWrapper = (QueryWrapper) arqConstraint;
-			Map<String,RDFNode> initialBindings = templateBindings.get(arqConstraint);
+			//Map<String,RDFNode> initialBindings = templateBindings.get(arqConstraint);
+			Map<String,RDFNode> initialBindings = arqConstraint.getTemplateBinding();
 			
 			Query arq = queryConstraintWrapper.getQuery();
 			String label = arqConstraint.getLabel();

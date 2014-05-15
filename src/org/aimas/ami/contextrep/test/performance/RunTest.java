@@ -36,7 +36,7 @@ import org.aimas.ami.contextrep.update.ContextUpdateExecutionWrapper;
 import org.aimas.ami.contextrep.update.ContinuityHookResult;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
-import org.openjena.atlas.logging.Log;
+import org.apache.jena.atlas.logging.LogCtl;
 import org.topbraid.spin.statistics.SPINStatistics;
 
 import com.google.gson.Gson;
@@ -73,7 +73,7 @@ public class RunTest {
 	
 	public static void main(String[] args) {
 		String configurationFile = "src/org/aimas/ami/contextrep/test/performance/config.properties";
-		Log.setLog4j();
+		LogCtl.setLog4j();
 		
 		try {
 			// read performance setup configuration

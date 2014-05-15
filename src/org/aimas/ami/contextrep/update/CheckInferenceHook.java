@@ -12,7 +12,6 @@ import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
-import org.aimas.ami.contextrep.test.adhocmeeting.ScenarioInit;
 import org.aimas.ami.contextrep.test.performance.RunTest;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences;
@@ -26,6 +25,7 @@ import org.topbraid.spin.util.CommandWrapper;
 import org.topbraid.spin.util.JenaUtil;
 
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -42,7 +42,6 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.shared.ReificationStyle;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.modify.request.QuadDataAcc;
 import com.hp.hpl.jena.sparql.modify.request.UpdateCreate;
@@ -130,16 +129,18 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		DerivationRuleDictionary ruleDict = Config.getDerivationRuleDictionary();
 		
 		// Create Model for inferred triples
-		Model newTriples = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
+		//Model newTriples = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
+		Model newTriples = ModelFactory.createDefaultModel();
 		
 		Map<Resource, List<CommandWrapper>> cls2Query = new HashMap<>();
 		Map<Resource, List<CommandWrapper>> cls2Constructor = new HashMap<>();
-		Map<CommandWrapper, Map<String, RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String, RDFNode>>();
 		SPINRuleComparator comparator = new DefaultSPINRuleComparator(queryModel);
 		
 		Resource entityRes = ruleDict.getEntityForDerivation(derivationWrapper);
 		CommandWrapper cmd = derivationWrapper.getDerivationCommand();
-		initialTemplateBindings.put(cmd, derivationWrapper.getCommandBindings());
+		
+		//Map<CommandWrapper, Map<String, RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String, RDFNode>>();
+		//initialTemplateBindings.put(cmd, derivationWrapper.getCommandBindings());
 		
 		// create entityCommandWrappers required for SPIN inference API call
 		List<CommandWrapper> entityCommandWrappers = new ArrayList<>();
@@ -147,11 +148,13 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		cls2Query.put(entityRes, entityCommandWrappers);
 		
 		// perform inference
-		long timestamp = System.currentTimeMillis();
+		//long timestamp = System.currentTimeMillis();
 		ARQFactory.set(new ContextARQFactory(contextDataset));
+		
+		//ContextInferenceResult inferenceResult = ContextSPINInferences.runContextInference(queryModel, newTriples,
+		//	cls2Query, cls2Constructor, initialTemplateBindings, null, SPINVocabulary.deriveAssertionRule, comparator);
 		ContextInferenceResult inferenceResult = ContextSPINInferences.runContextInference(queryModel, newTriples,
-		        cls2Query, cls2Constructor, initialTemplateBindings, null, 
-		        SPINVocabulary.deriveAssertionRule, comparator);
+			cls2Query, cls2Constructor, null, SPINVocabulary.deriveAssertionRule, comparator);
 		
 		if (inferenceResult != null && inferenceResult.isInferred()) {
 			//System.out.println("[INFO] WE HAVE DEDUCED A NEW CONTEXT-ASSERTION following insertion of " + contextAssertion 
@@ -218,7 +221,8 @@ public class CheckInferenceHook extends ContextUpdateHook {
 				
 				// create the context annotation quads, while keeping in mind to replace the
 				// annotationSubject with the created graphUUIDNode identifier of the ContextAssertion
-				Node derivedAssertionStore = Node.createURI(derivedAssertion.getAssertionStoreURI());
+				Node derivedAssertionStore = NodeFactory.createURI(derivedAssertion.getAssertionStoreURI());
+				
 				QuadDataAcc annotationData = new QuadDataAcc();
 				for (Statement s : annotationStatements) {
 					annotationData.addQuad(Quad.create(derivedAssertionStore,
@@ -260,7 +264,8 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			List<Statement> assertionStatements = assertionStmtIt.toList();
 			
 			// Create the identifier named graph URI for the new ContextAssertion
-			Node graphUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
+			//Node graphUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
+			Node graphUUIDNode = NodeFactory.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
 			
 			// Create the context assertion quads
 			QuadDataAcc assertionData = new QuadDataAcc();
@@ -287,7 +292,8 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			// the exact assertionInstance statement as selected above
 			
 			// Create the identifier named graph URI for the new ContextAssertion
-			Node graphUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(derivedAssertionProp));
+			//Node graphUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(derivedAssertionProp));
+			Node graphUUIDNode = NodeFactory.createURI(GraphUUIDGenerator.createUUID(derivedAssertionProp));
 			
 			// Create the context assertion quads
 			QuadDataAcc assertionData = new QuadDataAcc();
@@ -317,7 +323,8 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			List<Statement> assertionStatements = assertionStmtIt.toList();
 			
 			// Create the identifier named graph URI for the new ContextAssertion
-			Node graphUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
+			//Node graphUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
+			Node graphUUIDNode = NodeFactory.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
 			
 			// Create the context assertion quads
 			QuadDataAcc assertionData = new QuadDataAcc();

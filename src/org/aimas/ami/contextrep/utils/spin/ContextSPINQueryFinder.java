@@ -23,20 +23,20 @@ public class ContextSPINQueryFinder extends SPINQueryFinder {
 	 * @param predicate  the predicate such as <code>spin:rule</code>
 	 * @param withClass  true to also include a SPARQL clause to bind ?this
 	 *                   (something along the lines of ?this a ?THIS_CLASS) 
-	 * @param initialTemplateBindings  will contain the initial bindings if
-	 *                                 QueryWrappers wrap SPIN template calls
 	 * @param allowAsk  also return ASK queries
 	 * @return the result Map, possibly empty but not null
 	 */
 	public static Map<Resource, List<CommandWrapper>> getClass2QueryMap(Model model, Model queryModel, 
 			Resource subject, Property predicate, boolean withClass, 
-			Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings, boolean allowAsk) {
+			//Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings, 
+			boolean allowAsk) {
 		
 		predicate = model.getProperty(predicate.getURI());
 		Map<Resource,List<CommandWrapper>> class2Query = new HashMap<Resource,List<CommandWrapper>>();
 		
 		for(Statement s : JenaUtil.listAllProperties(subject, predicate).toList()) {
-			add(class2Query, s, model, withClass, initialTemplateBindings, allowAsk);
+			//add(class2Query, s, model, withClass, initialTemplateBindings, allowAsk);
+			add(class2Query, s, model, withClass, allowAsk);
 		}
 		return class2Query;
 	}

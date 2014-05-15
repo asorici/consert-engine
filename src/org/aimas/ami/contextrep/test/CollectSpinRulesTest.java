@@ -28,6 +28,7 @@ import org.topbraid.spin.model.TemplateCall;
 import org.topbraid.spin.model.TriplePath;
 import org.topbraid.spin.model.TriplePattern;
 import org.topbraid.spin.model.Union;
+import org.topbraid.spin.model.Values;
 import org.topbraid.spin.model.Variable;
 import org.topbraid.spin.model.visitor.ElementVisitor;
 import org.topbraid.spin.model.visitor.ExpressionVisitor;
@@ -92,7 +93,7 @@ public class CollectSpinRulesTest {
 		Property deriveAssertionProp = ResourceFactory.createProperty(SPIN.NS + "deriveassertion");
 		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
 		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(
-				contextModel, contextModel, deriveAssertionProp, false, initialTemplateBindings, false);
+				contextModel, contextModel, deriveAssertionProp, false, false);
 		
 		for (Resource res : cls2Query.keySet()) {
 			
@@ -235,6 +236,13 @@ public class CollectSpinRulesTest {
 			System.out.println("A UNION statement: " + union.getElements().size() + " subelements");
 			System.out.println();
 		}
+
+		@Override
+        public void visit(Values values) {
+			System.out.println("A VALUES statement: " + values.getVarNames().size() + " variables");
+			System.out.println();
+	        
+        }
 	}
 	
 	static class ContextExpressionVisitor implements ExpressionVisitor {
