@@ -9,11 +9,12 @@ import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
@@ -100,12 +101,12 @@ public class HasNoiseLevelEvent extends ContextEvent {
 		Literal sourceAnn = ResourceFactory.createTypedLiteral(DEFAULT_SOURCE_URI, XSDDatatype.XSDanyURI);
 		
 		// create update quads
-		Node storeURINode = Node.createURI(
-				Config.getContextAssertionIndex().getAssertionFromResource(assertionProperty).getAssertionStoreURI());
-		OntProperty assertedBy = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_SOURCE);
-		OntProperty hasTimestamp = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_TIMESTAMP);
-		OntProperty validDuring = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_VALIDITY);
-		OntProperty hasAccuracy = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_ACCURACY);
+		Node storeURINode = NodeFactory.createURI(
+			Config.getContextAssertionIndex().getAssertionFromResource(assertionProperty).getAssertionStoreURI());
+		OntProperty assertedBy = contextModel.getOntProperty(ConsertAnnotation.HAS_SOURCE.getURI());
+		OntProperty hasTimestamp = contextModel.getOntProperty(ConsertAnnotation.HAS_TIMESTAMP.getURI());
+		OntProperty validDuring = contextModel.getOntProperty(ConsertAnnotation.HAS_VALIDITY.getURI());
+		OntProperty hasAccuracy = contextModel.getOntProperty(ConsertAnnotation.HAS_CERTAINTY.getURI());
 		
 		Quad q1 = Quad.create(storeURINode, graphURINode, assertedBy.asNode(), sourceAnn.asNode());
 		Quad q2 = Quad.create(storeURINode, graphURINode, hasTimestamp.asNode(), timestampAnn.asNode());

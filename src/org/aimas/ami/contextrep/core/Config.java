@@ -20,7 +20,8 @@ import org.aimas.ami.contextrep.functions.validityIntervalsInclude;
 import org.aimas.ami.contextrep.functions.validityIntervalsOverlap;
 import org.aimas.ami.contextrep.update.ContextAssertionUpdateEngine;
 import org.aimas.ami.contextrep.utils.CalendarIntervalListType;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
+import org.aimas.ami.contextrep.vocabulary.ConsertFunctions;
 import org.topbraid.spin.system.SPINModuleRegistry;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -358,7 +359,7 @@ public class Config {
 		// load SPIN custom function module and register the functions and templates it defines
 		OntModelSpec functionModelSpec = new OntModelSpec(OntModelSpec.OWL_MEM);
 		OntModel functionModel = ModelFactory.createOntologyModel(functionModelSpec);
-		functionModel.read(ContextAssertionVocabulary.FUNCTIONS);
+		functionModel.read(ConsertFunctions.BASE_URI);
 		
 		SPINModuleRegistry.get().registerAll(functionModel, null);
 		
@@ -375,44 +376,36 @@ public class Config {
 	
 	private static void registerAnnotationOperators() {
 		// register time validity operators
-		FunctionRegistry.get().put(ContextAssertionVocabulary.FUNCTIONS_NS + "timeValidityMeetOp", 
-				timeValidityMeetOp.class) ;
+		FunctionRegistry.get().put(ConsertFunctions.NS + "timeValidityMeetOp", timeValidityMeetOp.class) ;
 		
-		FunctionRegistry.get().put(ContextAssertionVocabulary.FUNCTIONS_NS + "timeValidityJoinOp", 
-				timeValidityJoinOp.class) ;
+		FunctionRegistry.get().put(ConsertFunctions.NS + "timeValidityJoinOp", timeValidityJoinOp.class) ;
 	}
 	
 	
 	private static void registerCustomFilterFunctions() {
 		// register now function
-		FunctionRegistry.get().put(ContextAssertionVocabulary.FUNCTIONS_NS + "now", now.class) ;
+		FunctionRegistry.get().put(ConsertFunctions.NS + "now", now.class) ;
 		
 		// register datetimeDelay function
-		FunctionRegistry.get().put(ContextAssertionVocabulary.FUNCTIONS_NS + "datetimeDelay", datetimeDelay.class) ;
+		FunctionRegistry.get().put(ConsertFunctions.NS + "datetimeDelay", datetimeDelay.class) ;
 		
 		// register makeValidityInterval function
-		FunctionRegistry.get().put(ContextAssertionVocabulary.FUNCTIONS_NS + "makeValidityInterval", 
-				makeValidityInterval.class) ;
+		FunctionRegistry.get().put(ConsertFunctions.NS + "makeValidityInterval", makeValidityInterval.class) ;
 		
 		// register validityIntervalsInclude function
-		FunctionRegistry.get().put(ContextAssertionVocabulary.FUNCTIONS_NS + "validityIntervalsInclude", 
-				validityIntervalsInclude.class) ;
+		FunctionRegistry.get().put(ConsertFunctions.NS + "validityIntervalsInclude", validityIntervalsInclude.class) ;
 		
 		// register validityIntervalsOverlap function
-		FunctionRegistry.get().put(ContextAssertionVocabulary.FUNCTIONS_NS + "validityIntervalsOverlap", 
-				validityIntervalsOverlap.class) ;
+		FunctionRegistry.get().put(ConsertFunctions.NS + "validityIntervalsOverlap", validityIntervalsOverlap.class) ;
 		
 		// register validityIntervalsOverlap function
-		FunctionRegistry.get().put(ContextAssertionVocabulary.FUNCTIONS_NS + "validityIntervalsCloseEnough", 
-				validityIntervalsCloseEnough.class) ;
+		FunctionRegistry.get().put(ConsertFunctions.NS + "validityIntervalsCloseEnough", validityIntervalsCloseEnough.class) ;
 		
 		// register getCurrentAgent function
-		FunctionRegistry.get().put(ContextAssertionVocabulary.FUNCTIONS_NS + "getCurrentAgent", 
-				getCurrentAgent.class) ;
+		FunctionRegistry.get().put(ConsertFunctions.NS + "getCurrentAgent", getCurrentAgent.class) ;
 		
 		// register newGraphUUID function
-		FunctionRegistry.get().put(ContextAssertionVocabulary.FUNCTIONS_NS + "newGraphUUID", 
-				newGraphUUID.class) ;
+		FunctionRegistry.get().put(ConsertFunctions.NS + "newGraphUUID", newGraphUUID.class) ;
 	}
 	
 }

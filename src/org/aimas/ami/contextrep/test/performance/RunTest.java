@@ -35,7 +35,7 @@ import org.aimas.ami.contextrep.update.ConstraintHookResult;
 import org.aimas.ami.contextrep.update.ContextUpdateExecutionWrapper;
 import org.aimas.ami.contextrep.update.ContinuityHookResult;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.apache.jena.atlas.logging.LogCtl;
 import org.topbraid.spin.statistics.SPINStatistics;
 
@@ -432,7 +432,7 @@ public class RunTest {
 		
 		System.out.println();
 		
-		Property assertionResourceProp = basicContextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_RESOURCE);
+		Property assertionResourceProp = ConsertCore.CONTEXT_ASSERTION_RESOURCE;
 		
 		// unary check
 		OntResource unaryResource = basicContextModel.getOntClass(ScenarioSetup.CONTEXT_GEN_MODEL_NS + "UnaryA2");
@@ -568,7 +568,7 @@ public class RunTest {
 		List<ContextEvent> events = new ArrayList<>();
 		
 		// ======== STEP 2a - generate all unary context assertions ========
-		OntProperty assertionRole = basicContextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_ROLE);
+		OntProperty assertionRole = basicContextModel.getOntProperty(ConsertCore.CONTEXT_ASSERTION_ROLE.getURI());
 		String assertedByURI = configuration.contextAssertions.unary.annotation.assertedBy;
 		int validity = configuration.contextAssertions.unary.annotation.duration;  	// get the validity duration
 																					// this is also the gap 

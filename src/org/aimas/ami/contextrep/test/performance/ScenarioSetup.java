@@ -11,7 +11,7 @@ import org.aimas.ami.contextrep.core.Loader;
 import org.aimas.ami.contextrep.test.performance.PerformanceConfig.ContextAssertionConfig;
 import org.aimas.ami.contextrep.test.performance.PerformanceConfig.ContextEntityConfig;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.apache.jena.atlas.logging.Log;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Template;
@@ -119,14 +119,14 @@ public class ScenarioSetup {
 	    	String entityURI = CONTEXT_GEN_MODEL_NS + "E" + (i + 1);
 	    	OntClass entityClass = contextModel.createClass(entityURI);
 	    	contextModel.add(entityClass, RDFS.subClassOf, 
-	    		contextModel.getOntClass(ContextAssertionVocabulary.CONTEXT_ENTITY));
+	    		contextModel.getOntClass(ConsertCore.CONTEXT_ENTITY.getURI()));
 	    }
     }
 
 	
 	private void createModelAssertions(OntModel contextModel) {
 		ContextAssertionConfig contextAssertions = configuration.contextAssertions;
-		OntProperty assertionRole = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_ROLE);
+		OntProperty assertionRole = contextModel.getOntProperty(ConsertCore.CONTEXT_ASSERTION_ROLE.getURI());
 		
 		// ATTENTION: THE DERIVED ASSERTIONS ARE HARDCODED AS ARE THE DERIVATION RULES THAT GO ALONG
 		
@@ -146,12 +146,12 @@ public class ScenarioSetup {
 	    	
 	    	// set the restriction for the assertionType property
 	    	Restriction assertionTypeRestriction = contextModel.createHasValueRestriction(null,
-		        contextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_TYPE_PROPERTY),
-		        contextModel.getIndividual(ContextAssertionVocabulary.TYPE_SENSED));
+		        contextModel.getProperty(ConsertCore.CONTEXT_ASSERTION_TYPE_PROPERTY.getURI()),
+		        contextModel.getIndividual(ConsertCore.TYPE_SENSED.getURI()));
 	    	
 	    	// set the subClassOf properties for this new assertion
 	    	contextModel.add(assertionClass, RDFS.subClassOf, 
-		    	contextModel.getOntClass(ContextAssertionVocabulary.UNARY_CONTEXT_ASSERTION));
+		    	contextModel.getOntClass(ConsertCore.UNARY_CONTEXT_ASSERTION.getURI()));
 	    	contextModel.add(assertionClass, RDFS.subClassOf, assertionRoleRestriction);
 	    	contextModel.add(assertionClass, RDFS.subClassOf, assertionTypeRestriction);
 		}
@@ -169,12 +169,12 @@ public class ScenarioSetup {
 	    	Restriction assertionRoleRestriction = contextModel.createAllValuesFromRestriction(null, 
 	    			assertionRole, roleEntityClass);
 	    	Restriction assertionTypeRestriction = contextModel.createHasValueRestriction(null,
-	    	    	contextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_TYPE_PROPERTY),
-	    	    	contextModel.getIndividual(ContextAssertionVocabulary.TYPE_DERIVED));
+	    	    	contextModel.getProperty(ConsertCore.CONTEXT_ASSERTION_TYPE_PROPERTY.getURI()),
+	    	    	contextModel.getIndividual(ConsertCore.TYPE_DERIVED.getURI()));
 	    	
 	    	// set the subClassOf properties for this new assertion
 	    	contextModel.add(assertionClass, RDFS.subClassOf, 
-		    	contextModel.getOntClass(ContextAssertionVocabulary.UNARY_CONTEXT_ASSERTION));
+		    	contextModel.getOntClass(ConsertCore.UNARY_CONTEXT_ASSERTION.getURI()));
 	    	contextModel.add(assertionClass, RDFS.subClassOf, assertionRoleRestriction);
 	    	contextModel.add(assertionClass, RDFS.subClassOf, assertionTypeRestriction);
 		}
@@ -200,7 +200,7 @@ public class ScenarioSetup {
 	    	
 	    	// mark its type by subPropertyOf
 	    	contextModel.add(assertionProp, RDFS.subPropertyOf, 
-		    	contextModel.getOntProperty(ContextAssertionVocabulary.SENSED_RELATION_ASSERTION));
+		    	contextModel.getOntProperty(ConsertCore.SENSED_RELATION_ASSERTION.getURI()));
 		}
 		
 		for (int i = 0; i < contextAssertions.binary.nrDerived; i++) {
@@ -219,7 +219,7 @@ public class ScenarioSetup {
 	    	
 	    	// the assertionProp has the same domain and range as BinaryA6
 			contextModel.add(assertionProp, RDFS.subPropertyOf, 
-	    		contextModel.getOntProperty(ContextAssertionVocabulary.DERIVED_RELATION_ASSERTION));
+	    		contextModel.getOntProperty(ConsertCore.DERIVED_RELATION_ASSERTION.getURI()));
 		}
 		
 		
@@ -269,12 +269,12 @@ public class ScenarioSetup {
 	    	
 	    	// set the restriction for the assertionType property
 	    	Restriction assertionTypeRestriction = contextModel.createHasValueRestriction(null,
-		    	    contextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_TYPE_PROPERTY),
-		    	    contextModel.getIndividual(ContextAssertionVocabulary.TYPE_SENSED));
+		    	    contextModel.getProperty(ConsertCore.CONTEXT_ASSERTION_TYPE_PROPERTY.getURI()),
+		    	    contextModel.getIndividual(ConsertCore.TYPE_SENSED.getURI()));
 	    		    	
 	    	// set the subClassOf properties for this new assertion
 	    	contextModel.add(assertionClass, RDFS.subClassOf, 
-		    	contextModel.getOntClass(ContextAssertionVocabulary.NARY_CONTEXT_ASSERTION));
+		    	contextModel.getOntClass(ConsertCore.NARY_CONTEXT_ASSERTION.getURI()));
 	    	contextModel.add(assertionClass, RDFS.subClassOf, assertionTypeRestriction);
 	    	contextModel.add(assertionClass, RDFS.subClassOf, assertionRoleRestriction1);
 	    	contextModel.add(assertionClass, RDFS.subClassOf, assertionRoleRestriction2);
@@ -319,12 +319,12 @@ public class ScenarioSetup {
 	    		contextModel.createAllValuesFromRestriction(null, assertionRoleProp3, inspiringRoleProperty3.getDomain());
 	    	
 	    	Restriction assertionTypeRestriction = contextModel.createHasValueRestriction(null,
-	    	    	contextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_TYPE_PROPERTY),
-	    	    	contextModel.getIndividual(ContextAssertionVocabulary.TYPE_DERIVED));
+	    	    	contextModel.getProperty(ConsertCore.CONTEXT_ASSERTION_TYPE_PROPERTY.getURI()),
+	    	    	contextModel.getIndividual(ConsertCore.TYPE_DERIVED.getURI()));
 	    	
 			// set the subClassOf properties for this new assertion
 	    	contextModel.add(assertionClass, RDFS.subClassOf, 
-		    	contextModel.getOntClass(ContextAssertionVocabulary.NARY_CONTEXT_ASSERTION));
+		    	contextModel.getOntClass(ConsertCore.NARY_CONTEXT_ASSERTION.getURI()));
 	    	contextModel.add(assertionClass, RDFS.subClassOf, assertionTypeRestriction);
 	    	contextModel.add(assertionClass, RDFS.subClassOf, assertionRoleRestriction1);
 	    	contextModel.add(assertionClass, RDFS.subClassOf, assertionRoleRestriction2);
@@ -335,7 +335,7 @@ public class ScenarioSetup {
 	
 	private void createModelDerivationRules(OntModel contextModel) {
 	    // first get some usefull properties
-		OntProperty assertionRole = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_ROLE);
+		OntProperty assertionRole = contextModel.getOntProperty(ConsertCore.CONTEXT_ASSERTION_ROLE.getURI());
 		
 		// then read in all the derivation templates
 		SPINModuleRegistry.get().init();
@@ -404,7 +404,7 @@ public class ScenarioSetup {
 	
 	private void instantiateUnarySchemeCall(TemplateCall unarySchemeCall, OntModel contextModel, 
 			OntModel derivationModel, OntClass unaryAssertion, OntClass derivedEntityClass) {
-		OntProperty assertionRole = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_ROLE);
+		OntProperty assertionRole = contextModel.getOntProperty(ConsertCore.CONTEXT_ASSERTION_ROLE.getURI());
 		
 		// unaryAssertion
 		unarySchemeCall.addProperty(derivationModel.getProperty(ARG.NS + "unaryAssertion"), unaryAssertion);
@@ -446,7 +446,7 @@ public class ScenarioSetup {
 	
 	private void instantiateBinarySchemeCall(TemplateCall binarySchemeCall, OntModel contextModel, 
 			OntModel derivationModel, OntProperty binaryAssertion, OntResource domainClass, OntResource rangeClass) {
-		OntProperty assertionRole = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_ROLE);
+		OntProperty assertionRole = contextModel.getOntProperty(ConsertCore.CONTEXT_ASSERTION_ROLE.getURI());
 		
 		// binaryAssertion, domainClass, rangeClass
 		binarySchemeCall.addProperty(derivationModel.getProperty(ARG.NS + "binaryAssertion"), binaryAssertion);

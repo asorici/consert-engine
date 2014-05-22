@@ -3,7 +3,8 @@ package org.aimas.ami.contextrep.test.adhocmeeting;
 import org.aimas.ami.contextrep.core.Config;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
 import org.aimas.ami.contextrep.exceptions.ConfigException;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
+import org.aimas.ami.contextrep.vocabulary.ConsertFunctions;
 import org.apache.jena.atlas.logging.LogCtl;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.model.Select;
@@ -64,7 +65,7 @@ public class TestContinuity {
 		OntResource contextAssertionResource = contextModel.getOntResource(contextAssertionResourceURI);
 		
 		// find the property that states the validity interval
-		Property validDuringProp = contextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_VALIDITY);
+		Property validDuringProp = ConsertAnnotation.HAS_VALIDITY;
 		
 		// get context assertion store URI
 		String assertionStoreURI = 
@@ -85,7 +86,7 @@ public class TestContinuity {
 			
 			if (validityAnnotation != null) {
 				RDFNode newValidityPeriod = validityAnnotation.getObject();
-				Template closeEnoughValidity = SPINModuleRegistry.get().getTemplate(ContextAssertionVocabulary.CLOSE_ENOUGH_VALIDITY_TEMPLATE, null); 
+				Template closeEnoughValidity = SPINModuleRegistry.get().getTemplate(ConsertFunctions.CLOSE_ENOUGH_VALIDITY_TEMPLATE.getURI(), null); 
 				
 				// Now call the template
 				com.hp.hpl.jena.query.Query arq = ARQFactory.get().createQuery((Select)closeEnoughValidity.getBody());

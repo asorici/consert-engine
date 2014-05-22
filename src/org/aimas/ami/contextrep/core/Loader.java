@@ -20,7 +20,7 @@ import org.aimas.ami.contextrep.model.impl.ContextAssertionImpl;
 import org.aimas.ami.contextrep.utils.ContextAssertionFinder;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINQueryFinder;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.topbraid.spin.model.Construct;
 import org.topbraid.spin.model.ElementList;
 import org.topbraid.spin.model.SPINFactory;
@@ -179,7 +179,7 @@ public class Loader {
 		
 		// search all EntityRelationAssertions
 		ExtendedIterator<? extends OntProperty> relationPropIt = 
-			transitiveContextModel.getOntProperty(ContextAssertionVocabulary.ENTITY_RELATION_ASSERTION).listSubProperties();
+			transitiveContextModel.getOntProperty(ConsertCore.ENTITY_RELATION_ASSERTION.getURI()).listSubProperties();
 		
 		for (; relationPropIt.hasNext();) {
 			OntProperty prop = relationPropIt.next();
@@ -210,7 +210,7 @@ public class Loader {
 		
 		// search all EntityDataAssertions
 		ExtendedIterator<? extends OntProperty> dataPropIt = 
-			transitiveContextModel.getOntProperty(ContextAssertionVocabulary.ENTITY_DATA_ASSERTION).listSubProperties();
+			transitiveContextModel.getOntProperty(ConsertCore.ENTITY_DATA_ASSERTION.getURI()).listSubProperties();
 		
 		for (; dataPropIt.hasNext();) {
 			OntProperty prop = dataPropIt.next();
@@ -241,7 +241,7 @@ public class Loader {
 
 		// create stores for subclasses of UnaryContextAssertion 
 		ExtendedIterator<OntClass> unaryClassIt = transitiveContextModel
-			.getOntClass(ContextAssertionVocabulary.UNARY_CONTEXT_ASSERTION).listSubClasses();
+			.getOntClass(ConsertCore.UNARY_CONTEXT_ASSERTION.getURI()).listSubClasses();
 		for (; unaryClassIt.hasNext();) {
 			OntClass cls = unaryClassIt.next();
 			if (!SPINFactory.isAbstract(cls)) {
@@ -271,7 +271,7 @@ public class Loader {
 		
 		// and subclasses of NaryContextAssertion
 		ExtendedIterator<OntClass> naryClassIt = transitiveContextModel
-			.getOntClass(ContextAssertionVocabulary.NARY_CONTEXT_ASSERTION).listSubClasses();
+			.getOntClass(ConsertCore.NARY_CONTEXT_ASSERTION.getURI()).listSubClasses();
 		for (; naryClassIt.hasNext();) {
 			OntClass cls = naryClassIt.next();
 			if (!SPINFactory.isAbstract(cls)) {
@@ -415,7 +415,7 @@ public class Loader {
 				// its resource type
 				for (TripleTemplate tpl : constructedTriples) {
 					if (tpl.getPredicate().equals(
-							transitiveContextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_RESOURCE))) {
+						transitiveContextModel.getProperty(ConsertCore.CONTEXT_ASSERTION_RESOURCE.getURI()))) {
 						
 						RDFNode assertionRes = tpl.getObjectResource();
 						if (SPINFactory.isVariable(assertionRes)) {
