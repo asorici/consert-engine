@@ -8,9 +8,11 @@
     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
   xml:base="http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/test/testscenario">
   <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/functions"/>
     <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Created with TopBraid Composer</owl:versionInfo>
     <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models"/>
+    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core"/>
   </owl:Ontology>
   <models:Microphone rdf:ID="micAlex1">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"

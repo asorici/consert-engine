@@ -2,12 +2,12 @@
 <rdf:RDF
     xmlns:digital-doc="http://pervasive.semanticweb.org/ont/2004/06/digital-doc#"
     xmlns:action="http://pervasive.semanticweb.org/ont/2004/06/action#"
-    xmlns:cfn="http://pervasive.semanticweb.org/ont/2013/05/contextassertion/functions#"
     xmlns:event="http://pervasive.semanticweb.org/ont/2004/06/event#"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:contextassertion="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#"
+    xmlns:contextassertion="http://pervasive.semanticweb.org/ont/2014/05/consert/core#"
     xmlns:spin="http://spinrdf.org/spin#"
     xmlns:afn="http://jena.hpl.hp.com/ARQ/function#"
+    xmlns:cfn="http://pervasive.semanticweb.org/ont/2014/05/consert/functions#"
     xmlns:sp="http://spinrdf.org/sp#"
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:person="http://pervasive.semanticweb.org/ont/2004/06/person#"
@@ -19,15 +19,15 @@
     xmlns:location="http://pervasive.semanticweb.org/ont/2004/06/location#"
   xml:base="http://pervasive.semanticweb.org/ont/2014/01/smartconf">
   <owl:Ontology rdf:about="">
-    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion/functions"/>
-    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion"/>
+    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/digital-doc"/>
+    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/device"/>
+    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/space"/>
+    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/action"/>
+    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person"/>
     <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Created with TopBraid Composer</owl:versionInfo>
-    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person"/>
-    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/action"/>
-    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/space"/>
-    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/device"/>
-    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/digital-doc"/>
+    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/functions"/>
+    <owl:imports rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core"/>
   </owl:Ontology>
   <owl:Class rdf:ID="ConferencePresentation">
     <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/time#IntervalEvent"/>
@@ -64,34 +64,34 @@
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >g1</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >validity1</sp:varName>
                 </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >g1</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >ts1</sp:varName>
                 </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
               </rdf:Description>
             </sp:elements>
           </sp:NamedGraph>
           <sp:Filter>
             <sp:expression>
               <cfn:validityIntervalExceeds>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >2400</sp:arg2>
                 <sp:arg1 rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >validity1</sp:varName>
                 </sp:arg1>
-                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                >2400</sp:arg2>
               </cfn:validityIntervalExceeds>
             </sp:expression>
           </sp:Filter>
@@ -200,17 +200,18 @@
     <owl:disjointWith rdf:resource="#SessionRoom"/>
   </owl:Class>
   <owl:Class rdf:ID="ConferenceProfile">
-    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextEntity"/>
-    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >The profile of a ConferenceUser.</rdfs:comment>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >ConferenceProfile</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >The profile of a ConferenceUser.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#ContextEntity"/>
   </owl:Class>
   <owl:Class rdf:ID="SessionSpeakerArea">
     <owl:disjointWith>
       <owl:Class rdf:ID="SessionAudienceArea"/>
     </owl:disjointWith>
-    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextEntity"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >SessionSpeakerArea</rdfs:label>
     <rdfs:subClassOf>
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
@@ -222,8 +223,7 @@
         </owl:intersectionOf>
       </owl:Class>
     </rdfs:subClassOf>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >SessionSpeakerArea</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#ContextEntity"/>
   </owl:Class>
   <owl:Class rdf:about="#SessionChair">
     <rdfs:subClassOf>
@@ -242,13 +242,22 @@
     </owl:disjointWith>
   </owl:Class>
   <owl:Class rdf:ID="sensesBadgeWithIntensity">
-    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#NaryContextAssertion"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="sensorRole"/>
+        </owl:onProperty>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="ProximitySensor"/>
+        </owl:allValuesFrom>
+      </owl:Restriction>
+    </rdfs:subClassOf>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >sensesBadgeWithIntensity</rdfs:label>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:onProperty rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
-        <owl:hasValue rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Sensed"/>
+        <owl:onProperty rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
+        <owl:hasValue rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Sensed"/>
       </owl:Restriction>
     </rdfs:subClassOf>
     <rdfs:subClassOf>
@@ -271,22 +280,10 @@
         </owl:allValuesFrom>
       </owl:Restriction>
     </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:onProperty>
-          <owl:ObjectProperty rdf:ID="sensorRole"/>
-        </owl:onProperty>
-        <owl:allValuesFrom>
-          <owl:Class rdf:ID="ProximitySensor"/>
-        </owl:allValuesFrom>
-      </owl:Restriction>
-    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#NaryContextAssertion"/>
   </owl:Class>
   <owl:Class rdf:about="#SessionAudienceArea">
     <owl:disjointWith rdf:resource="#SessionSpeakerArea"/>
-    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextEntity"/>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >SessionAudienceArea</rdfs:label>
     <rdfs:subClassOf>
       <owl:Class>
         <owl:intersectionOf rdf:parseType="Collection">
@@ -298,11 +295,11 @@
         </owl:intersectionOf>
       </owl:Class>
     </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >SessionAudienceArea</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#ContextEntity"/>
   </owl:Class>
   <owl:Class rdf:about="#ProximitySignalIntesity">
-    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextEntity"/>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >ProximitySignalIntesity</rdfs:label>
     <owl:oneOf rdf:parseType="Collection">
       <ProximitySignalIntesity rdf:ID="Weak">
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -317,23 +314,26 @@
         >Strong</rdfs:label>
       </ProximitySignalIntesity>
     </owl:oneOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >ProximitySignalIntesity</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#ContextEntity"/>
   </owl:Class>
   <owl:Class rdf:ID="hostsAdHocDiscussion">
-    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#UnaryContextAssertion"/>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
+        <owl:hasValue rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Derived"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >hostsAdHocDiscussion</rdfs:label>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:onProperty rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionRole"/>
         <owl:allValuesFrom rdf:resource="#DiscussionArea"/>
+        <owl:onProperty rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionRole"/>
       </owl:Restriction>
     </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:onProperty rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
-        <owl:hasValue rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#UnaryContextAssertion"/>
   </owl:Class>
   <owl:Class rdf:about="#ReceptionArea">
     <rdfs:subClassOf rdf:resource="#ConferenceSpace"/>
@@ -365,50 +365,40 @@
     </owl:disjointWith>
   </owl:Class>
   <owl:Class rdf:ID="inAdHocDiscussion">
-    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#UnaryContextAssertion"/>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >inAdHocDiscussion</rdfs:label>
     <rdfs:subClassOf>
       <owl:Restriction>
-        <owl:onProperty rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
-        <owl:hasValue rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-      </owl:Restriction>
-    </rdfs:subClassOf>
-    <rdfs:subClassOf>
-      <owl:Restriction>
-        <owl:onProperty rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionRole"/>
         <owl:allValuesFrom>
           <rdf:Description rdf:about="http://pervasive.semanticweb.org/ont/2004/06/person#Person">
             <spin:constraint>
               <sp:Construct>
                 <sp:templates rdf:parseType="Collection">
                   <rdf:Description>
-                    <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#UniquenessConstraintViolation"/>
-                    <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
                     <sp:subject rdf:nodeID="A1"/>
+                    <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                    <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#UniquenessConstraintViolation"/>
                   </rdf:Description>
                   <rdf:Description>
                     <sp:object>
                       <owl:ObjectProperty rdf:about="http://pervasive.semanticweb.org/ont/2004/06/person#locatedAt"/>
                     </sp:object>
-                    <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#onContextAssertion"/>
                     <sp:subject rdf:nodeID="A1"/>
+                    <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#onContextAssertion"/>
                   </rdf:Description>
                   <rdf:Description>
                     <sp:object rdf:parseType="Resource">
                       <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                       >g1</sp:varName>
                     </sp:object>
-                    <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasConflictingAssertion"/>
                     <sp:subject rdf:nodeID="A1"/>
+                    <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasConflictingAssertion"/>
                   </rdf:Description>
                   <rdf:Description>
                     <sp:object rdf:parseType="Resource">
                       <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                       >g2</sp:varName>
                     </sp:object>
-                    <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasConflictingAssertion"/>
                     <sp:subject rdf:nodeID="A1"/>
+                    <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasConflictingAssertion"/>
                   </rdf:Description>
                 </sp:templates>
                 <sp:where rdf:parseType="Collection">
@@ -455,66 +445,66 @@
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >validity1</sp:varName>
                         </sp:object>
-                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
                         <sp:subject rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >g1</sp:varName>
                         </sp:subject>
+                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
                       </rdf:Description>
                       <rdf:Description>
                         <sp:object rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >acc1</sp:varName>
                         </sp:object>
-                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
                         <sp:subject rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >g1</sp:varName>
                         </sp:subject>
+                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
                       </rdf:Description>
                       <rdf:Description>
                         <sp:object rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >ts1</sp:varName>
                         </sp:object>
-                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
                         <sp:subject rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >g1</sp:varName>
                         </sp:subject>
+                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
                       </rdf:Description>
                       <rdf:Description>
                         <sp:object rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >validity2</sp:varName>
                         </sp:object>
-                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
                         <sp:subject rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >g2</sp:varName>
                         </sp:subject>
+                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
                       </rdf:Description>
                       <rdf:Description>
                         <sp:object rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >acc2</sp:varName>
                         </sp:object>
-                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
                         <sp:subject rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >g2</sp:varName>
                         </sp:subject>
+                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
                       </rdf:Description>
                       <rdf:Description>
                         <sp:object rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >ts2</sp:varName>
                         </sp:object>
-                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
                         <sp:subject rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >g2</sp:varName>
                         </sp:subject>
+                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
                       </rdf:Description>
                     </sp:elements>
                     <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person/locatedAtStore"/>
@@ -538,14 +528,14 @@
                           <sp:and>
                             <sp:arg2>
                               <cfn:validityIntervalsOverlap>
-                                <sp:arg2 rdf:parseType="Resource">
-                                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                                  >validity2</sp:varName>
-                                </sp:arg2>
                                 <sp:arg1 rdf:parseType="Resource">
                                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                                   >validity1</sp:varName>
                                 </sp:arg1>
+                                <sp:arg2 rdf:parseType="Resource">
+                                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                  >validity2</sp:varName>
+                                </sp:arg2>
                               </cfn:validityIntervalsOverlap>
                             </sp:arg2>
                             <sp:arg1>
@@ -640,8 +630,18 @@
             </spin:constraint>
           </rdf:Description>
         </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionRole"/>
       </owl:Restriction>
     </rdfs:subClassOf>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >inAdHocDiscussion</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:onProperty rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
+        <owl:hasValue rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Derived"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#UnaryContextAssertion"/>
   </owl:Class>
   <owl:Class rdf:about="#ProximitySensor">
     <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/device#Device"/>
@@ -656,11 +656,11 @@
     >ConferenceVenue</rdfs:label>
   </owl:Class>
   <owl:Class rdf:about="#ConferenceRole">
-    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextEntity"/>
-    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >A role that person involved in a given conference event can play: whether as participant, presenter, session chair or simple staff.</rdfs:comment>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >ConferenceRole</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A role that person involved in a given conference event can play: whether as participant, presenter, session chair or simple staff.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#ContextEntity"/>
   </owl:Class>
   <owl:Class rdf:ID="ConferenceSession">
     <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/time#IntervalEvent"/>
@@ -715,44 +715,44 @@
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >g1</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >validity1</sp:varName>
                 </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >g1</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >ts1</sp:varName>
                 </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >g2</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >validity2</sp:varName>
                 </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >g2</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >ts2</sp:varName>
                 </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
               </rdf:Description>
             </sp:elements>
           </sp:NamedGraph>
@@ -775,14 +775,14 @@
                     </sp:arg1>
                     <sp:arg2>
                       <cfn:validityIntervalsOverlap>
-                        <sp:arg1 rdf:parseType="Resource">
-                          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                          >validity1</sp:varName>
-                        </sp:arg1>
                         <sp:arg2 rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >validity2</sp:varName>
                         </sp:arg2>
+                        <sp:arg1 rdf:parseType="Resource">
+                          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                          >validity1</sp:varName>
+                        </sp:arg1>
                       </cfn:validityIntervalsOverlap>
                     </sp:arg2>
                   </sp:and>
@@ -842,109 +842,109 @@
   <owl:ObjectProperty rdf:ID="attendsPresentation">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >attendsPresentation</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#derivedRelationAssertion"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#derivedRelationAssertion"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="presentationPartOf">
     <rdfs:range rdf:resource="#ConferenceSession"/>
     <rdfs:domain rdf:resource="#ConferencePresentation"/>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#entityRelationDescription"/>
-    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >A conference presentation is part of a conference session.</rdfs:comment>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >presentationPartOf</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A conference presentation is part of a conference session.</rdfs:comment>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#entityRelationDescription"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#sensorRole">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >sensorRole</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionRole"/>
-    <rdfs:domain rdf:resource="#sensesBadgeWithIntensity"/>
     <rdfs:range rdf:resource="#ProximitySensor"/>
+    <rdfs:domain rdf:resource="#sensesBadgeWithIntensity"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionRole"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="sessionLocation">
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#entityRelationDescription"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >sessionLocation</rdfs:label>
     <rdfs:domain rdf:resource="#ConferenceSession"/>
     <rdfs:range rdf:resource="#SessionRoom"/>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >The location of a conference session.</rdfs:comment>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >sessionLocation</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#entityRelationDescription"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="givesPresentation">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >givesPresentation</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#derivedRelationAssertion"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#derivedRelationAssertion"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://pervasive.semanticweb.org/ont/2004/06/device#locatedAt">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >locatedAt</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#profiledRelationAssertion"/>
-    <rdfs:domain rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/device#Device"/>
     <rdfs:range rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/space#SpaceInAFixedStructure"/>
+    <rdfs:domain rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/device#Device"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#profiledRelationAssertion"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#currentPresentationForSession">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >presentationRole</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#sensedRelationAssertion"/>
-    <rdfs:domain rdf:resource="#ConferencePresentation"/>
     <rdfs:range rdf:resource="#ConferenceSession"/>
+    <rdfs:domain rdf:resource="#ConferencePresentation"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#sensedRelationAssertion"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="hasContactProfile">
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Indicates the contact profile of a given ConferenceUser.</rdfs:comment>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >hasContactProfile</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#entityRelationDescription"/>
-    <rdfs:domain rdf:resource="#ConferenceProfile"/>
     <rdfs:range rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person#ContactProfile"/>
+    <rdfs:domain rdf:resource="#ConferenceProfile"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#entityRelationDescription"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="identifiesUser">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >identifiesUser</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#entityRelationDescription"/>
-    <rdfs:domain rdf:resource="#ConferenceBadge"/>
     <rdfs:range rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person#Person"/>
+    <rdfs:domain rdf:resource="#ConferenceBadge"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#entityRelationDescription"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#badgeRole">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >badgeRole</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionRole"/>
-    <rdfs:domain rdf:resource="#sensesBadgeWithIntensity"/>
     <rdfs:range rdf:resource="#ConferenceBadge"/>
+    <rdfs:domain rdf:resource="#sensesBadgeWithIntensity"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionRole"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="#intensityRole">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >intensityRole</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionRole"/>
-    <rdfs:domain rdf:resource="#sensesBadgeWithIntensity"/>
     <rdfs:range rdf:resource="#ProximitySignalIntesity"/>
+    <rdfs:domain rdf:resource="#sensesBadgeWithIntensity"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionRole"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="playsConferenceRole">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >playsConferenceRole</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#profiledRelationAssertion"/>
-    <rdfs:domain rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person#Person"/>
     <rdfs:range rdf:resource="#ConferenceRole"/>
+    <rdfs:domain rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person#Person"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#profiledRelationAssertion"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:about="http://pervasive.semanticweb.org/ont/2004/06/person#locatedAt">
     <rdfs:range rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/space#SpaceInAFixedStructure"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >locatedAt</rdfs:label>
     <rdfs:domain rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person#Person"/>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#derivedRelationAssertion"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#derivedRelationAssertion"/>
   </owl:ObjectProperty>
   <owl:DatatypeProperty rdf:ID="hasNoiseLevel">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >hasNoiseLevel</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#sensedDataAssertion"/>
-    <rdfs:domain rdf:resource="#Microphone"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    <rdfs:domain rdf:resource="#Microphone"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#sensedDataAssertion"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="hasResearchInterests">
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#entityDataDescription"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >hasResearchInterests</rdfs:label>
     <rdfs:domain rdf:resource="#ConferenceProfile"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#entityDataDescription"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="hasAffiliation">
     <rdfs:domain rdf:resource="#ConferenceProfile"/>
@@ -952,8 +952,8 @@
     >Indicates the affiliation profile of a ConferenceUser.</rdfs:comment>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >hasAffiliation</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#entityDataDescription"/>
     <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#entityDataDescription"/>
   </owl:DatatypeProperty>
   <spin:ConstructTemplate rdf:ID="inAdHocDiscussionRule">
     <spin:body>
@@ -1007,30 +1007,30 @@
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gPersonLocation</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
-                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Sensed"/>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
+                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Sensed"/>
               </rdf:Description>
               <rdf:Description>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
-                <sp:subject rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >gPersonLocation</sp:varName>
-                </sp:subject>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >locTimestamp</sp:varName>
                 </sp:object>
+                <sp:subject rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >gPersonLocation</sp:varName>
+                </sp:subject>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gPersonLocation</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >locAcc</sp:varName>
                 </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
               </rdf:Description>
             </sp:elements>
           </sp:NamedGraph>
@@ -1057,22 +1057,22 @@
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gHostsDiscussion</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >discussionValidity</sp:varName>
                 </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >discussionAcc</sp:varName>
                 </sp:object>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gHostsDiscussion</sp:varName>
                 </sp:subject>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
               </rdf:Description>
             </sp:elements>
             <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2014/01/smartconf/hostsAdHocDiscussionStore"/>
@@ -1080,20 +1080,20 @@
           <sp:Filter>
             <sp:expression>
               <cfn:validityIntervalContains>
-                <sp:arg2 rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >locTimestamp</sp:varName>
-                </sp:arg2>
                 <sp:arg1 rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >discussionValidity</sp:varName>
                 </sp:arg1>
+                <sp:arg2 rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >locTimestamp</sp:varName>
+                </sp:arg2>
               </cfn:validityIntervalContains>
             </sp:expression>
           </sp:Filter>
           <sp:Bind>
             <sp:expression>
-              <cfn:accuracyMeetOp>
+              <cfn:certaintyMeetOp>
                 <sp:arg2 rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >discussionAcc</sp:varName>
@@ -1102,7 +1102,7 @@
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >locAcc</sp:varName>
                 </sp:arg1>
-              </cfn:accuracyMeetOp>
+              </cfn:certaintyMeetOp>
             </sp:expression>
             <sp:variable rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -1130,18 +1130,18 @@
           <sp:Bind>
             <sp:expression>
               <cfn:makeValidityInterval>
-                <sp:arg2>
-                  <cfn:datetimeDelay>
-                    <sp:arg1>
-                      <afn:now/>
-                    </sp:arg1>
-                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                    >30</sp:arg2>
-                  </cfn:datetimeDelay>
-                </sp:arg2>
                 <sp:arg1>
                   <afn:now/>
                 </sp:arg1>
+                <sp:arg2>
+                  <cfn:datetimeDelay>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >30</sp:arg2>
+                    <sp:arg1>
+                      <afn:now/>
+                    </sp:arg1>
+                  </cfn:datetimeDelay>
+                </sp:arg2>
               </cfn:makeValidityInterval>
             </sp:expression>
             <sp:variable rdf:parseType="Resource">
@@ -1160,27 +1160,27 @@
             </sp:subject>
           </rdf:Description>
           <rdf:Description>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
-            <sp:subject rdf:nodeID="A3"/>
             <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:subject rdf:nodeID="A3"/>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#ContextAnnotation"/>
           </rdf:Description>
           <rdf:Description>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
+            <sp:subject rdf:nodeID="A3"/>
             <sp:object rdf:resource="#inAdHocDiscussion"/>
-            <sp:subject rdf:nodeID="A3"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionResource"/>
           </rdf:Description>
           <rdf:Description>
             <sp:subject rdf:nodeID="A3"/>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Derived"/>
           </rdf:Description>
           <rdf:Description>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
+            <sp:subject rdf:nodeID="A3"/>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >src</sp:varName>
             </sp:object>
-            <sp:subject rdf:nodeID="A3"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertedBy"/>
           </rdf:Description>
           <rdf:Description>
             <sp:subject rdf:nodeID="A3"/>
@@ -1188,7 +1188,7 @@
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >t</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
           </rdf:Description>
           <rdf:Description>
             <sp:subject rdf:nodeID="A3"/>
@@ -1196,15 +1196,15 @@
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >valid</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >acc</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
             <sp:subject rdf:nodeID="A3"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
           </rdf:Description>
         </sp:templates>
       </sp:Construct>
@@ -1276,8 +1276,8 @@
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gMicLocation</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
-                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Profiled"/>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
+                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Profiled"/>
               </rdf:Description>
             </sp:elements>
           </sp:NamedGraph>
@@ -1312,22 +1312,22 @@
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >gPersonLocation</sp:varName>
                         </sp:subject>
-                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
                         <sp:object rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >validS</sp:varName>
                         </sp:object>
+                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
                       </rdf:Description>
                       <rdf:Description>
                         <sp:subject rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >gPersonLocation</sp:varName>
                         </sp:subject>
-                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
                         <sp:object rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >accS</sp:varName>
                         </sp:object>
+                        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
                       </rdf:Description>
                     </sp:elements>
                   </sp:NamedGraph>
@@ -1338,11 +1338,11 @@
                     </sp:variable>
                     <sp:expression>
                       <cfn:datetimeDelay>
+                        <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                        >-300</sp:arg2>
                         <sp:arg1>
                           <afn:now/>
                         </sp:arg1>
-                        <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                        >-300</sp:arg2>
                       </cfn:datetimeDelay>
                     </sp:expression>
                   </sp:Bind>
@@ -1353,27 +1353,27 @@
                     </sp:variable>
                     <sp:expression>
                       <cfn:makeValidityInterval>
+                        <sp:arg2>
+                          <afn:now/>
+                        </sp:arg2>
                         <sp:arg1 rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >earlier</sp:varName>
                         </sp:arg1>
-                        <sp:arg2>
-                          <afn:now/>
-                        </sp:arg2>
                       </cfn:makeValidityInterval>
                     </sp:expression>
                   </sp:Bind>
                   <sp:Filter>
                     <sp:expression>
                       <cfn:validityIntervalsInclude>
-                        <sp:arg1 rdf:parseType="Resource">
-                          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                          >validS</sp:varName>
-                        </sp:arg1>
                         <sp:arg2 rdf:parseType="Resource">
                           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                           >interv</sp:varName>
                         </sp:arg2>
+                        <sp:arg1 rdf:parseType="Resource">
+                          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                          >validS</sp:varName>
+                        </sp:arg1>
                       </cfn:validityIntervalsInclude>
                     </sp:expression>
                   </sp:Filter>
@@ -1462,22 +1462,22 @@
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gNoise</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >time</sp:varName>
                 </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gNoise</sp:varName>
                 </sp:subject>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >accN</sp:varName>
                 </sp:object>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
               </rdf:Description>
             </sp:elements>
           </sp:NamedGraph>
@@ -1518,11 +1518,11 @@
                         </sp:arg1>
                         <sp:arg2>
                           <cfn:datetimeDelay>
+                            <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                            >-300</sp:arg2>
                             <sp:arg1>
                               <afn:now/>
                             </sp:arg1>
-                            <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                            >-300</sp:arg2>
                           </cfn:datetimeDelay>
                         </sp:arg2>
                       </sp:ge>
@@ -1549,7 +1549,7 @@
               >acc</sp:varName>
             </sp:variable>
             <sp:expression>
-              <cfn:accuracyMeetOp>
+              <cfn:certaintyMeetOp>
                 <sp:arg1 rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >AvgAccS</sp:varName>
@@ -1558,7 +1558,7 @@
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >accN</sp:varName>
                 </sp:arg2>
-              </cfn:accuracyMeetOp>
+              </cfn:certaintyMeetOp>
             </sp:expression>
           </sp:Bind>
           <sp:Bind>
@@ -1586,18 +1586,18 @@
             </sp:variable>
             <sp:expression>
               <cfn:makeValidityInterval>
-                <sp:arg1>
-                  <cfn:datetimeDelay>
-                    <sp:arg1>
-                      <afn:now/>
-                    </sp:arg1>
-                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                    >-300</sp:arg2>
-                  </cfn:datetimeDelay>
-                </sp:arg1>
                 <sp:arg2>
                   <afn:now/>
                 </sp:arg2>
+                <sp:arg1>
+                  <cfn:datetimeDelay>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >-300</sp:arg2>
+                    <sp:arg1>
+                      <afn:now/>
+                    </sp:arg1>
+                  </cfn:datetimeDelay>
+                </sp:arg1>
               </cfn:makeValidityInterval>
             </sp:expression>
           </sp:Bind>
@@ -1614,49 +1614,49 @@
           <rdf:Description>
             <sp:subject rdf:nodeID="A4"/>
             <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#ContextAnnotation"/>
           </rdf:Description>
           <rdf:Description>
             <sp:subject rdf:nodeID="A4"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
             <sp:object rdf:resource="#hostsAdHocDiscussion"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionResource"/>
           </rdf:Description>
           <rdf:Description>
             <sp:subject rdf:nodeID="A4"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Derived"/>
           </rdf:Description>
           <rdf:Description>
             <sp:subject rdf:nodeID="A4"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >src</sp:varName>
             </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertedBy"/>
           </rdf:Description>
           <rdf:Description>
             <sp:subject rdf:nodeID="A4"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >t</sp:varName>
             </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
           </rdf:Description>
           <rdf:Description>
             <sp:subject rdf:nodeID="A4"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >valid</sp:varName>
             </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
           </rdf:Description>
           <rdf:Description>
             <sp:subject rdf:nodeID="A4"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >acc</sp:varName>
             </sp:object>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
           </rdf:Description>
         </sp:templates>
       </sp:Construct>
@@ -1678,51 +1678,51 @@
             </sp:subject>
           </rdf:Description>
           <rdf:Description>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
             <sp:subject rdf:nodeID="A5"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#ContextAnnotation"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:resource="#givesPresentation"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
             <sp:subject rdf:nodeID="A5"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionResource"/>
           </rdf:Description>
           <rdf:Description>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
             <sp:subject rdf:nodeID="A5"/>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Derived"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >src</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
             <sp:subject rdf:nodeID="A5"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertedBy"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >t</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
             <sp:subject rdf:nodeID="A5"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >valid</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
             <sp:subject rdf:nodeID="A5"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >acc</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
             <sp:subject rdf:nodeID="A5"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
           </rdf:Description>
         </sp:templates>
         <sp:where rdf:parseType="Collection">
@@ -1748,23 +1748,23 @@
           <sp:NamedGraph>
             <sp:elements rdf:parseType="Collection">
               <rdf:Description>
-                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gPersonLoc</sp:varName>
                 </sp:subject>
+                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Derived"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >locTimestamp</sp:varName>
                 </sp:object>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gPersonLoc</sp:varName>
                 </sp:subject>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
               </rdf:Description>
             </sp:elements>
             <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person/locatedAtStore"/>
@@ -1853,23 +1853,23 @@
           <sp:NamedGraph>
             <sp:elements rdf:parseType="Collection">
               <rdf:Description>
-                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Sensed"/>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gCurrentPres</sp:varName>
                 </sp:subject>
+                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Sensed"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >presValid</sp:varName>
                 </sp:object>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gCurrentPres</sp:varName>
                 </sp:subject>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
               </rdf:Description>
             </sp:elements>
             <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2014/01/smartconf/currentPresentationForSessionStore"/>
@@ -1877,11 +1877,11 @@
           <sp:Bind>
             <sp:expression>
               <cfn:datetimeDelay>
-                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                >-10</sp:arg2>
                 <sp:arg1>
                   <afn:now/>
                 </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >-10</sp:arg2>
               </cfn:datetimeDelay>
             </sp:expression>
             <sp:variable rdf:parseType="Resource">
@@ -1894,14 +1894,14 @@
               <sp:and>
                 <sp:arg2>
                   <cfn:validityIntervalContains>
-                    <sp:arg2 rdf:parseType="Resource">
-                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                      >locTimestamp</sp:varName>
-                    </sp:arg2>
                     <sp:arg1 rdf:parseType="Resource">
                       <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                       >presValid</sp:varName>
                     </sp:arg1>
+                    <sp:arg2 rdf:parseType="Resource">
+                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                      >locTimestamp</sp:varName>
+                    </sp:arg2>
                   </cfn:validityIntervalContains>
                 </sp:arg2>
                 <sp:arg1>
@@ -1948,20 +1948,20 @@
           <sp:Bind>
             <sp:expression>
               <cfn:makeValidityInterval>
-                <sp:arg2>
-                  <cfn:datetimeDelay>
-                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                    >10</sp:arg2>
-                    <sp:arg1 rdf:parseType="Resource">
-                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                      >t</sp:varName>
-                    </sp:arg1>
-                  </cfn:datetimeDelay>
-                </sp:arg2>
                 <sp:arg1 rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >t</sp:varName>
                 </sp:arg1>
+                <sp:arg2>
+                  <cfn:datetimeDelay>
+                    <sp:arg1 rdf:parseType="Resource">
+                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                      >t</sp:varName>
+                    </sp:arg1>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >10</sp:arg2>
+                  </cfn:datetimeDelay>
+                </sp:arg2>
               </cfn:makeValidityInterval>
             </sp:expression>
             <sp:variable rdf:parseType="Resource">
@@ -1992,51 +1992,51 @@
             </sp:subject>
           </rdf:Description>
           <rdf:Description>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
             <sp:subject rdf:nodeID="A6"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#ContextAnnotation"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:resource="#attendsPresentation"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
             <sp:subject rdf:nodeID="A6"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionResource"/>
           </rdf:Description>
           <rdf:Description>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
             <sp:subject rdf:nodeID="A6"/>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Derived"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >src</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
             <sp:subject rdf:nodeID="A6"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertedBy"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >t</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
             <sp:subject rdf:nodeID="A6"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >valid</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
             <sp:subject rdf:nodeID="A6"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >acc</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
             <sp:subject rdf:nodeID="A6"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
           </rdf:Description>
         </sp:templates>
         <sp:where rdf:parseType="Collection">
@@ -2062,23 +2062,23 @@
           <sp:NamedGraph>
             <sp:elements rdf:parseType="Collection">
               <rdf:Description>
-                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gPersonLoc</sp:varName>
                 </sp:subject>
+                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Derived"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >locTimestamp</sp:varName>
                 </sp:object>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gPersonLoc</sp:varName>
                 </sp:subject>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
               </rdf:Description>
             </sp:elements>
             <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person/locatedAtStore"/>
@@ -2167,23 +2167,23 @@
           <sp:NamedGraph>
             <sp:elements rdf:parseType="Collection">
               <rdf:Description>
-                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Sensed"/>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gCurrentPres</sp:varName>
                 </sp:subject>
+                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Sensed"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >presValid</sp:varName>
                 </sp:object>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gCurrentPres</sp:varName>
                 </sp:subject>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
               </rdf:Description>
             </sp:elements>
             <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2014/01/smartconf/currentPresentationForSessionStore"/>
@@ -2191,11 +2191,11 @@
           <sp:Bind>
             <sp:expression>
               <cfn:datetimeDelay>
-                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                >-10</sp:arg2>
                 <sp:arg1>
                   <afn:now/>
                 </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >-10</sp:arg2>
               </cfn:datetimeDelay>
             </sp:expression>
             <sp:variable rdf:parseType="Resource">
@@ -2208,14 +2208,14 @@
               <sp:and>
                 <sp:arg2>
                   <cfn:validityIntervalContains>
-                    <sp:arg2 rdf:parseType="Resource">
-                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                      >locTimestamp</sp:varName>
-                    </sp:arg2>
                     <sp:arg1 rdf:parseType="Resource">
                       <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                       >presValid</sp:varName>
                     </sp:arg1>
+                    <sp:arg2 rdf:parseType="Resource">
+                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                      >locTimestamp</sp:varName>
+                    </sp:arg2>
                   </cfn:validityIntervalContains>
                 </sp:arg2>
                 <sp:arg1>
@@ -2262,20 +2262,20 @@
           <sp:Bind>
             <sp:expression>
               <cfn:makeValidityInterval>
-                <sp:arg2>
-                  <cfn:datetimeDelay>
-                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                    >10</sp:arg2>
-                    <sp:arg1 rdf:parseType="Resource">
-                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                      >t</sp:varName>
-                    </sp:arg1>
-                  </cfn:datetimeDelay>
-                </sp:arg2>
                 <sp:arg1 rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >t</sp:varName>
                 </sp:arg1>
+                <sp:arg2>
+                  <cfn:datetimeDelay>
+                    <sp:arg1 rdf:parseType="Resource">
+                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                      >t</sp:varName>
+                    </sp:arg1>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >10</sp:arg2>
+                  </cfn:datetimeDelay>
+                </sp:arg2>
               </cfn:makeValidityInterval>
             </sp:expression>
             <sp:variable rdf:parseType="Resource">
@@ -2306,51 +2306,51 @@
             </sp:subject>
           </rdf:Description>
           <rdf:Description>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#ContextAnnotation"/>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
             <sp:subject rdf:nodeID="A7"/>
+            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#ContextAnnotation"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/person#locatedAt"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionResource"/>
             <sp:subject rdf:nodeID="A7"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionResource"/>
           </rdf:Description>
           <rdf:Description>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
             <sp:subject rdf:nodeID="A7"/>
+            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Derived"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >src</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertedBy"/>
             <sp:subject rdf:nodeID="A7"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertedBy"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >t</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
             <sp:subject rdf:nodeID="A7"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >valid</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#validDuring"/>
             <sp:subject rdf:nodeID="A7"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#validDuring"/>
           </rdf:Description>
           <rdf:Description>
             <sp:object rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >acc</sp:varName>
             </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
             <sp:subject rdf:nodeID="A7"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
           </rdf:Description>
         </sp:templates>
         <sp:where rdf:parseType="Collection">
@@ -2424,12 +2424,12 @@
           <sp:NamedGraph>
             <sp:elements rdf:parseType="Collection">
               <rdf:Description>
-                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Profiled"/>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#assertionType"/>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gProximitySensorLocation</sp:varName>
                 </sp:subject>
+                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Profiled"/>
               </rdf:Description>
             </sp:elements>
             <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2004/06/device/locatedAtStore"/>
@@ -2487,22 +2487,22 @@
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >senseTimestamp</sp:varName>
                 </sp:object>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasTimestamp"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gSensor</sp:varName>
                 </sp:subject>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasTimestamp"/>
               </rdf:Description>
               <rdf:Description>
                 <sp:object rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >accS</sp:varName>
                 </sp:object>
-                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion#hasAccuracy"/>
                 <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >gSensor</sp:varName>
                 </sp:subject>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#hasAccuracy"/>
               </rdf:Description>
             </sp:elements>
             <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2014/01/smartconf/sensesBadgeWithIntensityStore"/>
@@ -2510,11 +2510,11 @@
           <sp:Bind>
             <sp:expression>
               <cfn:datetimeDelay>
-                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                >-2</sp:arg2>
                 <sp:arg1>
                   <afn:now/>
                 </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >-2</sp:arg2>
               </cfn:datetimeDelay>
             </sp:expression>
             <sp:variable rdf:parseType="Resource">
@@ -2572,20 +2572,20 @@
           <sp:Bind>
             <sp:expression>
               <cfn:makeValidityInterval>
-                <sp:arg2>
-                  <cfn:datetimeDelay>
-                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                    >+2</sp:arg2>
-                    <sp:arg1 rdf:parseType="Resource">
-                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                      >t</sp:varName>
-                    </sp:arg1>
-                  </cfn:datetimeDelay>
-                </sp:arg2>
                 <sp:arg1 rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
                   >t</sp:varName>
                 </sp:arg1>
+                <sp:arg2>
+                  <cfn:datetimeDelay>
+                    <sp:arg1 rdf:parseType="Resource">
+                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                      >t</sp:varName>
+                    </sp:arg1>
+                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >+2</sp:arg2>
+                  </cfn:datetimeDelay>
+                </sp:arg2>
               </cfn:makeValidityInterval>
             </sp:expression>
             <sp:variable rdf:parseType="Resource">
