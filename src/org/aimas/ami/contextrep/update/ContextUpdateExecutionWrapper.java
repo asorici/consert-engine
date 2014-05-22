@@ -107,6 +107,7 @@ public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertRe
 		} 
 		catch (Exception ex) {
 			ex.printStackTrace();
+			contextDataset.abort();
 		}
 		finally {
 			contextDataset.end();

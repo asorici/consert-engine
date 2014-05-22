@@ -13,7 +13,8 @@ import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
 import org.aimas.ami.contextrep.update.ContextAssertionUpdateListener;
 import org.aimas.ami.contextrep.update.ContextAssertionUpdateListener.ContextUpdateHookWrapper;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
@@ -47,23 +48,23 @@ public class ContextAssertionUtil {
 			Set<? extends OntProperty> supers = property.listSuperProperties(true).toSet();
 			
 			// if-else statements for each type of ContextAssertion
-			if (supers.contains(contextModel.getOntProperty(ContextAssertionVocabulary.STATIC_RELATION_ASSERTION))
-				|| supers.contains(contextModel.getOntProperty(ContextAssertionVocabulary.STATIC_DATA_ASSERTION))) {
+			if (supers.contains(ConsertCore.STATIC_RELATION_ASSERTION)
+				|| supers.contains(ConsertCore.STATIC_DATA_ASSERTION)) {
 				return ContextAssertionType.Static;
 			}
 			
-			else if (supers.contains(contextModel.getOntProperty(ContextAssertionVocabulary.SENSED_RELATION_ASSERTION))
-				|| supers.contains(contextModel.getOntProperty(ContextAssertionVocabulary.SENSED_DATA_ASSERTION))) {
+			else if (supers.contains(ConsertCore.SENSED_RELATION_ASSERTION)
+				|| supers.contains(ConsertCore.SENSED_DATA_ASSERTION)) {
 				return ContextAssertionType.Sensed;
 			}
 			
-			else if (supers.contains(contextModel.getOntProperty(ContextAssertionVocabulary.PROFILED_RELATION_ASSERTION))
-				|| supers.contains(contextModel.getOntProperty(ContextAssertionVocabulary.PROFILED_DATA_ASSERTION))) {
+			else if (supers.contains(ConsertCore.PROFILED_RELATION_ASSERTION)
+				|| supers.contains(ConsertCore.PROFILED_DATA_ASSERTION)) {
 				return ContextAssertionType.Profiled;
 			}
 			
-			else if (supers.contains(contextModel.getOntProperty(ContextAssertionVocabulary.DERIVED_RELATION_ASSERTION))
-				|| supers.contains(contextModel.getOntProperty(ContextAssertionVocabulary.DERIVED_DATA_ASSERTION))) {
+			else if (supers.contains(ConsertCore.DERIVED_RELATION_ASSERTION)
+				|| supers.contains(ConsertCore.DERIVED_DATA_ASSERTION)) {
 				return ContextAssertionType.Derived;
 			}
 		}
@@ -78,21 +79,21 @@ public class ContextAssertionUtil {
 					Restriction restriction = sup.asRestriction();
 					if (restriction.isHasValueRestriction()) {
 						HasValueRestriction hvr = restriction.asHasValueRestriction();
-						if (hvr.onProperty(contextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_TYPE_PROPERTY))) {
+						if (hvr.onProperty(ConsertCore.CONTEXT_ASSERTION_TYPE_PROPERTY)) {
 							
-							if (hvr.hasValue(contextModel.getIndividual(ContextAssertionVocabulary.TYPE_STATIC))) {
+							if (hvr.hasValue(ConsertCore.TYPE_STATIC)) {
 								return ContextAssertionType.Static;
 							}
 							
-							else if (hvr.hasValue(contextModel.getIndividual(ContextAssertionVocabulary.TYPE_SENSED))) {
+							else if (hvr.hasValue(ConsertCore.TYPE_SENSED)) {
 								return ContextAssertionType.Sensed;
 							}
 							
-							else if (hvr.hasValue(contextModel.getIndividual(ContextAssertionVocabulary.TYPE_PROFILED))) {
+							else if (hvr.hasValue(ConsertCore.TYPE_PROFILED)) {
 								return ContextAssertionType.Profiled;
 							}
 							
-							else if (hvr.hasValue(contextModel.getIndividual(ContextAssertionVocabulary.TYPE_DERIVED))) {
+							else if (hvr.hasValue(ConsertCore.TYPE_DERIVED)) {
 								return ContextAssertionType.Derived;
 							}
 						}
@@ -133,11 +134,11 @@ public class ContextAssertionUtil {
 		
 		Resource idGraph = ResourceFactory.createResource(graphURI);
 		
-		OntProperty assertionTypeProp = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_TYPE_PROPERTY);
-		OntProperty assertedByProp = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_SOURCE);
-		OntProperty hasTimestampProp = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_TIMESTAMP);
-		OntProperty validDuringProp = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_VALIDITY);
-		OntProperty hasAccuracyProp = contextModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_ACCURACY);
+		OntProperty assertionTypeProp = contextModel.getOntProperty(ConsertCore.CONTEXT_ASSERTION_TYPE_PROPERTY.getURI());
+		OntProperty assertedByProp = contextModel.getOntProperty(ConsertAnnotation.HAS_SOURCE.getURI());
+		OntProperty hasTimestampProp = contextModel.getOntProperty(ConsertAnnotation.HAS_TIMESTAMP.getURI());
+		OntProperty validDuringProp = contextModel.getOntProperty(ConsertAnnotation.HAS_VALIDITY.getURI());
+		OntProperty hasAccuracyProp = contextModel.getOntProperty(ConsertAnnotation.HAS_CERTAINTY.getURI());
 		
 		// Create type statement
 		Individual typeIndividual = contextModel.getIndividual(assertionType.getTypeURI());
@@ -239,4 +240,6 @@ public class ContextAssertionUtil {
 		
 		return combinedHookWrapper;
     }
+	
+	
 }

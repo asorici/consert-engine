@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.aimas.ami.contextrep.model.ContextAssertionGraph;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.topbraid.spin.model.Element;
 import org.topbraid.spin.model.NamedGraph;
 import org.topbraid.spin.model.SPINFactory;
@@ -88,8 +88,8 @@ public class ContextAssertionGraphImpl extends NamedGraphImpl implements
 					
 					if (assertionProperty != null) {
 						// get the entityRelationAssertion and entityDataAssertion properties
-						OntProperty entityRelationAssertion = assertionModel.getOntProperty(ContextAssertionVocabulary.ENTITY_RELATION_ASSERTION);
-						OntProperty entityDataAssertion = assertionModel.getOntProperty(ContextAssertionVocabulary.ENTITY_DATA_ASSERTION);
+						OntProperty entityRelationAssertion = assertionModel.getOntProperty(ConsertCore.ENTITY_RELATION_ASSERTION.getURI());
+						OntProperty entityDataAssertion = assertionModel.getOntProperty(ConsertCore.ENTITY_DATA_ASSERTION.getURI());
 						Set<? extends OntProperty> supers = assertionProperty.listSuperProperties().toSet();
 						
 						if (supers.contains(entityRelationAssertion) || supers.contains(entityDataAssertion)) {
@@ -102,8 +102,8 @@ public class ContextAssertionGraphImpl extends NamedGraphImpl implements
 						OntClass assertionClass = assertionModel.getOntClass(object.asResource().getURI());
 						
 						if (assertionClass != null) {
-							OntClass unaryContextAssertion = assertionModel.getOntClass(ContextAssertionVocabulary.UNARY_CONTEXT_ASSERTION);
-							OntClass naryContextAssertion = assertionModel.getOntClass(ContextAssertionVocabulary.NARY_CONTEXT_ASSERTION);
+							OntClass unaryContextAssertion = assertionModel.getOntClass(ConsertCore.UNARY_CONTEXT_ASSERTION.getURI());
+							OntClass naryContextAssertion = assertionModel.getOntClass(ConsertCore.NARY_CONTEXT_ASSERTION.getURI());
 							Set<? extends OntClass> supers = assertionClass.listSuperClasses().toSet();
 							
 							if (supers.contains(unaryContextAssertion) || supers.contains(naryContextAssertion)) {

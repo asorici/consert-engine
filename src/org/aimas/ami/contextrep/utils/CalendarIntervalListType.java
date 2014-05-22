@@ -1,6 +1,6 @@
 package org.aimas.ami.contextrep.utils;
 
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.DatatypeFormatException;
@@ -8,7 +8,7 @@ import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
 
 public class CalendarIntervalListType extends BaseDatatype {
-	public static final String intervalListTypeURI = ContextAssertionVocabulary.NS + "intervalListType";
+	public static final String intervalListTypeURI = ConsertCore.NS + "intervalListType";
     public static final RDFDatatype intervalListType = new CalendarIntervalListType();
 	
 	

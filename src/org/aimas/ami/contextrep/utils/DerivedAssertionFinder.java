@@ -1,6 +1,6 @@
 package org.aimas.ami.contextrep.utils;
 
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.topbraid.spin.model.Aggregation;
 import org.topbraid.spin.model.Bind;
 import org.topbraid.spin.model.Element;
@@ -41,7 +41,7 @@ public class DerivedAssertionFinder {
 	public DerivedAssertionFinder(Element rootElement, OntModel assertionModel) {
 		this.rootElement = rootElement;
 		this.assertionModel = assertionModel;
-		this.assertionResourceProp = assertionModel.getOntProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_RESOURCE);
+		this.assertionResourceProp = ConsertCore.CONTEXT_ASSERTION_RESOURCE;
 	}
 	
 	

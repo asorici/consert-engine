@@ -16,7 +16,8 @@ import org.aimas.ami.contextrep.test.performance.RunTest;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences.ContextInferenceResult;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.aimas.ami.contextrep.vocabulary.SPINVocabulary;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
@@ -91,8 +92,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			
 			// for each derivation rule do a separate inference procedure
 			for (DerivedAssertionWrapper derivationWrapper : derivationCommands) {
-				List<ContextUpdateExecutionWrapper> inferred = 
-					attemptDerivationRule(derivationWrapper, queryModel, basicContextModel, contextDataset);
+				List<ContextUpdateExecutionWrapper> inferred = attemptDerivationRule(derivationWrapper, queryModel, basicContextModel, contextDataset);
 				
 				if (!inferred.isEmpty()) {
 					inferredContextAssertions.add(derivationWrapper.getDerivedResource());
@@ -169,8 +169,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			// Use it to create a new UpdateRequest to be executed by the assertionInsertExecutor
 			
 			// step 1: identify the blank nodes that assert the annotations - there may be several deductions
-			ResIterator annotationSubjectIt = newTriples.listResourcesWithProperty(RDF.type, 
-				basicContextModel.getResource(ContextAssertionVocabulary.CONTEXT_ANNOTATION));
+			ResIterator annotationSubjectIt = newTriples.listResourcesWithProperty(RDF.type, ConsertAnnotation.CONTEXT_ANNOTATION);
 			List<Resource> annotationSubjects = annotationSubjectIt.toList();
 			
 			// There may be more inference instances - the rule applied to several entities and assertions.
@@ -181,15 +180,13 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			// instances).
 			//int nrInferenceInstances = annotationSubjects.size();
 			Resource annotationSubject = annotationSubjects.get(0);
-			NodeIterator nodeIt = newTriples.listObjectsOfProperty(annotationSubject, 
-				ResourceFactory.createProperty(ContextAssertionVocabulary.CONTEXT_ASSERTION_RESOURCE));
+			NodeIterator nodeIt = newTriples.listObjectsOfProperty(annotationSubject, ConsertCore.CONTEXT_ASSERTION_RESOURCE);
 			
 			OntResource derivedAssertionResource = basicContextModel.getOntResource(nodeIt.next().asResource());
 			ContextAssertion derivedAssertion = Config.getContextAssertionIndex().getAssertionFromResource(derivedAssertionResource);
 				
 			// step 2: identify all statements having that node as subject - those are annotations
-			StmtIterator annotationIt = 
-				newTriples.listStatements(new AnnotationStatementSelector(annotationSubject));
+			StmtIterator annotationIt = newTriples.listStatements(new AnnotationStatementSelector(annotationSubject));
 			List<Statement> annotationStatements = annotationIt.toList();
 			
 			Map<Node, Update> assertionUpdates = null;
@@ -197,12 +194,10 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			// step 3: depending on the type of derived resource identify the assertion statements
 			if (derivedAssertionResource.canAs(OntProperty.class)) {
 				// we have a binary assertion
-				 assertionUpdates = getBinaryAssertionUpdates(newTriples, 
-						 derivedAssertionResource.as(OntProperty.class));
+				 assertionUpdates = getBinaryAssertionUpdates(newTriples, derivedAssertionResource.as(OntProperty.class));
 			}
 			else {
-				if (JenaUtil.hasSuperClass(derivedAssertionResource, 
-						basicContextModel.getOntClass(ContextAssertionVocabulary.UNARY_CONTEXT_ASSERTION))) {
+				if (JenaUtil.hasSuperClass(derivedAssertionResource, basicContextModel.getOntClass(ConsertCore.UNARY_CONTEXT_ASSERTION.getURI()))) {
 					// we have a unary assertion
 					assertionUpdates = getUnaryAssertionUpdates(newTriples, derivedAssertionResource);
 				}

@@ -1,6 +1,15 @@
 package org.aimas.ami.contextrep.model;
 
+import java.util.List;
+
+import org.aimas.ami.contextrep.model.exceptions.ContextAssertionContentException;
+import org.aimas.ami.contextrep.model.exceptions.ContextAssertionModelException;
+
+import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 
 public interface ContextAssertion {
 	public static enum ContextAssertionType {
@@ -50,6 +59,32 @@ public interface ContextAssertion {
 	 * this ContextAssertion.
 	 */
 	public String getAssertionStoreURI();
+	
+	/**
+	 * Get the list of statements that make up the content of the ContextAssertion instance identified by the
+	 * named graph URI <code>assertionUUID</code> and stored in the <code>contextStoreDataset</code> {@link Dataset}.
+	 * @param assertionUUID
+	 * @param contextStoreDataset
+	 * @return The list of statements that make up the content of a particular instance of a ContextAssertion
+	 * in the context dataset.
+	 */
+	public List<Statement> getAssertionContent(Resource assertionUUID, Dataset contextStoreDataset);
+	
+	/**
+	 * Produces the statements that represent the instantiation of the <code>ancestorAssertion</code> ContextAssertion
+	 * from which the current ContextAssertion inherits. The produced statements are based on the contents of the
+	 * current ContextAssertion. 
+	 * 
+	 * @param assertionUUID
+	 * @param contextStoreDataset
+	 * @param ancestorAssertion
+	 * @return The statements that compose an instance of the <code>ancestorAssertion</code>.
+	 * @throws ContextAssertionContentException
+	 * @throws ContextAssertionModelException 
+	 */
+	public List<Statement> copyToAncestor(Resource assertionUUID, Dataset contextStoreDataset, 
+		ContextAssertion ancestorAssertion, OntModel contextModel) 
+		throws ContextAssertionContentException, ContextAssertionModelException;
 	
 	
 	public boolean isUnary();

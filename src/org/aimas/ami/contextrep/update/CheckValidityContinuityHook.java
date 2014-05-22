@@ -7,7 +7,8 @@ import org.aimas.ami.contextrep.core.Config;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
-import org.aimas.ami.contextrep.vocabulary.ContextAssertionVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
+import org.aimas.ami.contextrep.vocabulary.ConsertFunctions;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.model.Template;
@@ -50,7 +51,7 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 		OntModel contextModel = Config.getBasicContextModel();
 		
 		// find the property that states the validity interval
-		Property validDuringProp = contextModel.getProperty(ContextAssertionVocabulary.CONTEXT_ANNOTATION_VALIDITY);
+		Property validDuringProp = ConsertAnnotation.HAS_VALIDITY;
 		
 		// get context assertion store URI
 		String assertionStoreURI = contextAssertion.getAssertionStoreURI();
@@ -68,8 +69,7 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 		
 		if (validityAnnotation != null) {
 			RDFNode newValidityPeriod = validityAnnotation.getObject();
-			Template closeEnoughValidity = SPINModuleRegistry.get().getTemplate(
-			        ContextAssertionVocabulary.CLOSE_ENOUGH_VALIDITY_TEMPLATE, null);
+			Template closeEnoughValidity = SPINModuleRegistry.get().getTemplate(ConsertFunctions.CLOSE_ENOUGH_VALIDITY_TEMPLATE.getURI(), null);
 			
 			// Now call the template
 			com.hp.hpl.jena.query.Query arq = ARQFactory.get().createQuery((Select) closeEnoughValidity.getBody());
