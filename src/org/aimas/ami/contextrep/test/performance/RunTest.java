@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.exceptions.ConfigException;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.test.ContextEvent;
@@ -82,11 +82,11 @@ public class RunTest {
 			PerformanceConfig configuration = gson.fromJson(jsonConfig, PerformanceConfig.class);
 			
 			// init generated context model configuration
-			Config.init(configurationFile, true);
-			Config.cleanDataset();
+			Engine.init(configurationFile, true);
+			Engine.cleanPersistentContextStore();
 			
-			Dataset dataset = Config.getContextDataset();
-			OntModel basicContextModel = Config.getBasicContextModel();
+			Dataset dataset = Engine.getRuntimeContextStore();
+			OntModel basicContextModel = Engine.getCoreContextModel();
 			
 			// ============================= build scenario events ============================== 
 			List<ContextEvent> scenarioEvents = buildScenarioEvents(configuration, basicContextModel, dataset);
@@ -112,7 +112,7 @@ public class RunTest {
 			// ========================= store statistics and graphs ============================
 			storeRunStatistics(configuration, measureCollecter);
 			
-			Config.close();
+			Engine.close(false);
 		}
         catch (ConfigException e) {
 	        e.printStackTrace();
@@ -146,8 +146,8 @@ public class RunTest {
 				config.contextAssertions.binary.nrTypes + "x" + config.contextAssertions.binary.nrInstances + "_" +
 				config.contextAssertions.nary.nrTypes + "x" + config.contextAssertions.nary.nrInstances + "_" +
 				quantificationStep + "_" +
-				Config.getAssertionInsertThreadPoolSize() + "_" + 
-				Config.getAssertionInferenceThreadPoolSize();
+				Engine.assertionInsertExecutor().getPoolSize() + "_" + 
+				Engine.assertionInferenceExecutor().getPoolSize();
 		
 		File outputFolder = new File(outputFolderName);
 		if (!outputFolder.exists()) {
@@ -422,7 +422,7 @@ public class RunTest {
 
 	private static void showDatasetContent(OntModel basicContextModel) {
 		System.out.println("######## DATASTORE ########");
-		Dataset dataset = Config.getContextDataset();
+		Dataset dataset = Engine.getRuntimeContextStore();
 		
 		dataset.begin(ReadWrite.READ);
 		Iterator<String> dataStoreNameIt = dataset.listNames();
@@ -436,7 +436,7 @@ public class RunTest {
 		
 		// unary check
 		OntResource unaryResource = basicContextModel.getOntClass(ScenarioSetup.CONTEXT_GEN_MODEL_NS + "UnaryA2");
-		ContextAssertion unaryAssertion = Config.getContextAssertionIndex().getAssertionFromResource(unaryResource);
+		ContextAssertion unaryAssertion = Engine.getContextAssertionIndex().getAssertionFromResource(unaryResource);
 		Model unaryA2StoreModel = dataset.getNamedModel(unaryAssertion.getAssertionStoreURI());
 		ScenarioInit.printStatements(unaryA2StoreModel);
 		
@@ -452,7 +452,7 @@ public class RunTest {
 		
 		// binary check
 		OntResource binaryResource = basicContextModel.getOntProperty(ScenarioSetup.CONTEXT_GEN_MODEL_NS + "BinaryA2");
-		ContextAssertion binaryAssertion = Config.getContextAssertionIndex().getAssertionFromResource(binaryResource);
+		ContextAssertion binaryAssertion = Engine.getContextAssertionIndex().getAssertionFromResource(binaryResource);
 		Model binaryA2StoreModel = dataset.getNamedModel(binaryAssertion.getAssertionStoreURI());
 		
 		ResIterator derivedBinaries = binaryA2StoreModel.listResourcesWithProperty(assertionResourceProp, binaryResource);
@@ -467,7 +467,7 @@ public class RunTest {
 		
 		// nary check
 		OntResource naryResource = basicContextModel.getOntClass(ScenarioSetup.CONTEXT_GEN_MODEL_NS + "NaryA2");
-		ContextAssertion naryAssertion = Config.getContextAssertionIndex().getAssertionFromResource(naryResource);
+		ContextAssertion naryAssertion = Engine.getContextAssertionIndex().getAssertionFromResource(naryResource);
 		Model naryA2StoreModel = dataset.getNamedModel(naryAssertion.getAssertionStoreURI());
 		
 		ResIterator derivedNaries = naryA2StoreModel.listResourcesWithProperty(assertionResourceProp, naryResource);
@@ -520,7 +520,7 @@ public class RunTest {
 					// executor
 					//System.out.println("GENERATING EVENT: " + event);
 					ContextUpdateExecutionWrapper insertTask = new ContextUpdateExecutionWrapper(event.getUpdateRequest());
-					Future<AssertionInsertResult> taskResult = Config.assertionInsertExecutor().submit(insertTask);
+					Future<AssertionInsertResult> taskResult = Engine.assertionInsertExecutor().submit(insertTask);
 					
 					insertionTaskEnqueueTime.put(insertTask.getAssertionInsertID(), System.currentTimeMillis());
 					insertionResults.put(insertTask.getAssertionInsertID(), taskResult);
@@ -548,8 +548,7 @@ public class RunTest {
 		System.out.println("BUILDING THE SCENARIO");
 		
 		// STEP 1 - populate the entityStore with the ContextEntity instances
-		String entityStoreURI = Config.getEntityStoreURI();
-		Model entityStoreModel = dataset.getNamedModel(entityStoreURI);
+		Model entityStoreModel = dataset.getNamedModel(ConsertCore.ENTITY_STORE_URI);
 		
 		for (int i = 0; i < configuration.contextEntities.nrTypes; i++) {
 			String entityURI = ScenarioSetup.CONTEXT_GEN_MODEL_NS + "E" + (i + 1);

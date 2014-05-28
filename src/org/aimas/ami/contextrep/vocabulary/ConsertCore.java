@@ -12,7 +12,9 @@ public class ConsertCore {
 	/** <p>The RDF model that holds the vocabulary terms</p> */
     private static Model m_model = ModelFactory.createDefaultModel();
 	
-	public final static String BASE_URI = "http://pervasive.semanticweb.org/ont/2014/05/consert/core";
+    private static final String CONSERT_ONT_ROOT_URI = "http://pervasive.semanticweb.org/ont/2014/05/consert/";
+    
+	public final static String BASE_URI = CONSERT_ONT_ROOT_URI + "core";
 	public final static String NS = BASE_URI + "#";
 	
     /** <p>The namespace of the vocabulary as a resource</p> */
@@ -90,4 +92,8 @@ public class ConsertCore {
 	public final static Resource CTX_USER = m_model.createResource( NS + "CtxUser", CONTEXT_AGENT_TYPE_CLASS);
 	public final static Resource CTX_AGGREGATOR = m_model.createResource( NS + "CtxAggregator", CONTEXT_AGENT_TYPE_CLASS);
 	public final static Resource CTX_HISTORIAN = m_model.createResource( NS + "CtxHistorian", CONTEXT_AGENT_TYPE_CLASS);
+	
+	// Miscellaneous 
+	////////////////
+	public static final String ENTITY_STORE_URI = CONSERT_ONT_ROOT_URI + "entityStore"; 
 }

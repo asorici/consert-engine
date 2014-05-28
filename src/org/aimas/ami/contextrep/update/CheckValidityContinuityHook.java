@@ -3,7 +3,7 @@ package org.aimas.ami.contextrep.update;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
@@ -48,7 +48,7 @@ public class CheckValidityContinuityHook extends ContextUpdateHook {
 		//        + "AssertionUUID: " + contextAssertionUUID);
 		
 		// get access to the datastore and the assertionIndex
-		OntModel contextModel = Config.getBasicContextModel();
+		OntModel contextModel = Engine.getCoreContextModel();
 		
 		// find the property that states the validity interval
 		Property validDuringProp = ConsertAnnotation.HAS_VALIDITY;

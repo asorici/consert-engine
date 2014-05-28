@@ -21,43 +21,20 @@
     <!-- policy for controlling the document manager's behaviour -->
     <processImports rdf:datatype="&xsd;boolean">true</processImports>
     <cacheModels    rdf:datatype="&xsd;boolean">true</cacheModels>
+    
+    <!-- Ignore importing SPIN related models. These will be loaded at the appropriate time when 
+     building indexes for Context Derivation Rules and Context Constraints -->
+    <ignoreImport rdf:datatype="&xsd;anyURI">http://spinrdf.org/spl</ignoreImport>
+    <ignoreImport rdf:datatype="&xsd;anyURI">http://spinrdf.org/spin</ignoreImport>
+    <ignoreImport rdf:datatype="&xsd;anyURI">http://spinrdf.org/sp</ignoreImport>
+    <ignoreImport rdf:datatype="&xsd;anyURI">http://spinrdf.org/spinowl</ignoreImport>
+    <ignoreImport rdf:datatype="&xsd;anyURI">http://topbraid.org/spin/owlrl-all</ignoreImport>
+    
 </DocumentManagerPolicy>
 
 
-<OntologySpec>
-    <!-- local version of the OWL language ontology (in OWL) -->
-    <publicURI rdf:resource="http://www.w3.org/2002/07/owl" />
-    <!-- uncomment the following line to re-direct attempts to http get the file -->
-    <altURL    rdf:resource="file:vocabularies/owl.owl" />
-    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-    <prefix    rdf:datatype="&xsd;string">owl</prefix>
-</OntologySpec>
 
-<OntologySpec>
-    <!-- local version of the RDFS vocabulary -->
-    <publicURI rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
-    <!-- uncomment the following line to re-direct attempts to http get the file -->
-    <altURL    rdf:resource="file:vocabularies/rdf-schema.rdf" />
-    <language  rdf:resource="http://www.w3.org/2000/01/rdf-schema" />
-    <prefix    rdf:datatype="&xsd;string">rdfs</prefix>
-</OntologySpec>
-
-<!-- ###################### ContextAssertion Ontology local mappings  ###################### -->
-<OntologySpec>
-    <!-- URI specification for the ContextAssertion Ontology -->
-    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion" />
-    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/core/contextassertion.spin.rdf" />
-    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-    <prefix    rdf:datatype="&xsd;string">contextassertion</prefix>
-</OntologySpec>
-
-<OntologySpec>
-    <!-- URI specification for the Ordered List Ontology -->
-    <publicURI rdf:resource="http://purl.org/ontology/olo/core" />
-    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/core/orderedlistontology.owl" />
-    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-    <prefix    rdf:datatype="&xsd;string">olo</prefix>
-</OntologySpec>
+<!-- ###################### CONSERT Ontology - default domain-base mappings  ###################### -->
 
 <OntologySpec>
     <!-- URI specification for the SOUPA action module -->
@@ -203,59 +180,6 @@
     <prefix    rdf:datatype="&xsd;string">time</prefix>
 </OntologySpec>
 
-<!-- ###################### SPIN ontologies local mappings  ###################### -->
-<OntologySpec>
-    <publicURI rdf:resource="http://spinrdf.org/spl" />
-    <altURL    rdf:resource="file:etc/ontologies/SPIN/spl.spin.ttl" />
-    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-    <prefix    rdf:datatype="&xsd;string">spl</prefix>
-</OntologySpec>
-
-<OntologySpec>
-    <publicURI rdf:resource="http://spinrdf.org/spin" />
-    <altURL    rdf:resource="file:etc/ontologies/SPIN/spin.ttl" />
-    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-    <prefix    rdf:datatype="&xsd;string">spin</prefix>
-</OntologySpec>
-
-<OntologySpec>
-    <publicURI rdf:resource="http://spinrdf.org/sp" />
-    <altURL    rdf:resource="file:etc/ontologies/SPIN/sp.ttl" />
-    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-    <prefix    rdf:datatype="&xsd;string">sp</prefix>
-</OntologySpec>
-
-<OntologySpec>
-    <publicURI rdf:resource="http://topbraid.org/spin/spinowl" />
-    <altURL    rdf:resource="file:etc/ontologies/SPIN/spinowl.ttl" />
-    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-    <prefix    rdf:datatype="&xsd;string">spinowl</prefix>
-</OntologySpec>
-
-<OntologySpec>
-    <publicURI rdf:resource="http://topbraid.org/spin/owlrl-all" />
-    <altURL    rdf:resource="file:etc/ontologies/SPIN/owlrl-all.ttl" />
-    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-    <prefix    rdf:datatype="&xsd;string">owlrl</prefix>
-</OntologySpec>
-
-
-<!-- ###################### Context Domain specific ontology URI specifications ###################### -->
-<OntologySpec>
-    <!-- URI specification for the AdHocMeeting domain ontology -->
-    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models" />
-    <altURL    rdf:resource="file:etc/ontologies/domain/models/adhocmeeting.rdf" />
-    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-    <prefix    rdf:datatype="&xsd;string">ctxmodels</prefix>
-</OntologySpec>
-
-<OntologySpec>
-    <!-- URI specification for the AdHocMeeting function definitions -->
-    <publicURI rdf:resource="http://pervasive.semanticweb.org/ont/2013/05/contextassertion/functions" />
-    <altURL    rdf:resource="file:etc/ontologies/ContextAssertion/core/functions.spin.rdf" />
-    <language  rdf:resource="http://www.w3.org/2002/07/owl" />
-    <prefix    rdf:datatype="&xsd;string">cfn</prefix>
-</OntologySpec>
 
 
 <!-- ###################### TestPerformance Domain specific ontology URI specifications ###################### -->

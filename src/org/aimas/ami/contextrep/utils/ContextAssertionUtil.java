@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
@@ -173,7 +173,7 @@ public class ContextAssertionUtil {
 	public static List<ContextAssertionUpdateListener> registerContextAssertionStoreListeners(Dataset dataset) {
 		List<ContextAssertionUpdateListener> registeredContextStoreListeners = new ArrayList<>();
 		
-		ContextAssertionIndex contextAssertionIndex = Config.getContextAssertionIndex();
+		ContextAssertionIndex contextAssertionIndex = Engine.getContextAssertionIndex();
 		Map<OntResource, ContextAssertion> assertionInfoMap = contextAssertionIndex.getAssertionInfoMap();
 		
 		for (OntResource res : assertionInfoMap.keySet()) {

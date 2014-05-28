@@ -1,6 +1,6 @@
 package org.aimas.ami.contextrep.test.adhocmeeting;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
 import org.aimas.ami.contextrep.exceptions.ConfigException;
 import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
@@ -46,14 +46,14 @@ public class TestContinuity {
 		
 		try {
 			// init configuration
-			Config.init(configurationFile, true);
+			Engine.init(configurationFile, true);
 			
-			Dataset dataset = Config.getContextDataset();
-			OntModel basicContextModel = Config.getBasicContextModel();
+			Dataset dataset = Engine.getRuntimeContextStore();
+			OntModel basicContextModel = Engine.getCoreContextModel();
 			
 			attemptContinuityDeduction(dataset, basicContextModel);
 			
-			Config.close();
+			Engine.close(false);
 		}
 		catch (ConfigException e) {
 			e.printStackTrace();
@@ -61,7 +61,7 @@ public class TestContinuity {
 	}
 
 	private static void attemptContinuityDeduction(Dataset contextStoreDataset, OntModel contextModel) {
-		ContextAssertionIndex assertionIndex = Config.getContextAssertionIndex();
+		ContextAssertionIndex assertionIndex = Engine.getContextAssertionIndex();
 		OntResource contextAssertionResource = contextModel.getOntResource(contextAssertionResourceURI);
 		
 		// find the property that states the validity interval

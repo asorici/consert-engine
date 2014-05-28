@@ -59,7 +59,7 @@ public class ScenarioSetup {
 	private void prepareTestConfiguration() { 
 	    // STEP 1: load the model containing the derivation rule schemas
 		OntDocumentManager globalDocMgr = OntDocumentManager.getInstance();
-		globalDocMgr.setMetadataSearchPath(Loader.DEFAULT_DOC_MGR_PATH, true);
+		globalDocMgr.setMetadataSearchPath(Loader.CONSERT_ONT_DOCMGR_FILE_DEFAULT, true);
 		
 		
 		OntModelSpec genContextModelSpec = new OntModelSpec(OntModelSpec.OWL_MEM);

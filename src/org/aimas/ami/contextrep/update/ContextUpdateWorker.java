@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 
@@ -65,7 +65,7 @@ public class ContextUpdateWorker extends UpdateEngineWorker {
 	public void visit(UpdateDataInsert update) {
 		super.visit(update);
 		
-		ContextAssertionIndex assertionIndex = Config.getContextAssertionIndex();
+		ContextAssertionIndex assertionIndex = Engine.getContextAssertionIndex();
 		List<Quad> quads = update.getQuads();
 		Quad firstQuad = quads.get(0);
 		Node graphNode = firstQuad.getGraph();
@@ -128,7 +128,7 @@ public class ContextUpdateWorker extends UpdateEngineWorker {
             addToGraphStore(graphStore, q);
         }
 		
-		ContextAssertionIndex assertionIndex = Config.getContextAssertionIndex();
+		ContextAssertionIndex assertionIndex = Engine.getContextAssertionIndex();
 		for (Node graphNode : updatedGraphNodes) {
 			// inspect the graph node to see if it is a
 			// ContextAssertion named graph UUID. If it is, then we are dealing with a 

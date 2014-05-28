@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
 import org.aimas.ami.contextrep.model.ContextAssertion;
@@ -18,7 +18,7 @@ import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences.ContextInferenceResult;
 import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;
-import org.aimas.ami.contextrep.vocabulary.SPINVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertRules;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
 import org.topbraid.spin.inference.SPINRuleComparator;
@@ -63,7 +63,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		//System.out.println("======== CHECKING INFERENCE FOR assertion <" + contextAssertion + ">. ");
 		
 		// get the context model
-		OntModel basicContextModel = Config.getBasicContextModel();
+		OntModel basicContextModel = Engine.getCoreContextModel();
 		
 		return attemptContextSPINInference(contextDataset, basicContextModel);
 	}
@@ -71,7 +71,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 	private InferenceHookResult attemptContextSPINInference(Dataset contextDataset, OntModel basicContextModel) {
 		long start = System.currentTimeMillis();
 		
-		DerivationRuleDictionary ruleDict = Config.getDerivationRuleDictionary();
+		DerivationRuleDictionary ruleDict = Engine.getDerivationRuleDictionary();
 		List<DerivedAssertionWrapper> derivationCommands = ruleDict.getDerivationsForAssertion(contextAssertion);
 		
 		if (derivationCommands != null) {
@@ -102,7 +102,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			
 			if (!inferredContext.isEmpty()) {
 				for (ContextUpdateExecutionWrapper inferredAssertion : inferredContext) {
-					Future<AssertionInsertResult> result = Config.assertionInsertExecutor().submit(inferredAssertion);
+					Future<AssertionInsertResult> result = Engine.assertionInsertExecutor().submit(inferredAssertion);
 					
 					RunTest.insertionTaskEnqueueTime.put(inferredAssertion.getAssertionInsertID(), System.currentTimeMillis());
 					RunTest.insertionResults.put(inferredAssertion.getAssertionInsertID(), result);
@@ -126,7 +126,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			Model queryModel,OntModel basicContextModel, Dataset contextDataset) {
 		List<ContextUpdateExecutionWrapper> inferred = new ArrayList<>();
 		
-		DerivationRuleDictionary ruleDict = Config.getDerivationRuleDictionary();
+		DerivationRuleDictionary ruleDict = Engine.getDerivationRuleDictionary();
 		
 		// Create Model for inferred triples
 		//Model newTriples = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
@@ -154,7 +154,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		//ContextInferenceResult inferenceResult = ContextSPINInferences.runContextInference(queryModel, newTriples,
 		//	cls2Query, cls2Constructor, initialTemplateBindings, null, SPINVocabulary.deriveAssertionRule, comparator);
 		ContextInferenceResult inferenceResult = ContextSPINInferences.runContextInference(queryModel, newTriples,
-			cls2Query, cls2Constructor, null, SPINVocabulary.deriveAssertionRule, comparator);
+			cls2Query, cls2Constructor, null, ConsertRules.DERIVE_ASSERTION, comparator);
 		
 		if (inferenceResult != null && inferenceResult.isInferred()) {
 			//System.out.println("[INFO] WE HAVE DEDUCED A NEW CONTEXT-ASSERTION following insertion of " + contextAssertion 
@@ -183,7 +183,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			NodeIterator nodeIt = newTriples.listObjectsOfProperty(annotationSubject, ConsertCore.CONTEXT_ASSERTION_RESOURCE);
 			
 			OntResource derivedAssertionResource = basicContextModel.getOntResource(nodeIt.next().asResource());
-			ContextAssertion derivedAssertion = Config.getContextAssertionIndex().getAssertionFromResource(derivedAssertionResource);
+			ContextAssertion derivedAssertion = Engine.getContextAssertionIndex().getAssertionFromResource(derivedAssertionResource);
 				
 			// step 2: identify all statements having that node as subject - those are annotations
 			StmtIterator annotationIt = newTriples.listStatements(new AnnotationStatementSelector(annotationSubject));

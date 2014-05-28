@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
 import org.aimas.ami.contextrep.exceptions.ConfigException;
@@ -17,7 +17,7 @@ import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.update.ContextUpdateExecutionWrapper;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
-import org.aimas.ami.contextrep.vocabulary.SPINVocabulary;
+import org.aimas.ami.contextrep.vocabulary.ConsertRules;
 import org.apache.jena.atlas.logging.LogCtl;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
@@ -55,11 +55,11 @@ public class PlayScenario {
 		
 		try {
 			// init configuration
-			Config.init(configurationFile, true);
-			Config.cleanDataset();
+			Engine.init(configurationFile, true);
+			Engine.cleanPersistentContextStore();
 			
-			Dataset dataset = Config.getContextDataset();
-			OntModel basicContextModel = Config.getBasicContextModel();
+			Dataset dataset = Engine.getRuntimeContextStore();
+			OntModel basicContextModel = Engine.getCoreContextModel();
 			OntModel basicScenarioModel = ScenarioInit.initScenario(dataset, basicContextModel);
 			
 			//attempSPINInference(dataset, basicContextModel);
@@ -91,7 +91,7 @@ public class PlayScenario {
 						
 						// wrap event for execution and send it to insert executor
 						System.out.println("GENERATING EVENT: " + event);
-						Config.assertionInsertExecutor().submit(new ContextUpdateExecutionWrapper(event.getUpdateRequest()));
+						Engine.assertionInsertExecutor().submit(new ContextUpdateExecutionWrapper(event.getUpdateRequest()));
 					}
 				}
 				
@@ -116,7 +116,7 @@ public class PlayScenario {
 			
 			
 			System.out.println("######## DATASTORE ########");
-			dataset = Config.getContextDataset();
+			dataset = Engine.getRuntimeContextStore();
 			
 			dataset.begin(ReadWrite.READ);
 			Iterator<String> dataStoreNameIt = dataset.listNames();
@@ -132,7 +132,7 @@ public class PlayScenario {
 			
 			dataset.end();
 			
-			Config.close();
+			Engine.close(false);
 		} catch (ConfigException e) {
 			e.printStackTrace();
 		}
@@ -145,7 +145,7 @@ public class PlayScenario {
 		// Initialize system functions and templates
 		SPINModuleRegistry.get().init();
 		
-		DerivationRuleDictionary ruleDict = Config.getDerivationRuleDictionary();
+		DerivationRuleDictionary ruleDict = Engine.getDerivationRuleDictionary();
 		OntProperty hasNoiseLevelProperty = basicContextModel.getOntProperty(ScenarioInit.AD_HOC_MEETING_NS + "hasNoiseLevel");
 		
 		//System.out.println(Config.getContextAssertionIndex().getAssertion2StoreMap());
@@ -160,7 +160,7 @@ public class PlayScenario {
 		Model newTriples = ModelFactory.createDefaultModel();
 		
 		List<DerivedAssertionWrapper> derivationCommands = 
-			ruleDict.getDerivationsForAssertion(Config.getContextAssertionIndex().getAssertionFromResource(hasNoiseLevelProperty));
+			ruleDict.getDerivationsForAssertion(Engine.getContextAssertionIndex().getAssertionFromResource(hasNoiseLevelProperty));
 		Map<Resource, List<CommandWrapper>> cls2Query = new HashMap<>();
 		Map<Resource, List<CommandWrapper>> cls2Constructor = new HashMap<>();
 		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = 
@@ -196,7 +196,7 @@ public class PlayScenario {
 		//ARQ.setExecutionLogging(Explain.InfoLevel.FINE);
 		ARQFactory.set(new ContextARQFactory());
 		//SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, true, SPINVocabulary.deriveAssertionRule, comparator, null);
-		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, null, null, true, SPINVocabulary.deriveAssertionRule, comparator, null);
+		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, null, null, true, ConsertRules.DERIVE_ASSERTION, comparator, null);
 		
 		System.out.println("[INFO] Ran SPIN Inference. Duration: " + 
 			(System.currentTimeMillis() - timestamp) );

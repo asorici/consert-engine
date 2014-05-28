@@ -1,5 +1,7 @@
 package org.aimas.ami.contextrep.vocabulary;
 
+import org.topbraid.spin.vocabulary.SPIN;
+
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -33,6 +35,7 @@ public class ConsertConstraint {
     // Vocabulary properties
     ////////////////////////
     
+    public final static Property CONSTRAINT = m_model.createProperty( SPIN.NS + "contextconstraint" );
     public final static Property HAS_SOURCE_TEMPLATE = m_model.createProperty( NS + "hasSourceTemplate" );
     public final static Property ON_CONTEXT_ASSERTION = m_model.createProperty( NS + "onContextAssertion" );
     public final static Property HAS_CONFLICTING_ASSERTION = m_model.createProperty( NS + "hasConflictingAssertion" );

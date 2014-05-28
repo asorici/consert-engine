@@ -2,7 +2,7 @@ package org.aimas.ami.contextrep.update;
 
 import java.util.concurrent.Callable;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.test.performance.RunTest;
 
 import com.hp.hpl.jena.query.Dataset;
@@ -28,7 +28,7 @@ public class ContextInferenceExecutionWrapper implements Callable<AssertionInfer
 		RunTest.enqueuedInferenceTracker.getAndIncrement();
 		
 		// STEP 1: start a new READ transaction on the contextStoreDataset
-		Dataset contextDataset = Config.getContextDataset();
+		Dataset contextDataset = Engine.getRuntimeContextStore();
 		contextDataset.begin(ReadWrite.READ);
 		//contextDataset.getLock().enterCriticalSection(true);
 		

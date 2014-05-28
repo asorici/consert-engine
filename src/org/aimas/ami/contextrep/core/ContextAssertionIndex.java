@@ -6,9 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.aimas.ami.contextrep.model.ContextAssertion;
+import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
+import org.aimas.ami.contextrep.model.impl.ContextAssertionImpl;
+import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
+import org.topbraid.spin.model.SPINFactory;
 
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.ontology.OntClass;
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 
 public class ContextAssertionIndex {
 	
@@ -117,7 +126,7 @@ public class ContextAssertionIndex {
 	public boolean isContextStore(Node graphNode) {
 		String graphURI = graphNode.getURI();
 		
-		if (graphURI.equalsIgnoreCase(Config.getEntityStoreURI())) {
+		if (graphURI.equalsIgnoreCase(ConsertCore.ENTITY_STORE_URI)) {
 			return true;
 		}
 		
@@ -195,4 +204,140 @@ public class ContextAssertionIndex {
 		graphURIBase2AssertionMap.put(assertionURI, assertion);
 	}
 	
+	
+	/**
+	 * Create the index structure that retains all types of ContextAssertion and the mapping
+	 * between a ContextAssertion and the named graph URI that acts as Store for that type of ContextAssertion
+	 * @param contextModelCore The ontology module that defines the core of this Context Model
+	 * @param dataset The TDB-backed dataset that holds the graphs
+	 * @return An {@link ContextAssertionIndex} instance that holds the index structure.
+	 */
+	public static ContextAssertionIndex create(OntModel contextModelCore) {
+		
+		ContextAssertionIndex assertionIndex = new ContextAssertionIndex();
+		
+		// search all EntityRelationAssertions
+		ExtendedIterator<? extends OntProperty> relationPropIt = 
+			contextModelCore.getOntProperty(ConsertCore.ENTITY_RELATION_ASSERTION.getURI()).listSubProperties();
+		
+		for (; relationPropIt.hasNext();) {
+			OntProperty prop = relationPropIt.next();
+			if (!SPINFactory.isAbstract(prop)) {
+				ContextAssertionType assertionType = ContextAssertionUtil.getType(prop, contextModelCore);
+				ContextAssertion assertion = ContextAssertionImpl.createBinary(assertionType, 2, prop);
+				
+				switch(assertionType) {
+				case Static:
+					assertionIndex.addStaticContextAssertion(assertion);
+					break;
+				case Profiled:
+					assertionIndex.addProfiledContextAssertion(assertion);
+					break;
+				case Sensed:
+					assertionIndex.addSensedContextAssertion(assertion);
+					break;
+				case Derived:
+					assertionIndex.addDerivedContextAssertion(assertion);
+					break;
+				default:
+					break;
+				}
+				
+				assertionIndex.mapAssertionStorage(assertion);
+			}
+		}
+		
+		// search all EntityDataAssertions
+		ExtendedIterator<? extends OntProperty> dataPropIt = 
+			contextModelCore.getOntProperty(ConsertCore.ENTITY_DATA_ASSERTION.getURI()).listSubProperties();
+		
+		for (; dataPropIt.hasNext();) {
+			OntProperty prop = dataPropIt.next();
+			if (!SPINFactory.isAbstract(prop)) {
+				ContextAssertionType assertionType = ContextAssertionUtil.getType(prop, contextModelCore);
+				ContextAssertion assertion = ContextAssertionImpl.createBinary(assertionType, 2, prop);
+				
+				switch(assertionType) {
+				case Static:
+					assertionIndex.addStaticContextAssertion(assertion);
+					break;
+				case Profiled:
+					assertionIndex.addProfiledContextAssertion(assertion);
+					break;
+				case Sensed:
+					assertionIndex.addSensedContextAssertion(assertion);
+					break;
+				case Derived:
+					assertionIndex.addDerivedContextAssertion(assertion);
+					break;
+				default:
+					break;
+				}
+				
+				assertionIndex.mapAssertionStorage(assertion);
+			}
+		}
+
+		// create stores for subclasses of UnaryContextAssertion 
+		ExtendedIterator<OntClass> unaryClassIt = contextModelCore
+			.getOntClass(ConsertCore.UNARY_CONTEXT_ASSERTION.getURI()).listSubClasses();
+		for (; unaryClassIt.hasNext();) {
+			OntClass cls = unaryClassIt.next();
+			if (!SPINFactory.isAbstract(cls)) {
+				ContextAssertionType assertionType = ContextAssertionUtil.getType(cls, contextModelCore);
+				ContextAssertion assertion = ContextAssertionImpl.createUnary(assertionType, 1, cls, contextModelCore);
+				
+				switch(assertionType) {
+				case Static:
+					assertionIndex.addStaticContextAssertion(assertion);
+					break;
+				case Profiled:
+					assertionIndex.addProfiledContextAssertion(assertion);
+					break;
+				case Sensed:
+					assertionIndex.addSensedContextAssertion(assertion);
+					break;
+				case Derived:
+					assertionIndex.addDerivedContextAssertion(assertion);
+					break;
+				default:
+					break;
+				}
+				
+				assertionIndex.mapAssertionStorage(assertion);
+			}
+		}
+		
+		// and subclasses of NaryContextAssertion
+		ExtendedIterator<OntClass> naryClassIt = contextModelCore
+			.getOntClass(ConsertCore.NARY_CONTEXT_ASSERTION.getURI()).listSubClasses();
+		for (; naryClassIt.hasNext();) {
+			OntClass cls = naryClassIt.next();
+			if (!SPINFactory.isAbstract(cls)) {
+				ContextAssertionType assertionType = ContextAssertionUtil.getType(cls, contextModelCore);
+				ContextAssertion assertion = ContextAssertionImpl.createNary(assertionType, 3, cls, contextModelCore);
+				
+				switch(assertionType) {
+				case Static:
+					assertionIndex.addStaticContextAssertion(assertion);
+					break;
+				case Profiled:
+					assertionIndex.addProfiledContextAssertion(assertion);
+					break;
+				case Sensed:
+					assertionIndex.addSensedContextAssertion(assertion);
+					break;
+				case Derived:
+					assertionIndex.addDerivedContextAssertion(assertion);
+					break;
+				default:
+					break;
+				}
+				
+				assertionIndex.mapAssertionStorage(assertion);
+			}
+		}
+		
+		return assertionIndex;
+	}
 }

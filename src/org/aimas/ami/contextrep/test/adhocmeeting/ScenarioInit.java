@@ -4,13 +4,14 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
 import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.JenaUtil;
 
@@ -168,8 +169,7 @@ public class ScenarioInit {
 	
 	
 	private static void insertInitialGeneralStore(OntModel initialModel, Dataset dataset) {
-		String entityStoreURI = Config.getEntityStoreURI();
-		Model entityStore = dataset.getNamedModel(entityStoreURI);
+		Model entityStore = dataset.getNamedModel(ConsertCore.ENTITY_STORE_URI);
 		
 		entityStore.add(initialModel);
 		TDB.sync(entityStore);
@@ -213,7 +213,7 @@ public class ScenarioInit {
 		
 		// ======== create annotations and insert them in the appropriate named graphs in the dataset ========
 		String deviceRoomSectionGraphURI = 
-			Config.getContextAssertionIndex().getAssertionFromResource(deviceRoomSection).getAssertionStoreURI();
+			Engine.getContextAssertionIndex().getAssertionFromResource(deviceRoomSection).getAssertionStoreURI();
 		Model deviceRoomSectionGraph = dataset.getNamedModel(deviceRoomSectionGraphURI);
 		
 		Calendar timestamp = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -279,7 +279,7 @@ public class ScenarioInit {
 			GraphUUIDGenerator.createUUID(ScenarioInit.AD_HOC_MEETING_BASE, assertionClass.getLocalName());
 		
 		String sensesSkeletonGraphURI = 
-			Config.getContextAssertionIndex().getAssertionFromResource(assertionClass).getAssertionStoreURI();
+			Engine.getContextAssertionIndex().getAssertionFromResource(assertionClass).getAssertionStoreURI();
 		Model sensesSkeletonGraph = dataset.getNamedModel(sensesSkeletonGraphURI);
 		
 		Individual sittingPosition = contextModel.getIndividual(ScenarioInit.AD_HOC_MEETING_NS + "sitting");
@@ -352,7 +352,7 @@ public class ScenarioInit {
 			GraphUUIDGenerator.createUUID(ScenarioInit.AD_HOC_MEETING_BASE, assertionProperty.getLocalName());
 		
 		String hasNoiseLevelGraphURI = 
-			Config.getContextAssertionIndex().getAssertionFromResource(assertionProperty).getAssertionStoreURI();
+			Engine.getContextAssertionIndex().getAssertionFromResource(assertionProperty).getAssertionStoreURI();
 		Model hasNoiseLevelGraph = dataset.getNamedModel(hasNoiseLevelGraphURI);
 		
 		Model hasNoiseLevel1Graph = dataset.getNamedModel(hasNoiseLevelID1);

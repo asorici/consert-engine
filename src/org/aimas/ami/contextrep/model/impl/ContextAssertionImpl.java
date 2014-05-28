@@ -171,7 +171,8 @@ public abstract class ContextAssertionImpl implements ContextAssertion {
 		
 		return assertionRoleMap;
 	}
-
+	
+	
 	@Override
     public List<Statement> getAssertionContent(Resource assertionUUIDRes, Dataset contextStoreDataset) {
 		// get the model store containing the ContextAssertion contents

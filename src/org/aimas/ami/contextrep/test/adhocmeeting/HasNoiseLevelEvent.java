@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
@@ -102,7 +102,7 @@ public class HasNoiseLevelEvent extends ContextEvent {
 		
 		// create update quads
 		Node storeURINode = NodeFactory.createURI(
-			Config.getContextAssertionIndex().getAssertionFromResource(assertionProperty).getAssertionStoreURI());
+			Engine.getContextAssertionIndex().getAssertionFromResource(assertionProperty).getAssertionStoreURI());
 		OntProperty assertedBy = contextModel.getOntProperty(ConsertAnnotation.HAS_SOURCE.getURI());
 		OntProperty hasTimestamp = contextModel.getOntProperty(ConsertAnnotation.HAS_TIMESTAMP.getURI());
 		OntProperty validDuring = contextModel.getOntProperty(ConsertAnnotation.HAS_VALIDITY.getURI());

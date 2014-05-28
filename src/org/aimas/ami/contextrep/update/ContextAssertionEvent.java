@@ -1,6 +1,6 @@
 package org.aimas.ami.contextrep.update;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 
 import com.hp.hpl.jena.graph.GraphEvents;
@@ -20,6 +20,6 @@ public class ContextAssertionEvent extends GraphEvents {
 	
 	public ContextAssertion getAssertion() {
 		Node graphNode = (Node)content;
-		return Config.getContextAssertionIndex().getAssertionFromGraphUUID(graphNode);
+		return Engine.getContextAssertionIndex().getAssertionFromGraphUUID(graphNode);
 	}
 }

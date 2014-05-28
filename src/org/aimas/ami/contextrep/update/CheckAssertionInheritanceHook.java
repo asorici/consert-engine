@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.model.BinaryContextAssertion;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.NaryContextAssertion;
@@ -50,7 +50,7 @@ public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 		long start = System.currentTimeMillis();
 		
 		// get access to the datastore and the assertionIndex
-		OntModel contextModel = Config.getBasicContextModel();
+		OntModel contextModel = Engine.getCoreContextModel();
 		
 		// determine if this ContextAssertion has ancestors from which it inherits
 		List<ContextAssertion> assertionAncestorList = 
@@ -74,7 +74,7 @@ public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 	            // enqueue them as individual insertion requests
 	            for (UpdateRequest req : ancestorAssertionInsertions) {
 	            	ContextUpdateExecutionWrapper ancestorInsertWrapper = new ContextUpdateExecutionWrapper(req);
-	            	Future<AssertionInsertResult> result = Config.assertionInsertExecutor().submit(ancestorInsertWrapper);
+	            	Future<AssertionInsertResult> result = Engine.assertionInsertExecutor().submit(ancestorInsertWrapper);
 					
 					RunTest.insertionTaskEnqueueTime.put(ancestorInsertWrapper.getAssertionInsertID(), System.currentTimeMillis());
 					RunTest.insertionResults.put(ancestorInsertWrapper.getAssertionInsertID(), result);

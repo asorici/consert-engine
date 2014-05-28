@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;
@@ -90,7 +90,7 @@ public class ContextUpdateUtil {
 					String varName = quad.getGraph().getName();
 					RDFNode binding = templateBindings.get(varName);
 					if(binding != null && binding.isURIResource()) {
-						if (storesOnly && Config.getContextAssertionIndex().isContextStore(binding.asNode())) {
+						if (storesOnly && Engine.getContextAssertionIndex().isContextStore(binding.asNode())) {
 							results.add(binding.asNode());
 						}
 						else if (!storesOnly) {
@@ -100,7 +100,7 @@ public class ContextUpdateUtil {
 				}
 			}
 			else {
-				if (storesOnly && Config.getContextAssertionIndex().isContextStore(quad.getGraph())) {
+				if (storesOnly && Engine.getContextAssertionIndex().isContextStore(quad.getGraph())) {
 					results.add(quad.getGraph());
 				}
 				else if (!storesOnly) {
@@ -153,7 +153,7 @@ public class ContextUpdateUtil {
 		
 		if (directAssertionParent != null) {
 			OntResource assertionOntRes = contextModel.getOntResource(directAssertionParent);
-			return Config.getContextAssertionIndex().getAssertionFromResource(assertionOntRes);
+			return Engine.getContextAssertionIndex().getAssertionFromResource(assertionOntRes);
 		}
 		
 		return null;

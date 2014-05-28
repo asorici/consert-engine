@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.aimas.ami.contextrep.core.Config;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.utils.CalendarInterval;
 import org.aimas.ami.contextrep.utils.CalendarIntervalList;
@@ -115,7 +115,7 @@ public class SenseSkeletonSittingEvent extends ContextEvent {
 		
 		// create update quads
 		Node storeURINode = NodeFactory.createURI(
-			Config.getContextAssertionIndex().getAssertionFromResource(assertionClass).getAssertionStoreURI());
+			Engine.getContextAssertionIndex().getAssertionFromResource(assertionClass).getAssertionStoreURI());
 		
 		OntProperty assertedBy = contextModel.getOntProperty(ConsertAnnotation.HAS_SOURCE.getURI());
 		OntProperty hasTimestamp = contextModel.getOntProperty(ConsertAnnotation.HAS_TIMESTAMP.getURI());

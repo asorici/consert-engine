@@ -3,8 +3,8 @@ package org.aimas.ami.contextrep.update;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.aimas.ami.contextrep.core.Config;
-import org.aimas.ami.contextrep.core.ConstraintIndex;
+import org.aimas.ami.contextrep.core.Engine;
+import org.aimas.ami.contextrep.core.ContextConstraintIndex;
 import org.aimas.ami.contextrep.model.ConstraintsWrapper;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.utils.spin.ContextConstraintViolation;
@@ -25,11 +25,11 @@ public class CheckConstraintHook extends ContextUpdateHook {
 		long start = System.currentTimeMillis();
 		
 		// see if this context assertion has any constraints attached
-		ConstraintIndex constraintIndex = Config.getConstraintIndex();
+		ContextConstraintIndex constraintIndex = Engine.getConstraintIndex();
 		ConstraintsWrapper constraints = constraintIndex.getConstraints(contextAssertion);  
 		
 		if (constraints != null) {
-			OntModel infContextModel = Config.getRdfsContextModel();
+			OntModel infContextModel = Engine.getRdfsContextModel();
 			List<SPINStatistics> stats = new LinkedList<>();
 			
 			List<ContextConstraintViolation> constraintViolations = 
