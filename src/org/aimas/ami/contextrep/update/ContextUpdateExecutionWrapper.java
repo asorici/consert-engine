@@ -8,10 +8,13 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
-import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
+import org.aimas.ami.contextrep.core.Engine;
+import org.aimas.ami.contextrep.core.api.InsertException;
+import org.aimas.ami.contextrep.core.api.InsertResult;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.test.performance.RunTest;
+import org.aimas.ami.contextrep.update.performance.AssertionInferenceResult;
 import org.aimas.ami.contextrep.utils.ContextUpdateUtil;
 
 import com.hp.hpl.jena.graph.Node;
@@ -24,9 +27,8 @@ import com.hp.hpl.jena.update.Update;
 import com.hp.hpl.jena.update.UpdateAction;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertResult> {
-	private static int counter = 0;
-	private int assertionInsertID = counter++;
+public class ContextUpdateExecutionWrapper implements Callable<InsertResult> {
+	private int assertionInsertID;
 	
 	private UpdateRequest request;
 	
@@ -35,34 +37,37 @@ public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertRe
 	}
 	
 	
+	public void setAssertionInsertID(int id) {
+		assertionInsertID = id;
+	}
+	
 	public int getAssertionInsertID() {
 		return assertionInsertID;
 	}
 	
 	
 	@Override
-    public AssertionInsertResult call() {
+    public InsertResult call() {
 		long start = System.currentTimeMillis();
 		
 		// for testing increment the atomic counter
-		RunTest.executedInsertionsTracker.getAndIncrement();
+		// TODO performance collection: RunTest.executedInsertionsTracker.getAndIncrement();
 		
 		// STEP 1: start a new WRITE transaction on the contextStoreDataset
 		Dataset contextDataset = Engine.getRuntimeContextStore();
 		contextDataset.begin(ReadWrite.WRITE);
 		
-		//contextDataset.getLock().enterCriticalSection(false);
-		
-		List<ContextAssertion> insertedContextAssertions = new LinkedList<>();
-		List<CheckValidityContinuityHook> continuityChecks = new LinkedList<>();
-		List<CheckConstraintHook> constraintChecks = new LinkedList<>();
-		List<CheckInferenceHook> inferenceChecks = new LinkedList<>();
-		
-		List<ContinuityHookResult> continuityResults = null;
-		List<ConstraintHookResult> constraintResults = null;
-		
 		// STEP 2: analyze request
 		List<Node> updatedContextStores = new ArrayList<>(analyzeRequest(contextDataset, null));
+		
+		ContextAssertion insertedAssertion = null;
+		Node insertedAssertionUUID = null;
+		
+		ContinuityResult continuityResult = null;
+		ConstraintResult constraintResult = null;
+		AssertionInheritanceResult inheritanceResult = null;
+		
+		CheckInferenceHook inferenceHook = null;
 		
 		try {
 			// STEP 3: determine the inserted ContextAssertion based on the request analysis - the updates context stores
@@ -71,34 +76,45 @@ public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertRe
 			for (Node graphNode : updatedContextStores) {
 				if (Engine.getContextAssertionIndex().isContextAssertionUUID(graphNode)) {
 					// get the inserted assertion
-					ContextAssertion assertion = Engine.getContextAssertionIndex().getAssertionFromGraphUUID(graphNode);
-					insertedContextAssertions.add(assertion);
-					
-					// add continuity checks for it
-					continuityChecks.add(new CheckValidityContinuityHook(assertion, graphNode));
-					
-					// add constraint checks for it
-					constraintChecks.add(new CheckConstraintHook(assertion));
-					
-					// add inference checks for it
-					DerivationRuleDictionary ruleDict = Engine.getDerivationRuleDictionary();
-					if (ruleDict.getDerivationsForAssertion(assertion) != null) {
-						inferenceChecks.add(new CheckInferenceHook(assertion));
-					}
+					insertedAssertion = Engine.getContextAssertionIndex().getAssertionFromGraphUUID(graphNode);
+					insertedAssertionUUID = graphNode;
+					break;	// break since WE IMPOSE !!! that there be only one instance in the UpdateRequest
 				}
 			}
-			
-			//for (Node graphNode : updatedContextStores) {
-			//	contextDataset.asDatasetGraph().getGraph(graphNode).getTransactionHandler().begin();
-			//}
 			
 			// STEP 4: execute updates
 			GraphStore graphStore = GraphStoreFactory.create(contextDataset);
 			UpdateAction.execute(request, graphStore);
 			
-			// STEP 5: execute VALIDITY_CONTINUITY and CONSTRAINT HOOKS
-			continuityResults = execContinuityHooks(continuityChecks, contextDataset);
-			constraintResults = execConstraintHooks(constraintChecks, contextDataset);
+			// STEP 5: if there was an assertion instance update check the hooks in order
+			if (insertedAssertion != null) {
+				// STEP 5A: first check continuity
+				continuityResult = new CheckContinuityHook(insertedAssertion, insertedAssertionUUID).exec(contextDataset);
+				if (continuityResult.hasError()) {
+					return new InsertResult(new InsertException(continuityResult.getError()), null, false, false);
+				}
+				
+				// STEP 5B: check for constraints
+				constraintResult = new CheckConstraintHook(insertedAssertion).exec(contextDataset);
+				if (constraintResult.hasError()) {
+					return new InsertResult(new InsertException(constraintResult.getError()), null, false, false);
+				}
+				else if (constraintResult.hasViolation()) {
+					return new InsertResult(null, constraintResult.getViolations(), continuityResult.hasContinuity(), false);
+				}
+				
+				// STEP 5C: if all is well up to here, check for inheritance
+				inheritanceResult = new CheckAssertionInheritanceHook(insertedAssertion, insertedAssertionUUID).exec(contextDataset);
+				if (inheritanceResult.hasError()) {
+					return new InsertResult(new InsertException(constraintResult.getError()), null, false, false);
+				}
+			}
+			
+			// STEP 5D: if all good up to here, add inference checks for the new assertion
+			DerivationRuleDictionary ruleDict = Engine.getDerivationRuleDictionary();
+			if (ruleDict.getDerivationsForAssertion(insertedAssertion) != null) {
+				inferenceHook = new CheckInferenceHook(insertedAssertion);
+			}
 			
 			// STEP 6: commit transaction
 			contextDataset.commit();
@@ -109,17 +125,18 @@ public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertRe
 		}
 		finally {
 			contextDataset.end();
-			//contextDataset.getLock().leaveCriticalSection();
 		}
 		
 		// STEP 7: enqueue detected INFERENCE HOOK to assertionInferenceExecutor
-		enqueueInferenceHooks(inferenceChecks, assertionInsertID);
+		if (inferenceHook != null) {
+			Future<InferenceResult> result = Engine.assertionInferenceExecutor().submit(new ContextInferenceExecutionWrapper(inferenceHook));
+			// TODO: performance collection
+		}
 		
-		
-		long end = System.currentTimeMillis();
-		
-		return new AssertionInsertResult(assertionInsertID, start, (int)(end - start), insertedContextAssertions, 
-				continuityResults, constraintResults);
+		return new InsertResult(null, constraintResult.getViolations(), continuityResult.hasContinuity(), inheritanceResult.inherits());
+		// TODO: performance collection 
+		//long end = System.currentTimeMillis();
+		//return new AssertionInsertResult(assertionInsertID, start, (int)(end - start), insertedContextAssertions, continuityResults, constraintResults);
     }
 	
 	
@@ -139,13 +156,13 @@ public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertRe
 	}
 	
 	
-	protected List<ContinuityHookResult> execContinuityHooks(List<CheckValidityContinuityHook> hooks, Dataset contextStoreDataset) {
-		List<ContinuityHookResult> hookResults = new LinkedList<>();
+	protected List<ContinuityResult> execContinuityHooks(List<CheckContinuityHook> hooks, Dataset contextStoreDataset) {
+		List<ContinuityResult> hookResults = new LinkedList<>();
 		
 		for (int i = 0; i < hooks.size(); i++) {
-			CheckValidityContinuityHook hook = hooks.get(i);
+			CheckContinuityHook hook = hooks.get(i);
 			
-			ContinuityHookResult result = hook.exec(contextStoreDataset);
+			ContinuityResult result = hook.exec(contextStoreDataset);
 			if (result.hasError()) {
 				System.out.println("Action ERROR!");
 			}
@@ -157,13 +174,13 @@ public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertRe
 	}
 	
 	
-	protected List<ConstraintHookResult> execConstraintHooks(List<CheckConstraintHook> hooks, Dataset contextStoreDataset) {
-		List<ConstraintHookResult> hookResults = new LinkedList<>();
+	protected List<ConstraintResult> execConstraintHooks(List<CheckConstraintHook> hooks, Dataset contextStoreDataset) {
+		List<ConstraintResult> hookResults = new LinkedList<>();
 		
 		for (int i = 0; i < hooks.size(); i++) {
 			CheckConstraintHook hook = hooks.get(i);
 			
-			ConstraintHookResult result = hook.exec(contextStoreDataset);
+			ConstraintResult result = hook.exec(contextStoreDataset);
 			if (result.hasError()) {
 				System.out.println("Action ERROR!");
 			}
@@ -175,12 +192,13 @@ public class ContextUpdateExecutionWrapper implements Callable<AssertionInsertRe
 	}
 	
 	
-	private void enqueueInferenceHooks(List<CheckInferenceHook> inferenceHooks, int assertionInsertID) {
+	private void enqueueInferenceHooks(List<CheckInferenceHook> inferenceHooks) {
 	    for (CheckInferenceHook hook : inferenceHooks) {
-	    	Future<AssertionInferenceResult> result = Engine.assertionInferenceExecutor().submit(new ContextInferenceExecutionWrapper(hook, assertionInsertID));
+	    	Future<InferenceResult> result = Engine.assertionInferenceExecutor().submit(new ContextInferenceExecutionWrapper(hook));
 	    	
-	    	RunTest.inferenceTaskEnqueueTime.put(assertionInsertID, System.currentTimeMillis());
-	    	RunTest.inferenceResults.put(assertionInsertID, result);
+	    	// TODO: figure out performance collection
+	    	//RunTest.inferenceTaskEnqueueTime.put(assertionInsertID, System.currentTimeMillis());
+	    	//RunTest.inferenceResults.put(assertionInsertID, result);
 	    }
     }
 }

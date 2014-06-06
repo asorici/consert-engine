@@ -11,7 +11,7 @@ import java.util.TimeZone;
 import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
-import org.aimas.ami.contextrep.exceptions.ConfigException;
+import org.aimas.ami.contextrep.core.api.ConfigException;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
 import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.update.ContextUpdateExecutionWrapper;

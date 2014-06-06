@@ -4,7 +4,7 @@
  * For more information, see http://timeandmoney.sourceforge.net.
  */
 
-package org.aimas.ami.contextrep.utils;
+package org.aimas.ami.contextrep.datatype;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

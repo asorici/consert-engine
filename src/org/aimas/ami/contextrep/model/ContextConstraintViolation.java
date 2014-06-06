@@ -1,10 +1,10 @@
-package org.aimas.ami.contextrep.utils.spin;
-
-import org.aimas.ami.contextrep.model.ContextAssertion;
+package org.aimas.ami.contextrep.model;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class ContextConstraintViolation {
+	public enum ContextConstraintType { Uniqueness, Value }
+	
 	/*
 	 * The context assertion for which the constraint is expressed
 	 */
@@ -15,10 +15,13 @@ public class ContextConstraintViolation {
 	 */
 	private Resource constraintSource;
 	
-	public ContextConstraintViolation(ContextAssertion constrainedAssertion, Resource constraintSource) {
+	private ContextConstraintType constraintType;
+	
+	public ContextConstraintViolation(ContextAssertion constrainedAssertion, Resource constraintSource, ContextConstraintType constraintType) {
 	    
 		this.constrainedAssertion = constrainedAssertion;
 	    this.constraintSource = constraintSource;
+	    this.constraintType = constraintType;
     }
 
 
@@ -29,5 +32,19 @@ public class ContextConstraintViolation {
 
 	public Resource getConstraintSource() {
 		return constraintSource;
+	}
+	
+	
+	public ContextConstraintType getType() {
+		return constraintType;
+	}
+	
+	public boolean isUniquenessConstraint() {
+		return constraintType == ContextConstraintType.Uniqueness;
+	}
+	
+	
+	public boolean isValueConstraint() {
+		return constraintType == ContextConstraintType.Value;
 	}
 }

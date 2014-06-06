@@ -1,4 +1,4 @@
-package org.aimas.ami.contextrep.utils;
+package org.aimas.ami.contextrep.datatype;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

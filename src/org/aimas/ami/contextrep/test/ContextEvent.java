@@ -2,10 +2,10 @@ package org.aimas.ami.contextrep.test;
 
 import java.util.Calendar;
 
+import org.aimas.ami.contextrep.datatype.CalendarInterval;
+import org.aimas.ami.contextrep.datatype.CalendarIntervalList;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.test.adhocmeeting.ScenarioInit;
-import org.aimas.ami.contextrep.utils.CalendarInterval;
-import org.aimas.ami.contextrep.utils.CalendarIntervalList;
 import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
 import org.aimas.ami.contextrep.vocabulary.ConsertConstraint;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;

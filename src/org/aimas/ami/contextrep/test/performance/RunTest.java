@@ -25,15 +25,15 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.aimas.ami.contextrep.core.Engine;
-import org.aimas.ami.contextrep.exceptions.ConfigException;
+import org.aimas.ami.contextrep.core.api.ConfigException;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.test.adhocmeeting.ScenarioInit;
-import org.aimas.ami.contextrep.update.AssertionInferenceResult;
-import org.aimas.ami.contextrep.update.AssertionInsertResult;
-import org.aimas.ami.contextrep.update.ConstraintHookResult;
+import org.aimas.ami.contextrep.update.ConstraintResult;
 import org.aimas.ami.contextrep.update.ContextUpdateExecutionWrapper;
-import org.aimas.ami.contextrep.update.ContinuityHookResult;
+import org.aimas.ami.contextrep.update.ContinuityResult;
+import org.aimas.ami.contextrep.update.performance.AssertionInferenceResult;
+import org.aimas.ami.contextrep.update.performance.AssertionInsertResult;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.apache.jena.atlas.logging.LogCtl;
@@ -57,6 +57,17 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class RunTest {
 	private static final int DELAY_MILLIS = 100;
 	private static final String TEST_DIR = "tests" + File.separator + "performance";
+	
+	private static int insertionCounter = 0;
+	private static int inferenceCounter = 0;
+	
+	public static synchronized int getInsertCounterID() {
+		return insertionCounter++;
+	}
+	
+	public static synchronized int getInferenceCounterID() {
+		return inferenceCounter++;
+	}
 	
 	public static AtomicInteger numInferredAssertions = new AtomicInteger(0);
 	public static AtomicInteger executedInsertionsTracker = new AtomicInteger(0);
@@ -260,13 +271,13 @@ public class RunTest {
 					
 					// List<ContextAssertion> insertedAssertions =
 					// insertRes.getInsertedAssertions();
-					List<ContinuityHookResult> continuityResults = insertRes.continuityResults();
-					List<ConstraintHookResult> constraintResults = insertRes.constraintResults();
+					List<ContinuityResult> continuityResults = insertRes.continuityResults();
+					List<ConstraintResult> constraintResults = insertRes.constraintResults();
 					
 					// System.out.println("	Inserted assertions - ");
 					// System.out.println("	continuity results - ");
 					if (continuityResults != null) {
-						for (ContinuityHookResult continuityRes : continuityResults) {
+						for (ContinuityResult continuityRes : continuityResults) {
 							int continuityDuration = continuityRes.getDuration();
 							
 							measureCollecter.performanceResult.averageContinuityCheckDuration += continuityDuration;
@@ -281,7 +292,7 @@ public class RunTest {
 					
 					// System.out.println("	constraint results - ");
 					if (constraintResults != null) {
-						for (ConstraintHookResult constraintRes : constraintResults) {
+						for (ConstraintResult constraintRes : constraintResults) {
 							if (constraintRes.hasConstraint()) {
 								int constraintDuration = constraintRes.getDuration();
 								

@@ -1,11 +1,9 @@
 package org.aimas.ami.contextrep.model;
 
 import java.util.List;
-import java.util.Map;
 
 import org.topbraid.spin.util.CommandWrapper;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 public class ConstraintsWrapper {

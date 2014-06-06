@@ -5,11 +5,19 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.aimas.ami.contextrep.exceptions.ConfigException;
+import org.aimas.ami.contextrep.core.api.ConfigException;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.topbraid.spin.util.JenaUtil;
+import org.topbraid.spin.vocabulary.SP;
+import org.topbraid.spin.vocabulary.SPIN;
+import org.topbraid.spin.vocabulary.SPL;
 
+import com.hp.hpl.jena.graph.Graph;
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.graph.Triple;
+import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
@@ -18,6 +26,8 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.base.file.Location;
+import com.hp.hpl.jena.vocabulary.OWL;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class Loader {
 	public static final String CONSERT_PERSISTENT_STORAGE_ASSEMBLER_FILE_DEFAULT = "etc/context-tdb-assembler.ttl";
@@ -345,4 +355,47 @@ public class Loader {
 		return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_MINI_RULE_INF, basicContextModel);
 	}
 	
+	/**
+	 * Return an extended {@link OntModel} context domain ontology module (with no entailement specification), 
+	 * where the SPL, SPIN and SP namespaces have been added to the <code>baseContextModelModule</code>.
+	 * @param baseContextModelModule The context domain ontology module to extend with the SPIN imports
+	 * @return An {@link OntModel} with no entailement specification, extended with the contents of the 
+	 * 		SPL, SPIN and SP ontologies
+	 */
+	public static OntModel ensureSPINImported(OntModel baseContextModelModule) {
+		Graph baseGraph = baseContextModelModule.getGraph();
+		MultiUnion spinUnion = JenaUtil.createMultiUnion();
+		
+		ensureImported(baseGraph, spinUnion, SP.BASE_URI, SP.getModel());
+		ensureImported(baseGraph, spinUnion, SPL.BASE_URI, SPL.getModel());
+		ensureImported(baseGraph, spinUnion, SPIN.BASE_URI, SPIN.getModel());
+		Model unionModel = ModelFactory.createModelForGraph(spinUnion);
+		
+		return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, unionModel.union(baseContextModelModule));
+	}
+	
+	
+	/**
+	 * Return an extended Jena {@link Model}, where the SPL, SPIN and SP namespaces have been added to 
+	 * the <code>baseModel</code>.
+	 * @param baseModel The model to extend with the SPIN imports.
+	 * @return An {@link Model} extended with the contents of the SPL, SPIN and SP ontologies.
+	 */
+	public static Model ensureSPINImported(Model baseModel) {
+		Graph baseGraph = baseModel.getGraph();
+		MultiUnion spinUnion = JenaUtil.createMultiUnion();
+		
+		ensureImported(baseGraph, spinUnion, SP.BASE_URI, SP.getModel());
+		ensureImported(baseGraph, spinUnion, SPL.BASE_URI, SPL.getModel());
+		ensureImported(baseGraph, spinUnion, SPIN.BASE_URI, SPIN.getModel());
+		Model unionModel = ModelFactory.createModelForGraph(spinUnion);
+		
+		return unionModel;
+	}
+	
+	private static void ensureImported(Graph baseGraph, MultiUnion union, String baseURI, Model model) {
+		if(!baseGraph.contains(Triple.create(NodeFactory.createURI(baseURI), RDF.type.asNode(), OWL.Ontology.asNode()))) {
+			union.addGraph(model.getGraph());
+		}
+	}
 }

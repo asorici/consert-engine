@@ -8,7 +8,7 @@ import java.util.Map;
 import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
-import org.aimas.ami.contextrep.exceptions.ConfigException;
+import org.aimas.ami.contextrep.core.api.ConfigException;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;

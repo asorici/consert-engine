@@ -1,8 +1,10 @@
-package org.aimas.ami.contextrep.update;
+package org.aimas.ami.contextrep.update.performance;
 
 import java.util.List;
 
 import org.aimas.ami.contextrep.model.ContextAssertion;
+import org.aimas.ami.contextrep.update.ConstraintResult;
+import org.aimas.ami.contextrep.update.ContinuityResult;
 
 public class AssertionInsertResult implements Comparable<AssertionInsertResult> {
 	private int referenceID;
@@ -11,12 +13,12 @@ public class AssertionInsertResult implements Comparable<AssertionInsertResult> 
 	
 	private List<ContextAssertion> insertedAssertions;
 	
-	private List<ContinuityHookResult> continuityResults;
-	private List<ConstraintHookResult> constraintResults;
+	private List<ContinuityResult> continuityResults;
+	private List<ConstraintResult> constraintResults;
 	
 	
 	public AssertionInsertResult(int referenceID, long startTime, int duration, List<ContextAssertion> insertedAssertions, 
-			List<ContinuityHookResult> continuityResults, List<ConstraintHookResult> constraintResults) {
+			List<ContinuityResult> continuityResults, List<ConstraintResult> constraintResults) {
 	    this.referenceID = referenceID;
 	    this.startTime = startTime;
 	    this.duration = duration;
@@ -42,11 +44,11 @@ public class AssertionInsertResult implements Comparable<AssertionInsertResult> 
 		return insertedAssertions;
 	}
 	
-	public List<ContinuityHookResult> continuityResults() {
+	public List<ContinuityResult> continuityResults() {
 	    return continuityResults;
     }
 
-	public List<ConstraintHookResult> constraintResults() {
+	public List<ConstraintResult> constraintResults() {
 	    return constraintResults;
     }
 

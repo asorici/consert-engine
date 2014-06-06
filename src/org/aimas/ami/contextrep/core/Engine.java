@@ -8,7 +8,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.aimas.ami.contextrep.exceptions.ConfigException;
+import org.aimas.ami.contextrep.core.api.ConfigException;
+import org.aimas.ami.contextrep.test.PerformanceRunner;
 import org.aimas.ami.contextrep.update.ContextAssertionUpdateEngine;
 
 import com.hp.hpl.jena.ontology.OntModel;
@@ -22,6 +23,17 @@ import com.hp.hpl.jena.tdb.base.file.Location;
 public class Engine {
 	
 	private static final String CONFIG_FILENAME = "etc/config.properties";
+	
+	// ========== Internal usage elements - Performance testing ==========
+	private static PerformanceRunner performanceRunner;
+	
+	public static void enablePerformanceTest(PerformanceRunner runner) {
+		Engine.performanceRunner = runner;
+	}
+	
+	public boolean performaceTestEnabled() {
+		return Engine.performanceRunner != null;
+	}
 	
 	// ========== CONSERT Engine storage ==========
 	/** Path to persistent TDB contextStore */

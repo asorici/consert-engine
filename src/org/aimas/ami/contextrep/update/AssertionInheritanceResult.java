@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.aimas.ami.contextrep.model.ContextAssertion;
 
-public class AssertionInheritanceHookResult extends HookResult {
+public class AssertionInheritanceResult extends HookResult {
 	
 	private List<ContextAssertion> ancestorAssertionList;
 	
-	public AssertionInheritanceHookResult(long startTime, int duration, boolean error, 
+	public AssertionInheritanceResult(ContextAssertion assertion, Exception error, 
 			List<ContextAssertion> ancestorAssertionList) {
 	    
-		super(startTime, duration, error);
+		super(assertion, error);
 	    this.ancestorAssertionList = ancestorAssertionList;
     }
 	

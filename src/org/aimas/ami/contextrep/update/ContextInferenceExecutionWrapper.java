@@ -4,25 +4,39 @@ import java.util.concurrent.Callable;
 
 import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.test.performance.RunTest;
+import org.aimas.ami.contextrep.update.performance.AssertionInferenceResult;
 
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 
 
-public class ContextInferenceExecutionWrapper implements Callable<AssertionInferenceResult> {
+public class ContextInferenceExecutionWrapper implements Callable<InferenceResult> {
 	private CheckInferenceHook inferenceHook;
-	private int assertionInsertID;	// the ID corresponding to the assertion insert that triggered this inference hook
 	
-	public ContextInferenceExecutionWrapper(CheckInferenceHook inferenceHook, int assertionInsertID) {
+	/** 
+	 * The ID corresponding to the assertion insert that triggered this inference hook. 
+	 * Used only during performance tests.
+	 */
+	private int referenceID;
+	
+	public void setReferenceID(int id) {
+		referenceID = id;
+	}
+	
+	public int getReferenceID() {
+		return referenceID;
+	}
+	
+	
+	public ContextInferenceExecutionWrapper(CheckInferenceHook inferenceHook) {
 		this.inferenceHook = inferenceHook;
-		this.assertionInsertID = assertionInsertID;
 	}
 	
 	@Override
-	public AssertionInferenceResult call() {
+	public InferenceResult call() {
 		long start = System.currentTimeMillis();
 		
-		InferenceHookResult inferenceHookResult = null;
+		InferenceResult inferenceHookResult = null;
 		
 		// for test purposes increment atomic counter
 		RunTest.enqueuedInferenceTracker.getAndIncrement();
@@ -45,8 +59,9 @@ public class ContextInferenceExecutionWrapper implements Callable<AssertionInfer
 			//contextDataset.getLock().leaveCriticalSection();
 		}
 		
-		long end = System.currentTimeMillis();
-		return new AssertionInferenceResult(assertionInsertID, start, (int)(end - start), 
-				inferenceHook.getContextAssertion(), inferenceHookResult);
+		return inferenceHookResult;
+		// TODO: performance collection
+		//long end = System.currentTimeMillis();
+		//return new AssertionInferenceResult(referenceID, start, (int)(end - start), inferenceHook.getContextAssertion(), inferenceHookResult);
 	}
 }

@@ -2,7 +2,6 @@ package org.aimas.ami.contextrep.update;
 
 import org.aimas.ami.contextrep.model.ContextAssertion;
 
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Dataset;
 
 public abstract class ContextUpdateHook {

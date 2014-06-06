@@ -1,4 +1,4 @@
-package org.aimas.ami.contextrep.exceptions;
+package org.aimas.ami.contextrep.core.api;
 
 public class ConfigException extends Exception {
 

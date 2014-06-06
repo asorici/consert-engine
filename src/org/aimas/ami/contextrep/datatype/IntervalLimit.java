@@ -1,4 +1,4 @@
-package org.aimas.ami.contextrep.utils;
+package org.aimas.ami.contextrep.datatype;
 
 /**
  * Copyright (c) 2005 Domain Language, Inc. (http://domainlanguage.com) This

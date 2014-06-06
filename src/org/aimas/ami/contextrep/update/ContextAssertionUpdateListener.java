@@ -75,7 +75,7 @@ public class ContextAssertionUpdateListener implements GraphListener {
 				
 				// then check continuity
 				System.out.println("============== ADDING HOOKS ==============");
-				updateHookWrapper.addContinuityHook(new CheckValidityContinuityHook(
+				updateHookWrapper.addContinuityHook(new CheckContinuityHook(
 						event.getAssertion(), contextAssertionUUID));
 				
 				// then check the 
@@ -94,7 +94,7 @@ public class ContextAssertionUpdateListener implements GraphListener {
 	public static class ContextUpdateHookWrapper {
 		private ContextAssertion assertion;
 		
-		private List<CheckValidityContinuityHook> continuityHooks;
+		private List<CheckContinuityHook> continuityHooks;
 		private List<CheckConstraintHook> constraintHooks;
 		private List<CheckInferenceHook> inferenceHooks;
 		
@@ -111,7 +111,7 @@ public class ContextAssertionUpdateListener implements GraphListener {
 		
 		
 		
-		void addContinuityHook(CheckValidityContinuityHook hook) {
+		void addContinuityHook(CheckContinuityHook hook) {
 			continuityHooks.add(hook);
 		}
 		
@@ -123,7 +123,7 @@ public class ContextAssertionUpdateListener implements GraphListener {
 			inferenceHooks.add(hook);
 		}
 
-		public List<CheckValidityContinuityHook> getContinuityHooks() {
+		public List<CheckContinuityHook> getContinuityHooks() {
 			return continuityHooks;
 		}
 

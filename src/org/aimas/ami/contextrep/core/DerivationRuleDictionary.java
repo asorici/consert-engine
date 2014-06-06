@@ -119,13 +119,7 @@ public class DerivationRuleDictionary {
 		//		transitiveContextModel, transitiveContextModel, deriveAssertionProp, false, initialTemplateBindings, false);
 		
 		// build the extended Rules Module including the SPL, SP and SPIN namespaces
-		MultiUnion spinUnion = JenaUtil.createMultiUnion();
-		spinUnion.addGraph(SP.getModel().getGraph());
-		spinUnion.addGraph(SPL.getModel().getGraph());
-		spinUnion.addGraph(SPIN.getModel().getGraph());
-		
-		OntModel extendedRulesModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, contextModelRules);
-		extendedRulesModel.union(ModelFactory.createModelForGraph(spinUnion));
+		OntModel extendedRulesModel = Loader.ensureSPINImported(contextModelRules);
 		
 		// make sure to register the templates as they will be searched for when collecting the constraints
 		SPINModuleRegistry.get().registerAll(extendedRulesModel, null);

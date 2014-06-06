@@ -1075,607 +1075,693 @@
     </spin:body>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >uniquePersonLocationConstraint</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/constraint#ValueConstraintTemplates"/>
+    <rdfs:subClassOf rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/constraint#UniquenessConstraintTemplates"/>
     <spin:labelTemplate rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >uniquePersonLocationConstraint</spin:labelTemplate>
   </contextconstraint:ContextConstraintTemplate>
   <rdf:Description rdf:nodeID="A1">
+    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >?0</sp:varName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
     <rdf:rest rdf:parseType="Collection">
       <sp:Bind>
-        <sp:expression>
-          <cfn:datetimeDelay>
-            <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-            >-300</sp:arg2>
-            <sp:arg1>
-              <afn:now/>
-            </sp:arg1>
-          </cfn:datetimeDelay>
-        </sp:expression>
         <sp:variable rdf:parseType="Resource">
           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-          >earlier</sp:varName>
+          >src</sp:varName>
         </sp:variable>
+        <sp:expression>
+          <cfn:getCurrentAgent/>
+        </sp:expression>
       </sp:Bind>
       <sp:Bind>
+        <sp:variable rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >t</sp:varName>
+        </sp:variable>
+        <sp:expression>
+          <afn:now/>
+        </sp:expression>
+      </sp:Bind>
+      <sp:Bind>
+        <sp:variable rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >valid</sp:varName>
+        </sp:variable>
         <sp:expression>
           <cfn:makeValidityInterval>
+            <sp:arg1>
+              <cfn:datetimeDelay>
+                <sp:arg1>
+                  <afn:now/>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >-300</sp:arg2>
+              </cfn:datetimeDelay>
+            </sp:arg1>
             <sp:arg2>
               <afn:now/>
             </sp:arg2>
-            <sp:arg1 rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >earlier</sp:varName>
-            </sp:arg1>
           </cfn:makeValidityInterval>
         </sp:expression>
+      </sp:Bind>
+    </rdf:rest>
+    <rdf:first>
+      <sp:Bind>
+        <sp:variable rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >acc</sp:varName>
+        </sp:variable>
+        <sp:expression>
+          <cfn:certaintyMeetOp>
+            <sp:arg1 rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >AvgAccS</sp:varName>
+            </sp:arg1>
+            <sp:arg2 rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >AvgAccN</sp:varName>
+            </sp:arg2>
+          </cfn:certaintyMeetOp>
+        </sp:expression>
+      </sp:Bind>
+    </rdf:first>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rdf:rest rdf:parseType="Collection">
+      <rdf:Description>
+        <sp:subject rdf:nodeID="A4"/>
+        <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+        <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#DatetimeTimestamp"/>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:nodeID="A4"/>
+        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
+        <sp:object rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >t</sp:varName>
+        </sp:object>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:nodeID="A5"/>
+        <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+        <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#TemporalValidity"/>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:nodeID="A5"/>
+        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
+        <sp:object rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >valid</sp:varName>
+        </sp:object>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:nodeID="A6"/>
+        <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+        <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#NumericValueCertainty"/>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:nodeID="A6"/>
+        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
+        <sp:object rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >acc</sp:varName>
+        </sp:object>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:nodeID="A7"/>
+        <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+        <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#SourceAnnotation"/>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:nodeID="A7"/>
+        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasUnstructuredValue"/>
+        <sp:object rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >src</sp:varName>
+        </sp:object>
+      </rdf:Description>
+    </rdf:rest>
+    <rdf:first rdf:parseType="Resource">
+      <sp:subject rdf:nodeID="A8"/>
+      <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionRole"/>
+      <sp:object rdf:parseType="Resource">
+        <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >RL</sp:varName>
+      </sp:object>
+    </rdf:first>
+  </rdf:Description>
+  <sp:Filter rdf:nodeID="A9">
+    <sp:expression>
+      <sp:and>
+        <sp:arg1>
+          <sp:ge>
+            <sp:arg1 rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >time</sp:varName>
+            </sp:arg1>
+            <sp:arg2>
+              <cfn:datetimeDelay>
+                <sp:arg1>
+                  <afn:now/>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >-300</sp:arg2>
+              </cfn:datetimeDelay>
+            </sp:arg2>
+          </sp:ge>
+        </sp:arg1>
+        <sp:arg2>
+          <sp:le>
+            <sp:arg1 rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >time</sp:varName>
+            </sp:arg1>
+            <sp:arg2>
+              <afn:now/>
+            </sp:arg2>
+          </sp:le>
+        </sp:arg2>
+      </sp:and>
+    </sp:expression>
+  </sp:Filter>
+  <rdf:Description rdf:nodeID="A10">
+    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >earlier</sp:varName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >AvgLvl</sp:varName>
+    <sp:expression>
+      <sp:Avg>
+        <sp:expression rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >lvl</sp:varName>
+        </sp:expression>
+      </sp:Avg>
+    </sp:expression>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rdf:rest rdf:parseType="Resource">
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:rest rdf:parseType="Resource">
+                <rdf:rest rdf:parseType="Resource">
+                  <rdf:rest rdf:parseType="Resource">
+                    <rdf:rest rdf:nodeID="A3"/>
+                    <rdf:first rdf:parseType="Resource">
+                      <sp:subject rdf:nodeID="A8"/>
+                      <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                      <sp:object rdf:resource="#HostsAdHocMeeting"/>
+                    </rdf:first>
+                  </rdf:rest>
+                  <rdf:first rdf:parseType="Resource">
+                    <sp:subject rdf:nodeID="A13"/>
+                    <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+                    <sp:object rdf:resource="#HostsAdHocMeeting"/>
+                  </rdf:first>
+                </rdf:rest>
+                <rdf:first rdf:parseType="Resource">
+                  <sp:subject rdf:nodeID="A13"/>
+                  <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+                  <sp:object rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                </rdf:first>
+              </rdf:rest>
+              <rdf:first rdf:parseType="Resource">
+                <sp:subject rdf:nodeID="A13"/>
+                <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"/>
+                <sp:object rdf:nodeID="A8"/>
+              </rdf:first>
+            </rdf:rest>
+            <rdf:first rdf:parseType="Resource">
+              <sp:subject rdf:nodeID="A13"/>
+              <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+              <sp:object rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+            </rdf:first>
+          </rdf:rest>
+          <rdf:first rdf:parseType="Resource">
+            <sp:subject rdf:nodeID="A14"/>
+            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionContent"/>
+            <sp:object rdf:nodeID="A13"/>
+          </rdf:first>
+        </rdf:rest>
+        <rdf:first rdf:parseType="Resource">
+          <sp:subject rdf:nodeID="A14"/>
+          <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasSource"/>
+          <sp:object rdf:nodeID="A7"/>
+        </rdf:first>
+      </rdf:rest>
+      <rdf:first rdf:parseType="Resource">
+        <sp:subject rdf:nodeID="A14"/>
+        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasCertainty"/>
+        <sp:object rdf:nodeID="A6"/>
+      </rdf:first>
+    </rdf:rest>
+    <rdf:first rdf:parseType="Resource">
+      <sp:subject rdf:nodeID="A14"/>
+      <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasValidity"/>
+      <sp:object rdf:nodeID="A5"/>
+    </rdf:first>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >gRoomSection</sp:varName>
+  </rdf:Description>
+  <sp:NamedGraph rdf:nodeID="A16">
+    <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/entityStore"/>
+    <sp:elements rdf:parseType="Collection">
+      <rdf:Description>
+        <sp:subject rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >K</sp:varName>
+        </sp:subject>
+        <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+        <sp:object rdf:resource="#KinectCamera"/>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >RL</sp:varName>
+        </sp:subject>
+        <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+        <sp:object rdf:resource="#BuildingRoomSection"/>
+      </rdf:Description>
+    </sp:elements>
+  </sp:NamedGraph>
+  <sp:Avg rdf:nodeID="A17">
+    <sp:expression rdf:parseType="Resource">
+      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+      >accS</sp:varName>
+    </sp:expression>
+  </sp:Avg>
+  <rdf:Description rdf:nodeID="A18">
+    <rdf:first>
+      <sp:Filter>
+        <sp:expression>
+          <sp:and>
+            <sp:arg1>
+              <sp:ge>
+                <sp:arg1 rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >AvgLvl</sp:varName>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >60</sp:arg2>
+              </sp:ge>
+            </sp:arg1>
+            <sp:arg2>
+              <sp:ge>
+                <sp:arg1 rdf:parseType="Resource">
+                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                  >AvgAccN</sp:varName>
+                </sp:arg1>
+                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+                >0.75</sp:arg2>
+              </sp:ge>
+            </sp:arg2>
+          </sp:and>
+        </sp:expression>
+      </sp:Filter>
+    </rdf:first>
+    <rdf:rest rdf:nodeID="A2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A19">
+    <sp:subject rdf:nodeID="A14"/>
+    <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasTimestamp"/>
+    <sp:object rdf:nodeID="A4"/>
+  </rdf:Description>
+  <afn:now rdf:nodeID="A20"/>
+  <rdf:Description rdf:nodeID="A21">
+    <sp:subject rdf:parseType="Resource">
+      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+      >gNoise</sp:varName>
+    </sp:subject>
+    <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasTimestamp"/>
+    <sp:object rdf:parseType="Resource">
+      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+      >timeAnn</sp:varName>
+    </sp:object>
+  </rdf:Description>
+  <afn:now rdf:nodeID="A22"/>
+  <sp:NamedGraph rdf:nodeID="A23">
+    <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models/SensesSkelInPositionStore"/>
+    <sp:elements rdf:parseType="Collection">
+      <rdf:Description>
+        <sp:subject rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >gCamera</sp:varName>
+        </sp:subject>
+        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasValidity"/>
+        <sp:object rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >valAnn</sp:varName>
+        </sp:object>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >valAnn</sp:varName>
+        </sp:subject>
+        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
+        <sp:object rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >validS</sp:varName>
+        </sp:object>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >gCamera</sp:varName>
+        </sp:subject>
+        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasCertainty"/>
+        <sp:object rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >certAnn</sp:varName>
+        </sp:object>
+      </rdf:Description>
+      <rdf:Description>
+        <sp:subject rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >certAnn</sp:varName>
+        </sp:subject>
+        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
+        <sp:object rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >accS</sp:varName>
+        </sp:object>
+      </rdf:Description>
+    </sp:elements>
+  </sp:NamedGraph>
+  <rdf:Description rdf:nodeID="A24">
+    <rdf:rest rdf:nodeID="A12"/>
+    <rdf:first rdf:nodeID="A19"/>
+  </rdf:Description>
+  <cfn:datetimeDelay rdf:nodeID="A25">
+    <sp:arg1 rdf:nodeID="A20"/>
+    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >-300</sp:arg2>
+  </cfn:datetimeDelay>
+  <rdf:Description rdf:nodeID="A26">
+    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >gCamera</sp:varName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A27">
+    <rdf:rest rdf:parseType="Collection">
+      <sp:Bind>
         <sp:variable rdf:parseType="Resource">
           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
           >interv</sp:varName>
         </sp:variable>
+        <sp:expression>
+          <cfn:makeValidityInterval>
+            <sp:arg1 rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >earlier</sp:varName>
+            </sp:arg1>
+            <sp:arg2 rdf:nodeID="A22"/>
+          </cfn:makeValidityInterval>
+        </sp:expression>
       </sp:Bind>
       <sp:Filter>
         <sp:expression>
           <cfn:validityIntervalsInclude>
-            <sp:arg2 rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >interv</sp:varName>
-            </sp:arg2>
             <sp:arg1 rdf:parseType="Resource">
               <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
               >validS</sp:varName>
             </sp:arg1>
+            <sp:arg2 rdf:parseType="Resource">
+              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+              >interv</sp:varName>
+            </sp:arg2>
           </cfn:validityIntervalsInclude>
         </sp:expression>
       </sp:Filter>
     </rdf:rest>
     <rdf:first>
-      <sp:NamedGraph>
-        <sp:elements rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >valAnn</sp:varName>
-            </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasValidity"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >gCamera</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >validS</sp:varName>
-            </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >valAnn</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >certAnn</sp:varName>
-            </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasCertainty"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >gCamera</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >accS</sp:varName>
-            </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >certAnn</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-        </sp:elements>
-        <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models/SensesSkelInPositionStore"/>
-      </sp:NamedGraph>
+      <sp:Bind>
+        <sp:variable rdf:nodeID="A10"/>
+        <sp:expression rdf:nodeID="A25"/>
+      </sp:Bind>
     </rdf:first>
   </rdf:Description>
-  <rdf:Description rdf:nodeID="A2">
-    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >S</sp:varName>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A3">
-    <sp:object rdf:resource="#KinectCamera"/>
-    <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-    <sp:subject rdf:parseType="Resource">
-      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-      >K</sp:varName>
-    </sp:subject>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A4">
-    <rdf:rest rdf:nodeID="A1"/>
-    <rdf:first>
-      <sp:NamedGraph>
-        <sp:elements rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:object rdf:resource="#SensesSkelInPosition"/>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >?0</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >K</sp:varName>
-            </sp:object>
-            <sp:predicate rdf:resource="#kinectCameraRole"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >?0</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:object rdf:nodeID="A2"/>
-            <sp:predicate rdf:resource="#skeletonRole"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >?0</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:object rdf:resource="#sitting"/>
-            <sp:predicate rdf:resource="#skelPositionRole"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >?0</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-        </sp:elements>
-        <sp:graphNameNode rdf:parseType="Resource">
-          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-          >gCamera</sp:varName>
-        </sp:graphNameNode>
-      </sp:NamedGraph>
-    </rdf:first>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A5">
-    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Mic</sp:varName>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A6">
-    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >lvl</sp:varName>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A7">
-    <rdf:rest rdf:parseType="Collection">
-      <sp:Filter>
-        <sp:expression>
-          <sp:and>
-            <sp:arg2>
-              <sp:le>
-                <sp:arg2>
-                  <afn:now/>
-                </sp:arg2>
-                <sp:arg1 rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >time</sp:varName>
-                </sp:arg1>
-              </sp:le>
-            </sp:arg2>
-            <sp:arg1>
-              <sp:ge>
-                <sp:arg2>
-                  <cfn:datetimeDelay>
-                    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                    >-300</sp:arg2>
-                    <sp:arg1>
-                      <afn:now/>
-                    </sp:arg1>
-                  </cfn:datetimeDelay>
-                </sp:arg2>
-                <sp:arg1 rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >time</sp:varName>
-                </sp:arg1>
-              </sp:ge>
-            </sp:arg1>
-          </sp:and>
-        </sp:expression>
-      </sp:Filter>
-    </rdf:rest>
-    <rdf:first>
-      <sp:NamedGraph>
-        <sp:elements rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >timeAnn</sp:varName>
-            </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasTimestamp"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >gNoise</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >time</sp:varName>
-            </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >timeAnn</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >certAnn</sp:varName>
-            </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasCertainty"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >gNoise</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-          <rdf:Description>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >accN</sp:varName>
-            </sp:object>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >certAnn</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-        </sp:elements>
-        <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models/hasNoiseLevelStore"/>
-      </sp:NamedGraph>
-    </rdf:first>
-  </rdf:Description>
-  <sp:ge rdf:nodeID="A8">
-    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
-    >0.75</sp:arg2>
-    <sp:arg1 rdf:parseType="Resource">
-      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-      >AvgAccS</sp:varName>
-    </sp:arg1>
-  </sp:ge>
-  <sp:Select rdf:nodeID="A9">
-    <sp:resultVariables rdf:parseType="Collection">
+  <sp:NamedGraph rdf:nodeID="A28">
+    <sp:graphNameNode rdf:nodeID="A15"/>
+    <sp:elements rdf:parseType="Collection">
       <rdf:Description>
-        <sp:expression>
-          <sp:Avg>
-            <sp:expression rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >lvl</sp:varName>
-            </sp:expression>
-          </sp:Avg>
-        </sp:expression>
-        <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >AvgLvl</sp:varName>
-      </rdf:Description>
-      <rdf:Description>
-        <sp:expression>
-          <sp:Avg>
-            <sp:expression rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >accN</sp:varName>
-            </sp:expression>
-          </sp:Avg>
-        </sp:expression>
-        <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >AvgAccN</sp:varName>
-      </rdf:Description>
-    </sp:resultVariables>
-    <sp:where rdf:parseType="Resource">
-      <rdf:rest rdf:nodeID="A7"/>
-      <rdf:first>
-        <sp:NamedGraph>
-          <sp:elements rdf:parseType="Collection">
-            <rdf:Description>
-              <sp:object rdf:nodeID="A6"/>
-              <sp:predicate rdf:resource="#hasNoiseLevel"/>
-              <sp:subject rdf:nodeID="A5"/>
-            </rdf:Description>
-          </sp:elements>
-          <sp:graphNameNode rdf:parseType="Resource">
-            <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-            >gNoise</sp:varName>
-          </sp:graphNameNode>
-        </sp:NamedGraph>
-      </rdf:first>
-    </sp:where>
-  </sp:Select>
-  <rdf:Description rdf:nodeID="A10">
-    <rdf:rest rdf:parseType="Collection">
-      <rdf:Description>
-        <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#TemporalValidity"/>
-        <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-        <sp:subject rdf:nodeID="A11"/>
-      </rdf:Description>
-      <rdf:Description>
-        <sp:object rdf:parseType="Resource">
-          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-          >valid</sp:varName>
-        </sp:object>
-        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
-        <sp:subject rdf:nodeID="A11"/>
-      </rdf:Description>
-      <rdf:Description>
-        <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#NumericValueCertainty"/>
-        <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-        <sp:subject rdf:nodeID="A12"/>
-      </rdf:Description>
-      <rdf:Description>
-        <sp:object rdf:parseType="Resource">
-          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-          >acc</sp:varName>
-        </sp:object>
-        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
-        <sp:subject rdf:nodeID="A12"/>
-      </rdf:Description>
-      <rdf:Description>
-        <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#SourceAnnotation"/>
-        <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-        <sp:subject rdf:nodeID="A13"/>
-      </rdf:Description>
-      <rdf:Description>
-        <sp:object rdf:parseType="Resource">
-          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-          >src</sp:varName>
-        </sp:object>
-        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasUnstructuredValue"/>
-        <sp:subject rdf:nodeID="A13"/>
-      </rdf:Description>
-    </rdf:rest>
-    <rdf:first rdf:parseType="Resource">
-      <sp:object rdf:parseType="Resource">
-        <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >t</sp:varName>
-      </sp:object>
-      <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
-      <sp:subject rdf:nodeID="A14"/>
-    </rdf:first>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A15">
-    <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#DatetimeTimestamp"/>
-    <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-    <sp:subject rdf:nodeID="A14"/>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A16">
-    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >AvgAccS</sp:varName>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A17">
-    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Ct</sp:varName>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A18">
-    <rdf:rest rdf:nodeID="A10"/>
-    <rdf:first rdf:nodeID="A15"/>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A19">
-    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >RL</sp:varName>
-  </rdf:Description>
-  <rdf:Description rdf:nodeID="A20">
-    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >AvgAccN</sp:varName>
-  </rdf:Description>
-  <sp:ge rdf:nodeID="A21">
-    <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-    >3</sp:arg2>
-    <sp:arg1 rdf:nodeID="A17"/>
-  </sp:ge>
-  <sp:Construct rdf:nodeID="A22">
-    <sp:templates rdf:parseType="Resource">
-      <rdf:rest rdf:parseType="Resource">
-        <rdf:rest rdf:parseType="Resource">
-          <rdf:rest rdf:nodeID="A18"/>
-          <rdf:first rdf:parseType="Resource">
-            <sp:object rdf:nodeID="A19"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionRole"/>
-            <sp:subject rdf:nodeID="A23"/>
-          </rdf:first>
-        </rdf:rest>
-        <rdf:first rdf:parseType="Resource">
-          <sp:object rdf:resource="#HostsAdHocMeeting"/>
-          <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-          <sp:subject rdf:nodeID="A23"/>
-        </rdf:first>
-      </rdf:rest>
-      <rdf:first rdf:parseType="Resource">
-        <sp:object rdf:resource="#HostsAdHocMeeting"/>
-        <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionResource"/>
         <sp:subject rdf:parseType="Resource">
+          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+          >K</sp:varName>
         </sp:subject>
-      </rdf:first>
-    </sp:templates>
-    <sp:where rdf:parseType="Collection">
-      <sp:NamedGraph>
-        <sp:elements rdf:parseType="Collection">
-          <rdf:Description rdf:nodeID="A3"/>
-          <rdf:Description>
-            <sp:object rdf:resource="#BuildingRoomSection"/>
-            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >RL</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-        </sp:elements>
-        <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/entityStore"/>
-      </sp:NamedGraph>
-      <sp:NamedGraph>
-        <sp:elements rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:object rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >RL</sp:varName>
-            </sp:object>
-            <sp:predicate rdf:resource="#deviceRoomSection"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >K</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-        </sp:elements>
-        <sp:graphNameNode rdf:parseType="Resource">
+        <sp:predicate rdf:resource="#deviceRoomSection"/>
+        <sp:object rdf:parseType="Resource">
           <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-          >gRoomSection</sp:varName>
-        </sp:graphNameNode>
-      </sp:NamedGraph>
-      <sp:NamedGraph>
-        <sp:elements rdf:parseType="Collection">
-          <rdf:Description>
-            <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Profiled"/>
-            <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
-            <sp:subject rdf:parseType="Resource">
-              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-              >gRoomSection</sp:varName>
-            </sp:subject>
-          </rdf:Description>
-        </sp:elements>
-        <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models/deviceRoomSectionStore"/>
-      </sp:NamedGraph>
-      <sp:SubQuery>
-        <sp:query>
-          <sp:Select>
-            <sp:resultVariables rdf:parseType="Collection">
+          >RL</sp:varName>
+        </sp:object>
+      </rdf:Description>
+    </sp:elements>
+  </sp:NamedGraph>
+  <rdf:Description rdf:nodeID="A29">
+    <sp:subject rdf:nodeID="A14"/>
+    <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionResource"/>
+    <sp:object rdf:resource="#HostsAdHocMeeting"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A30">
+    <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >certAnn</sp:varName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A31">
+    <rdf:first rdf:nodeID="A16"/>
+    <rdf:rest rdf:parseType="Resource">
+      <rdf:first rdf:nodeID="A28"/>
+      <rdf:rest rdf:parseType="Resource">
+        <rdf:first>
+          <sp:NamedGraph>
+            <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models/deviceRoomSectionStore"/>
+            <sp:elements rdf:parseType="Collection">
               <rdf:Description>
-                <sp:expression>
-                  <sp:Count>
-                    <sp:expression rdf:parseType="Resource">
-                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                      >S</sp:varName>
-                    </sp:expression>
-                    <sp:distinct rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
-                    >true</sp:distinct>
-                  </sp:Count>
-                </sp:expression>
-                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                >Ct</sp:varName>
-              </rdf:Description>
-              <rdf:Description>
-                <sp:expression>
-                  <sp:Avg>
-                    <sp:expression rdf:parseType="Resource">
-                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                      >accS</sp:varName>
-                    </sp:expression>
-                  </sp:Avg>
-                </sp:expression>
-                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                >AvgAccS</sp:varName>
-              </rdf:Description>
-            </sp:resultVariables>
-            <sp:where rdf:nodeID="A4"/>
-          </sp:Select>
-        </sp:query>
-      </sp:SubQuery>
-      <sp:Filter>
-        <sp:expression>
-          <sp:and>
-            <sp:arg2 rdf:nodeID="A8"/>
-            <sp:arg1 rdf:nodeID="A21"/>
-          </sp:and>
-        </sp:expression>
-      </sp:Filter>
-      <sp:SubQuery>
-        <sp:query rdf:nodeID="A9"/>
-      </sp:SubQuery>
-      <sp:Filter>
-        <sp:expression>
-          <sp:and>
-            <sp:arg2>
-              <sp:ge>
-                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
-                >0.75</sp:arg2>
-                <sp:arg1 rdf:parseType="Resource">
+                <sp:subject rdf:parseType="Resource">
                   <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >AvgAccN</sp:varName>
-                </sp:arg1>
-              </sp:ge>
-            </sp:arg2>
-            <sp:arg1>
-              <sp:ge>
-                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                >60</sp:arg2>
-                <sp:arg1 rdf:parseType="Resource">
-                  <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-                  >AvgLvl</sp:varName>
-                </sp:arg1>
-              </sp:ge>
-            </sp:arg1>
-          </sp:and>
-        </sp:expression>
-      </sp:Filter>
-      <sp:Bind>
-        <sp:expression>
-          <cfn:certaintyMeetOp>
-            <sp:arg2 rdf:nodeID="A20"/>
-            <sp:arg1 rdf:nodeID="A16"/>
-          </cfn:certaintyMeetOp>
-        </sp:expression>
-        <sp:variable rdf:parseType="Resource">
-          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-          >acc</sp:varName>
-        </sp:variable>
-      </sp:Bind>
-      <sp:Bind>
-        <sp:expression>
-          <cfn:getCurrentAgent/>
-        </sp:expression>
-        <sp:variable rdf:parseType="Resource">
-          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-          >src</sp:varName>
-        </sp:variable>
-      </sp:Bind>
-      <sp:Bind>
-        <sp:expression>
-          <afn:now/>
-        </sp:expression>
-        <sp:variable rdf:parseType="Resource">
-          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-          >t</sp:varName>
-        </sp:variable>
-      </sp:Bind>
-      <sp:Bind>
-        <sp:expression>
-          <cfn:makeValidityInterval>
-            <sp:arg2>
-              <afn:now/>
-            </sp:arg2>
-            <sp:arg1>
-              <cfn:datetimeDelay>
-                <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
-                >-300</sp:arg2>
-                <sp:arg1>
-                  <afn:now/>
-                </sp:arg1>
-              </cfn:datetimeDelay>
-            </sp:arg1>
-          </cfn:makeValidityInterval>
-        </sp:expression>
-        <sp:variable rdf:parseType="Resource">
-          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-          >valid</sp:varName>
-        </sp:variable>
-      </sp:Bind>
-    </sp:where>
-  </sp:Construct>
+                  >gRoomSection</sp:varName>
+                </sp:subject>
+                <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#assertionType"/>
+                <sp:object rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core#Profiled"/>
+              </rdf:Description>
+            </sp:elements>
+          </sp:NamedGraph>
+        </rdf:first>
+        <rdf:rest rdf:parseType="Resource">
+          <rdf:first>
+            <sp:SubQuery>
+              <sp:query>
+                <sp:Select>
+                  <sp:where rdf:parseType="Resource">
+                    <rdf:rest rdf:parseType="Resource">
+                      <rdf:rest rdf:nodeID="A27"/>
+                      <rdf:first rdf:nodeID="A23"/>
+                    </rdf:rest>
+                    <rdf:first>
+                      <sp:NamedGraph>
+                        <sp:graphNameNode rdf:nodeID="A26"/>
+                        <sp:elements rdf:parseType="Collection">
+                          <rdf:Description>
+                            <sp:subject rdf:parseType="Resource">
+                              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                              >?0</sp:varName>
+                            </sp:subject>
+                            <sp:predicate rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+                            <sp:object rdf:resource="#SensesSkelInPosition"/>
+                          </rdf:Description>
+                          <rdf:Description>
+                            <sp:subject rdf:parseType="Resource">
+                              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                              >?0</sp:varName>
+                            </sp:subject>
+                            <sp:predicate rdf:resource="#kinectCameraRole"/>
+                            <sp:object rdf:parseType="Resource">
+                              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                              >K</sp:varName>
+                            </sp:object>
+                          </rdf:Description>
+                          <rdf:Description>
+                            <sp:subject rdf:parseType="Resource">
+                              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                              >?0</sp:varName>
+                            </sp:subject>
+                            <sp:predicate rdf:resource="#skeletonRole"/>
+                            <sp:object rdf:parseType="Resource">
+                              <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                              >S</sp:varName>
+                            </sp:object>
+                          </rdf:Description>
+                          <rdf:Description>
+                            <sp:subject rdf:nodeID="A1"/>
+                            <sp:predicate rdf:resource="#skelPositionRole"/>
+                            <sp:object rdf:resource="#sitting"/>
+                          </rdf:Description>
+                        </sp:elements>
+                      </sp:NamedGraph>
+                    </rdf:first>
+                  </sp:where>
+                  <sp:resultVariables rdf:parseType="Collection">
+                    <rdf:Description>
+                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                      >Ct</sp:varName>
+                      <sp:expression>
+                        <sp:Count>
+                          <sp:distinct rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
+                          >true</sp:distinct>
+                          <sp:expression rdf:parseType="Resource">
+                            <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                            >S</sp:varName>
+                          </sp:expression>
+                        </sp:Count>
+                      </sp:expression>
+                    </rdf:Description>
+                    <rdf:Description>
+                      <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                      >AvgAccS</sp:varName>
+                      <sp:expression rdf:nodeID="A17"/>
+                    </rdf:Description>
+                  </sp:resultVariables>
+                </sp:Select>
+              </sp:query>
+            </sp:SubQuery>
+          </rdf:first>
+          <rdf:rest rdf:parseType="Resource">
+            <rdf:first>
+              <sp:Filter>
+                <sp:expression>
+                  <sp:and>
+                    <sp:arg1>
+                      <sp:ge>
+                        <sp:arg1 rdf:parseType="Resource">
+                          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                          >Ct</sp:varName>
+                        </sp:arg1>
+                        <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                        >3</sp:arg2>
+                      </sp:ge>
+                    </sp:arg1>
+                    <sp:arg2>
+                      <sp:ge>
+                        <sp:arg1 rdf:parseType="Resource">
+                          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                          >AvgAccS</sp:varName>
+                        </sp:arg1>
+                        <sp:arg2 rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+                        >0.75</sp:arg2>
+                      </sp:ge>
+                    </sp:arg2>
+                  </sp:and>
+                </sp:expression>
+              </sp:Filter>
+            </rdf:first>
+            <rdf:rest rdf:parseType="Resource">
+              <rdf:first>
+                <sp:SubQuery>
+                  <sp:query>
+                    <sp:Select>
+                      <sp:where rdf:parseType="Collection">
+                        <sp:NamedGraph>
+                          <sp:graphNameNode rdf:parseType="Resource">
+                            <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                            >gNoise</sp:varName>
+                          </sp:graphNameNode>
+                          <sp:elements rdf:parseType="Collection">
+                            <rdf:Description>
+                              <sp:subject rdf:parseType="Resource">
+                                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >Mic</sp:varName>
+                              </sp:subject>
+                              <sp:predicate rdf:resource="#hasNoiseLevel"/>
+                              <sp:object rdf:parseType="Resource">
+                                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >lvl</sp:varName>
+                              </sp:object>
+                            </rdf:Description>
+                          </sp:elements>
+                        </sp:NamedGraph>
+                        <sp:NamedGraph>
+                          <sp:graphNameNode rdf:resource="http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models/hasNoiseLevelStore"/>
+                          <sp:elements rdf:parseType="Collection">
+                            <rdf:Description rdf:nodeID="A21"/>
+                            <rdf:Description>
+                              <sp:subject rdf:parseType="Resource">
+                                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >timeAnn</sp:varName>
+                              </sp:subject>
+                              <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
+                              <sp:object rdf:parseType="Resource">
+                                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >time</sp:varName>
+                              </sp:object>
+                            </rdf:Description>
+                            <rdf:Description>
+                              <sp:subject rdf:parseType="Resource">
+                                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >gNoise</sp:varName>
+                              </sp:subject>
+                              <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasCertainty"/>
+                              <sp:object rdf:parseType="Resource">
+                                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >certAnn</sp:varName>
+                              </sp:object>
+                            </rdf:Description>
+                            <rdf:Description>
+                              <sp:subject rdf:nodeID="A30"/>
+                              <sp:predicate rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation#hasStructuredValue"/>
+                              <sp:object rdf:parseType="Resource">
+                                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >accN</sp:varName>
+                              </sp:object>
+                            </rdf:Description>
+                          </sp:elements>
+                        </sp:NamedGraph>
+                        <sp:Filter rdf:nodeID="A9"/>
+                      </sp:where>
+                      <sp:resultVariables rdf:parseType="Collection">
+                        <rdf:Description rdf:nodeID="A11"/>
+                        <rdf:Description>
+                          <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                          >AvgAccN</sp:varName>
+                          <sp:expression>
+                            <sp:Avg>
+                              <sp:expression rdf:parseType="Resource">
+                                <sp:varName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                                >accN</sp:varName>
+                              </sp:expression>
+                            </sp:Avg>
+                          </sp:expression>
+                        </rdf:Description>
+                      </sp:resultVariables>
+                    </sp:Select>
+                  </sp:query>
+                </sp:SubQuery>
+              </rdf:first>
+              <rdf:rest rdf:nodeID="A18"/>
+            </rdf:rest>
+          </rdf:rest>
+        </rdf:rest>
+      </rdf:rest>
+    </rdf:rest>
+  </rdf:Description>
   <spin:ConstructTemplate rdf:ID="hostsAdHocMeetingConstruct">
-    <spin:body rdf:nodeID="A22"/>
+    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#ConstructTemplates"/>
     <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Infers a new HostsAdHocMeeting assertion by constructing the assertion and annotation tuples.</rdfs:comment>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >hostsAdHocMeetingConstruct</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://spinrdf.org/spin#ConstructTemplates"/>
+    <spin:body>
+      <sp:Construct>
+        <sp:where rdf:nodeID="A31"/>
+        <sp:templates rdf:parseType="Resource">
+          <rdf:rest rdf:nodeID="A24"/>
+          <rdf:first rdf:nodeID="A29"/>
+        </sp:templates>
+      </sp:Construct>
+    </spin:body>
   </spin:ConstructTemplate>
 </rdf:RDF>
 

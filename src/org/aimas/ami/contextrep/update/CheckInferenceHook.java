@@ -2,47 +2,45 @@ package org.aimas.ami.contextrep.update;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 
-import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
+import org.aimas.ami.contextrep.core.Engine;
+import org.aimas.ami.contextrep.core.api.InsertResult;
+import org.aimas.ami.contextrep.model.ContextAnnotation;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
 import org.aimas.ami.contextrep.test.performance.RunTest;
+import org.aimas.ami.contextrep.utils.ContextAnnotationUtil;
+import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
+import org.aimas.ami.contextrep.utils.ContextStoreUtil;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences.ContextInferenceResult;
-import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.aimas.ami.contextrep.vocabulary.ConsertRules;
+import org.apache.jena.atlas.lib.Pair;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
 import org.topbraid.spin.inference.SPINRuleComparator;
 import org.topbraid.spin.util.CommandWrapper;
-import org.topbraid.spin.util.JenaUtil;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.modify.request.QuadDataAcc;
 import com.hp.hpl.jena.sparql.modify.request.UpdateCreate;
@@ -50,7 +48,6 @@ import com.hp.hpl.jena.sparql.modify.request.UpdateDataInsert;
 import com.hp.hpl.jena.update.Update;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class CheckInferenceHook extends ContextUpdateHook {
 	
@@ -59,40 +56,33 @@ public class CheckInferenceHook extends ContextUpdateHook {
 	}
 	
 	@Override
-	public InferenceHookResult exec(Dataset contextDataset) {
+	public InferenceResult exec(Dataset contextDataset) {
 		//System.out.println("======== CHECKING INFERENCE FOR assertion <" + contextAssertion + ">. ");
 		
 		// get the context model
-		OntModel basicContextModel = Engine.getCoreContextModel();
+		OntModel contextModelCore = Engine.getCoreContextModel();
 		
-		return attemptContextSPINInference(contextDataset, basicContextModel);
+		return attemptContextSPINInference(contextDataset, contextModelCore);
 	}
 	
-	private InferenceHookResult attemptContextSPINInference(Dataset contextDataset, OntModel basicContextModel) {
+	private InferenceResult attemptContextSPINInference(Dataset contextDataset, OntModel contextModelCore) {
 		long start = System.currentTimeMillis();
 		
 		DerivationRuleDictionary ruleDict = Engine.getDerivationRuleDictionary();
 		List<DerivedAssertionWrapper> derivationCommands = ruleDict.getDerivationsForAssertion(contextAssertion);
 		
 		if (derivationCommands != null) {
-			
 			// Create a list to collect inference results
 			List<ContextUpdateExecutionWrapper> inferredContext = new ArrayList<>();
 			List<ContextAssertion> inferredContextAssertions = new ArrayList<>();
 			
-			
 			// get the query model as the union of the named graphs in our dataset
 			//Model queryModel = contextDataset.getNamedModel(JenaVocabulary.UNION_GRAPH_URN);
-			MultiUnion union = new MultiUnion();
-			Iterator<String> namedModels = contextDataset.listNames();
-			for (; namedModels.hasNext();) {
-				union.addGraph(contextDataset.getNamedModel(namedModels.next()).getGraph());
-			}
-			Model queryModel = ModelFactory.createModelForGraph(union);
+			Model queryModel = ContextStoreUtil.getUnionModel(contextDataset);
 			
 			// for each derivation rule do a separate inference procedure
 			for (DerivedAssertionWrapper derivationWrapper : derivationCommands) {
-				List<ContextUpdateExecutionWrapper> inferred = attemptDerivationRule(derivationWrapper, queryModel, basicContextModel, contextDataset);
+				List<ContextUpdateExecutionWrapper> inferred = attemptDerivationRule(derivationWrapper, queryModel, contextModelCore, contextDataset);
 				
 				if (!inferred.isEmpty()) {
 					inferredContextAssertions.add(derivationWrapper.getDerivedResource());
@@ -102,28 +92,35 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			
 			if (!inferredContext.isEmpty()) {
 				for (ContextUpdateExecutionWrapper inferredAssertion : inferredContext) {
-					Future<AssertionInsertResult> result = Engine.assertionInsertExecutor().submit(inferredAssertion);
+					Future<InsertResult> result = Engine.assertionInsertExecutor().submit(inferredAssertion);
 					
-					RunTest.insertionTaskEnqueueTime.put(inferredAssertion.getAssertionInsertID(), System.currentTimeMillis());
-					RunTest.insertionResults.put(inferredAssertion.getAssertionInsertID(), result);
+					// TODO: performance collection
+					//RunTest.insertionTaskEnqueueTime.put(inferredAssertion.getAssertionInsertID(), System.currentTimeMillis());
+					//RunTest.insertionResults.put(inferredAssertion.getAssertionInsertID(), result);
 				}
 				
-				long end = System.currentTimeMillis();
-				return new InferenceHookResult(start, (int)(end - start), false, inferredContextAssertions, true, true);
+				return new InferenceResult(contextAssertion, null, inferredContextAssertions);
+				// TODO: performance collect
+				//long end = System.currentTimeMillis();
+				//return new InferenceResult(start, (int)(end - start), false, inferredContextAssertions, true, true);
 			}
 			else {
-				long end = System.currentTimeMillis();
-				return new InferenceHookResult(start, (int)(end - start), false, null, true, false);
+				return new InferenceResult(contextAssertion, null, inferredContextAssertions);
+				// TODO: performance collect
+				//long end = System.currentTimeMillis();
+				//return new InferenceResult(start, (int)(end - start), false, null, true, false);
 			}
 		}
 		
-		long end = System.currentTimeMillis();
-		return new InferenceHookResult(start, (int)(end - start), false, null, false, false);
+		return new InferenceResult(contextAssertion, null, null);
+		// TODO: performance collect
+		//long end = System.currentTimeMillis();
+		//return new InferenceResult(start, (int)(end - start), false, null, false, false);
 	}
 	
 	
 	private List<ContextUpdateExecutionWrapper> attemptDerivationRule(DerivedAssertionWrapper derivationWrapper, 
-			Model queryModel,OntModel basicContextModel, Dataset contextDataset) {
+			Model queryModel, OntModel contextModelCore, Dataset contextDataset) {
 		List<ContextUpdateExecutionWrapper> inferred = new ArrayList<>();
 		
 		DerivationRuleDictionary ruleDict = Engine.getDerivationRuleDictionary();
@@ -163,73 +160,70 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			//ScenarioInit.printStatements(newTriples);
 			
 			// for testing purpose only count number of inferred assertions
-			RunTest.numInferredAssertions.getAndIncrement();
+			// TODO performance collection: RunTest.numInferredAssertions.getAndIncrement();
 			
-			// If there was a deduction the CONSTRUCTED result is in the newTriples model.
-			// Use it to create a new UpdateRequest to be executed by the assertionInsertExecutor
 			
-			// step 1: identify the blank nodes that assert the annotations - there may be several deductions
-			ResIterator annotationSubjectIt = newTriples.listResourcesWithProperty(RDF.type, ConsertAnnotation.CONTEXT_ANNOTATION);
-			List<Resource> annotationSubjects = annotationSubjectIt.toList();
+			/* 
+			 * If there was a deduction the CONSTRUCTED result is in the newTriples model. 
+			 * Use it to create a new UpdateRequest to be executed by the assertionInsertExecutor.
+			 * 
+			 * Step 1: identify the blank nodes that assert the type of derived ContextAssertion. There may be several deductions
+			 * since the rule might have fired several times. Each one will include a different binding for the contents of the derived
+			 * ContextAssertion. The annotation values might be the same across firings, but not necessarily. We therefore need to create 
+			 * a way to account for each triggered derivation and identify the individual assertions and their corresponding annotations
+			 * within the newTriples model. We identify individual ContextAssertion instances by searching for 
+			 * _:bnode :assertionResource <someDerivedAssertionResource> statements in the inferred newTriples. The _:bnode node will then
+			 * help identify the annotation instances for this particular assertion instance. 
+			 * The contents of the assertion are identified by a _:bnode :assertionContent _:reifStatementNode statement. 
+			 * The _:reifStatementNode is the subject of a reification statement that represents the <i>key</i> statement for the ContextAssertion
+			 * content. The nature of this statement depends on the arity of the derived ContextAssertion. Starting with this key statement, the 
+			 * rest of the contents of the derived assertion can be identified and retrieved. 
+			 */
 			
-			// There may be more inference instances - the rule applied to several entities and assertions.
-			// Each of them will have the same annotations (from rule construction), so we only need to inspect
-			// one annotation instance.
-			// But we have to identify the individual assertions - for this it suffices to know the type of the
-			// derived assertion and the number of inference instances (which is the same as that of annotation
-			// instances).
-			//int nrInferenceInstances = annotationSubjects.size();
-			Resource annotationSubject = annotationSubjects.get(0);
-			NodeIterator nodeIt = newTriples.listObjectsOfProperty(annotationSubject, ConsertCore.CONTEXT_ASSERTION_RESOURCE);
+			List<Statement> derivedAssertionStatements = newTriples.listStatements(null, ConsertCore.CONTEXT_ASSERTION_RESOURCE, (RDFNode)null).toList();
+			//int nrInferenceInstances = derivedAssertionStatements.size();
+			//System.out.println("[INFO] There are " + nrInferenceInstance + " derived assertion instances.");
 			
-			OntResource derivedAssertionResource = basicContextModel.getOntResource(nodeIt.next().asResource());
-			ContextAssertion derivedAssertion = Engine.getContextAssertionIndex().getAssertionFromResource(derivedAssertionResource);
+			for (Statement derivedAssertionStmt : derivedAssertionStatements) {
+				// TODO: add error handling if for some unknown reason the object of the derivedAssertionStatement is not a Resource
+				OntResource derivedAssertionResource = contextModelCore.getOntResource(derivedAssertionStmt.getResource());
+				ContextAssertion derivedAssertion = Engine.getContextAssertionIndex().getAssertionFromResource(derivedAssertionResource);
 				
-			// step 2: identify all statements having that node as subject - those are annotations
-			StmtIterator annotationIt = newTriples.listStatements(new AnnotationStatementSelector(annotationSubject));
-			List<Statement> annotationStatements = annotationIt.toList();
-			
-			Map<Node, Update> assertionUpdates = null;
-			
-			// step 3: depending on the type of derived resource identify the assertion statements
-			if (derivedAssertionResource.canAs(OntProperty.class)) {
-				// we have a binary assertion
-				 assertionUpdates = getBinaryAssertionUpdates(newTriples, derivedAssertionResource.as(OntProperty.class));
-			}
-			else {
-				if (JenaUtil.hasSuperClass(derivedAssertionResource, basicContextModel.getOntClass(ConsertCore.UNARY_CONTEXT_ASSERTION.getURI()))) {
-					// we have a unary assertion
-					assertionUpdates = getUnaryAssertionUpdates(newTriples, derivedAssertionResource);
+				// The subject of the derived assertion statement is the one to which all elements (assertion and annotation content) bind
+				Resource derivationSubject = derivedAssertionStmt.getSubject();
+				
+				// Step 2: identify all statements having the annotationSubject as subject and do not contain the properties 
+				// :assertionResource and :assertionContent. These are statements that link towards annotation instances attached to this assertion
+				// The full extent of the annotation content may be larger, but these statements provide the required identifier (i.e. starting from
+				// these statements, the entire annotation content can be retrieved)
+				List<Statement> derivedAnnIdentifierStatements = newTriples.listStatements(new AnnotationStatementSelector(derivationSubject)).toList();
+				
+				Map<ContextAnnotation, Pair<Resource, Set<Statement>>> derivedAssertionAnnotations = new HashMap<ContextAnnotation, Pair<Resource,Set<Statement>>>();
+				for (Statement annIdentifierStmt : derivedAnnIdentifierStatements) {
+					Map<ContextAnnotation, Pair<Resource, Set<Statement>>> derivedAnnContents = ContextAnnotationUtil.getAnnotationContents(annIdentifierStmt, newTriples);
+					derivedAssertionAnnotations.putAll(derivedAnnContents);
 				}
-				else {
-					// we have a nary assertion
-					assertionUpdates = getNaryAssertionUpdates(newTriples, derivedAssertionResource);
-				}
-			}
-			
-			// step 4: for each assertion instance: create the new identifier graph and add the
-			// annotation statements (which are the same for every instance)
-			for (Node graphUUIDNode : assertionUpdates.keySet()) {
-				// create the new assertion graph
-				Update createUpdate = new UpdateCreate(graphUUIDNode);
-				Update assertionUpdate = assertionUpdates.get(graphUUIDNode);
 				
-				// create the context annotation quads, while keeping in mind to replace the
-				// annotationSubject with the created graphUUIDNode identifier of the ContextAssertion
-				Node derivedAssertionStore = NodeFactory.createURI(derivedAssertion.getAssertionStoreURI());
+				// Step 3: retrieve the :assertionContent statement that acts as root for getting all the contents of the derived assertion
+				Statement contentStatement = newTriples.getProperty(derivationSubject, ConsertCore.CONTEXT_ASSERTION_CONTENT);
+				Set<Statement> derivedAssertionContents = 
+					ContextAssertionUtil.getDerivedAssertionContents(derivedAssertionResource, contentStatement, newTriples);
 				
-				QuadDataAcc annotationData = new QuadDataAcc();
-				for (Statement s : annotationStatements) {
-					annotationData.addQuad(Quad.create(derivedAssertionStore,
-							graphUUIDNode, s.getPredicate().asNode(), s.getObject().asNode()));
-				}
-				Update annotationUpdate = new UpdateDataInsert(annotationData);
 				
-				// create the update request and enqueue it
+				// Step 4: create the new identifier graph and add the derived assertion statements in it creating an Update object
+				Node graphUUIDNode = NodeFactory.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
+				Update derivedAssertionCreateIdentifierUpdate = new UpdateCreate(graphUUIDNode);
+				Update derivedAssertionContentUpdate = createDerivedContentUpdate(derivedAssertion, derivedAssertionContents, graphUUIDNode);
+				
+				// Step 5: create the derived assertion annotation Update object
+				Update derivedAssertionAnnotationUpdate = 
+					createDerivedAnnotationUpdate(derivedAssertion, derivedAssertionAnnotations, graphUUIDNode);
+				
+				// Step 6: create the update request and enqueue it
 				UpdateRequest insertInferredRequest = UpdateFactory.create();
-				insertInferredRequest.add(createUpdate);
-				insertInferredRequest.add(assertionUpdate);
-				insertInferredRequest.add(annotationUpdate);
+				insertInferredRequest.add(derivedAssertionCreateIdentifierUpdate);
+				insertInferredRequest.add(derivedAssertionContentUpdate);
+				insertInferredRequest.add(derivedAssertionAnnotationUpdate);
 				
 				inferred.add(new ContextUpdateExecutionWrapper(insertInferredRequest));
 			}
@@ -241,99 +235,51 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		
 		return inferred;
     }
+	
 
-
-	private Map<Node, Update> getNaryAssertionUpdates(Model newTriples, OntResource derivedAssertionResource) {
-		Map<Node, Update> naryAssertionInstances = new HashMap<>();
+	private Update createDerivedContentUpdate(ContextAssertion derivedAssertion, Set<Statement> derivedAssertionContents, Node graphUUIDNode) {
+		QuadDataAcc assertionData = new QuadDataAcc();
 		
-		// Identify all statements that are not annotations - those are assertion statements
-		StmtIterator assertionInstanceIt = newTriples.listStatements(null, RDF.type, derivedAssertionResource);
-		List<Statement> assertionInstances = assertionInstanceIt.toList();
+		for (Statement s : derivedAssertionContents) {
+			assertionData.addQuad(Quad.create(graphUUIDNode, s.asTriple()));
+		}
 		
-		for (Statement assertionInstance : assertionInstances) {
-			Resource assertionSubject = assertionInstance.getSubject();
+		return new UpdateDataInsert(assertionData);
+    }
+	
+	
+	private Update createDerivedAnnotationUpdate(ContextAssertion derivedAssertion, 
+			Map<ContextAnnotation, Pair<Resource, Set<Statement>>> derivedAssertionAnnotations, Node graphUUIDNode) {
+		
+		QuadDataAcc annotationData = new QuadDataAcc();
+		Node derivedAssertionStore = NodeFactory.createURI(derivedAssertion.getAssertionStoreURI());
+		
+		for (ContextAnnotation annotation : derivedAssertionAnnotations.keySet()) {
+			Pair<Resource, Set<Statement>> annotationPair = derivedAssertionAnnotations.get(annotation);
+			Resource annotationContentRoot = annotationPair.car();
+			Set<Statement> annotationContents = annotationPair.cdr();
 			
-			// For Nary assertions the statements are those that have the blank node that defines the assertion
-			// as a subject
-			StmtIterator assertionStmtIt = newTriples.listStatements(assertionSubject, null, (RDFNode)null);
-			List<Statement> assertionStatements = assertionStmtIt.toList();
+			// for each annotation we need to create a quad of the form: <contentstore> graphUUIDNode <annotationProp> <annotationContentRoot>
+			// then when we add the rest of the annotation contents they will bind to the annotationContentRoot
+			annotationData.addQuad(Quad.create(derivedAssertionStore, graphUUIDNode, 
+				annotation.getBindingProperty().asNode(), annotationContentRoot.asNode()));
 			
-			// Create the identifier named graph URI for the new ContextAssertion
-			//Node graphUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
-			Node graphUUIDNode = NodeFactory.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
-			
-			// Create the context assertion quads
-			QuadDataAcc assertionData = new QuadDataAcc();
-			for (Statement s : assertionStatements) {
-				assertionData.addQuad(Quad.create(graphUUIDNode, s.asTriple()));
+			for (Statement s : annotationContents) {
+				annotationData.addQuad(Quad.create(derivedAssertionStore, s.asTriple()));
 			}
-			Update assertionUpdate = new UpdateDataInsert(assertionData);
-			
-			naryAssertionInstances.put(graphUUIDNode, assertionUpdate);
 		}
 		
-		return naryAssertionInstances;
+		// at the end add the triples stating that the graphUUIDNode identifies a ContextAssertion with
+		// :assertionResource <derivedAssertionResource> and of :assertionType :Derived
+		annotationData.addQuad(Quad.create(derivedAssertionStore, graphUUIDNode, 
+			ConsertCore.CONTEXT_ASSERTION_RESOURCE.asNode(), derivedAssertion.getOntologyResource().asNode()));
+		
+		annotationData.addQuad(Quad.create(derivedAssertionStore, graphUUIDNode, 
+			ConsertCore.CONTEXT_ASSERTION_TYPE_PROPERTY.asNode(), ConsertCore.TYPE_DERIVED.asNode()));
+			
+		
+		return new UpdateDataInsert(annotationData);
     }
-
-	private Map<Node, Update> getBinaryAssertionUpdates(Model newTriples, OntProperty derivedAssertionProp) {
-		Map<Node, Update> binaryAssertionInstances = new HashMap<>();
-		
-		// Identify all statements that are not annotations - those are assertion statements
-		StmtIterator assertionInstanceIt = newTriples.listStatements((Resource)null, derivedAssertionProp, (RDFNode)null);
-		List<Statement> assertionInstances = assertionInstanceIt.toList();
-		
-		for (Statement assertionInstance : assertionInstances) {
-			// For Binary assertions the statements are those that have the derivedAssertionProp as property =>
-			// the exact assertionInstance statement as selected above
-			
-			// Create the identifier named graph URI for the new ContextAssertion
-			//Node graphUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(derivedAssertionProp));
-			Node graphUUIDNode = NodeFactory.createURI(GraphUUIDGenerator.createUUID(derivedAssertionProp));
-			
-			// Create the context assertion quads
-			QuadDataAcc assertionData = new QuadDataAcc();
-			assertionData.addQuad(Quad.create(graphUUIDNode, assertionInstance.asTriple()));
-			
-			Update assertionUpdate = new UpdateDataInsert(assertionData);
-			
-			binaryAssertionInstances.put(graphUUIDNode, assertionUpdate);
-		}
-		
-		return binaryAssertionInstances;
-    }
-
-	private Map<Node, Update> getUnaryAssertionUpdates(Model newTriples, OntResource derivedAssertionResource) {
-		Map<Node, Update> unaryAssertionInstances = new HashMap<>();
-		
-		// Identify all statements that are not annotations - those are assertion statements
-		StmtIterator assertionInstanceIt = newTriples.listStatements(null, RDF.type, derivedAssertionResource);
-		List<Statement> assertionInstances = assertionInstanceIt.toList();
-		
-		for (Statement assertionInstance : assertionInstances) {
-			Resource assertionSubject = assertionInstance.getSubject();
-			
-			// For Unary assertions the statements are those that have the ContextEntity that plays the assertionRole
-			// as a subject
-			StmtIterator assertionStmtIt = newTriples.listStatements(assertionSubject, null, (RDFNode)null);
-			List<Statement> assertionStatements = assertionStmtIt.toList();
-			
-			// Create the identifier named graph URI for the new ContextAssertion
-			//Node graphUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
-			Node graphUUIDNode = NodeFactory.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
-			
-			// Create the context assertion quads
-			QuadDataAcc assertionData = new QuadDataAcc();
-			for (Statement s : assertionStatements) {
-				assertionData.addQuad(Quad.create(graphUUIDNode, s.asTriple()));
-			}
-			Update assertionUpdate = new UpdateDataInsert(assertionData);
-			
-			unaryAssertionInstances.put(graphUUIDNode, assertionUpdate);
-		}
-		
-		return unaryAssertionInstances;
-    }
-
 
 	private class AnnotationStatementSelector implements Selector {
 		private Resource annotationSubject;
@@ -344,7 +290,9 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		
 		@Override
         public boolean test(Statement s) {
-			if (s.getSubject().equals(annotationSubject) && !s.getPredicate().equals(RDF.type)) {
+			if (s.getSubject().equals(annotationSubject) 
+				&& !s.getPredicate().equals(ConsertCore.CONTEXT_ASSERTION_RESOURCE)
+				&& !s.getPredicate().equals(ConsertCore.CONTEXT_ASSERTION_CONTENT)) {
 				return true;
 			}
 			
@@ -372,42 +320,4 @@ public class CheckInferenceHook extends ContextUpdateHook {
         }
 	}
 	
-	private class AssertionStatementSelector implements Selector {
-		private List<Statement> annotationStatements;
-		private Resource annotationSubject;
-
-		public AssertionStatementSelector(List<Statement> annotationStatements, Resource annotationSubject) {
-	        this.annotationStatements = annotationStatements;
-	        this.annotationSubject = annotationSubject;
-        }
-		
-		@Override
-        public boolean test(Statement s) {
-	        if (annotationStatements.contains(s) || s.getSubject().equals(annotationSubject)) {
-	        	return false;
-	        }
-	        
-	        return true;
-        }
-
-		@Override
-        public boolean isSimple() {
-	        return false;
-        }
-
-		@Override
-        public Resource getSubject() {
-	        return null;
-        }
-
-		@Override
-        public Property getPredicate() {
-	        return null;
-        }
-
-		@Override
-        public RDFNode getObject() {
-	        return null;
-        }
-	}
 }

@@ -7,6 +7,10 @@ import java.util.Set;
 
 import org.aimas.ami.contextrep.model.ConstraintsWrapper;
 import org.aimas.ami.contextrep.model.ContextAssertion;
+import org.aimas.ami.contextrep.model.ContextConstraintViolation;
+import org.aimas.ami.contextrep.model.ContextUniquenessConstraintViolation;
+import org.aimas.ami.contextrep.model.ContextValueConstraintViolation;
+import org.aimas.ami.contextrep.vocabulary.ConsertConstraint;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.statistics.SPINStatistics;
 import org.topbraid.spin.system.SPINLabels;
@@ -16,7 +20,6 @@ import org.topbraid.spin.util.QueryWrapper;
 import org.topbraid.spin.util.SPINUtil;
 import org.topbraid.spin.vocabulary.SPIN;
 
-import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QuerySolutionMap;
@@ -29,17 +32,17 @@ import com.hp.hpl.jena.vocabulary.RDF;
 
 public class ContextSPINConstraints {
 	
-	public static List<ContextConstraintViolation> check(OntModel infContextModel, ContextAssertion assertion, ConstraintsWrapper constraints, List<SPINStatistics> stats) {
+	public static List<ContextConstraintViolation> check(Model constraintContextModel, ContextAssertion assertion, ConstraintsWrapper constraints, List<SPINStatistics> stats) {
 		
 		Resource anchorResource = constraints.getAnchorResource();
 		List<CommandWrapper> constraintCommands = constraints.getConstraintCommands();
 		//Map<CommandWrapper, Map<String, RDFNode>> templateBindings = constraints.getConstraintTemplateBindings();
 		
 		//return run(infContextModel, assertion, anchorResource, constraintCommands, templateBindings, stats);
-		return run(infContextModel, assertion, anchorResource, constraintCommands, stats);
+		return run(constraintContextModel, assertion, anchorResource, constraintCommands, stats);
 	}
 	
-	private static List<ContextConstraintViolation> run(OntModel infContextModel, ContextAssertion assertion, 
+	private static List<ContextConstraintViolation> run(Model constraintContextModel, ContextAssertion assertion, 
 			Resource anchorResource, List<CommandWrapper> constraintCommands,
 			//Map<CommandWrapper, Map<String, RDFNode>> templateBindings,
 			List<SPINStatistics> stats) {
@@ -54,12 +57,12 @@ public class ContextSPINConstraints {
 			Query arq = queryConstraintWrapper.getQuery();
 			String label = arqConstraint.getLabel();
 			
-			runQueryOnClass(results, arq, queryConstraintWrapper.getSPINQuery(), label, infContextModel, assertion, anchorResource, initialBindings, arqConstraint.isThisUnbound(), arqConstraint.isThisDeep(), arqConstraint.getSource(), stats);
+			runQueryOnClass(results, arq, queryConstraintWrapper.getSPINQuery(), label, constraintContextModel, assertion, anchorResource, initialBindings, arqConstraint.isThisUnbound(), arqConstraint.isThisDeep(), arqConstraint.getSource(), stats);
 			
 			if(!arqConstraint.isThisUnbound()) {
 				Set<Resource> subClasses = JenaUtil.getAllSubClasses(anchorResource);
 				for(Resource subClass : subClasses) {
-					runQueryOnClass(results, arq, queryConstraintWrapper.getSPINQuery(), label, infContextModel, assertion, subClass, initialBindings, arqConstraint.isThisUnbound(), arqConstraint.isThisDeep(), arqConstraint.getSource(), stats);
+					runQueryOnClass(results, arq, queryConstraintWrapper.getSPINQuery(), label, constraintContextModel, assertion, subClass, initialBindings, arqConstraint.isThisUnbound(), arqConstraint.isThisDeep(), arqConstraint.getSource(), stats);
 				}
 			}
 			
@@ -71,11 +74,11 @@ public class ContextSPINConstraints {
 	private static void runQueryOnClass(
             List<ContextConstraintViolation> results, Query arq,
             org.topbraid.spin.model.Query spinQuery, String label,
-            OntModel infContextModel, ContextAssertion assertion, Resource anchorResource,
+            Model constraintContextModel, ContextAssertion assertion, Resource anchorResource,
             Map<String, RDFNode> initialBindings, boolean thisUnbound,
             boolean thisDeep, Resource source, List<SPINStatistics> stats) {
 	    
-		if(thisUnbound || SPINUtil.isRootClass(anchorResource) || infContextModel.contains(null, RDF.type, anchorResource)) {
+		if(thisUnbound || SPINUtil.isRootClass(anchorResource) || constraintContextModel.contains(null, RDF.type, anchorResource)) {
 			QuerySolutionMap arqBindings = new QuerySolutionMap();
 			if(!thisUnbound) {
 				arqBindings.add(SPINUtil.TYPE_CLASS_VAR_NAME, anchorResource);
@@ -91,17 +94,17 @@ public class ContextSPINConstraints {
 			Model cm = JenaUtil.createDefaultModel();
 			
 			if(thisDeep && !thisUnbound) {
-				StmtIterator it = infContextModel.listStatements(null, RDF.type, anchorResource);
+				StmtIterator it = constraintContextModel.listStatements(null, RDF.type, anchorResource);
 				while(it.hasNext()) {
 					Resource instance = it.next().getSubject();
 					arqBindings.add(SPIN.THIS_VAR_NAME, instance);
-					QueryExecution qexec = ARQFactory.get().createQueryExecution(arq, infContextModel, arqBindings);
+					QueryExecution qexec = ARQFactory.get().createQueryExecution(arq, constraintContextModel, arqBindings);
 					qexec.execConstruct(cm);
 					qexec.close();
 				}
 			}
 			else {
-				QueryExecution qexec = ARQFactory.get().createQueryExecution(arq, infContextModel, arqBindings);
+				QueryExecution qexec = ARQFactory.get().createQueryExecution(arq, constraintContextModel, arqBindings);
 				qexec.execConstruct(cm);
 				qexec.close();
 			}
@@ -116,38 +119,78 @@ public class ContextSPINConstraints {
 				stats.add(new SPINStatistics(label, queryText, duration, startTime, anchorResource.asNode()));
 			}
 			
-			addConstructedProblemReports(cm, results, infContextModel, assertion, anchorResource, null, label, source);
+			addConstructedProblemReports(cm, results, constraintContextModel, assertion, anchorResource, null, label, source);
 		}
 	    
     }
 
 	private static void addConstructedProblemReports(Model cm,
-            List<ContextConstraintViolation> results, OntModel infContextModel,
+            List<ContextConstraintViolation> results, Model constraintContextModel,
             ContextAssertion assertion, Resource anchorResource, Resource matchRoot, String label,
             Resource source) {
 		
-		StmtIterator it = cm.listStatements(null, RDF.type, SPIN.ConstraintViolation);
-		while(it.hasNext()) {
-			Statement s = it.nextStatement();
-			Resource vio = s.getSubject();
-			
-			// this is misused to indicate the newly inserted context assertion
-			Statement rootS = vio.getProperty(SPIN.violationRoot);
-			String newAssertionIdURI = rootS.getResource().getURI();
-			
-			// this is misused to indicate the conflicting existing context assertion
-			Statement rootP = vio.getProperty(SPIN.violationPath);
-			String conflictingAssertionIdURI = rootP.getResource().getURI();
-			
-			results.add(createConstraintViolation(assertion, newAssertionIdURI, conflictingAssertionIdURI, source));
+		// First we must determine the type of constraint violation that was triggered
+		StmtIterator uniquenessViolationIt = cm.listStatements(null, RDF.type, ConsertConstraint.UNIQUENESS_CONSTRAINT_VIOLATION);
+		StmtIterator valueViolationIt = cm.listStatements(null, RDF.type, ConsertConstraint.VALUE_CONSTRAINT_VIOLATION);
+		
+		if (uniquenessViolationIt.hasNext()) {
+			while(uniquenessViolationIt.hasNext()) {
+				Statement s = uniquenessViolationIt.nextStatement();
+				Resource vio = s.getSubject();
+				
+				// determine the URI of the ContextConstraintTemplate that triggered this conflict
+				//Statement constraintTemplateStmt = cm.getProperty(vio, ConsertConstraint.HAS_SOURCE_TEMPLATE);
+				//String constraintTemplateURI = constraintTemplateStmt.getResource().getURI();
+				
+				// get the identifier URIs of the two conflicting ContextAssertions
+				List<Statement> conflictingAssertions = cm.listStatements(vio, ConsertConstraint.HAS_CONFLICTING_ASSERTION, (RDFNode)null).toList();
+				if (conflictingAssertions.size() == 2) {
+					String assertionUUID1 = conflictingAssertions.get(0).getResource().getURI();
+					String assertionUUID2 = conflictingAssertions.get(1).getResource().getURI();
+					
+					results.add(createUniquenessConstraintViolation(assertion, assertionUUID1, assertionUUID2, source));
+				}
+			}
 		}
+		else {
+			while(valueViolationIt.hasNext()) {
+				Statement s = valueViolationIt.nextStatement();
+				Resource vio = s.getSubject();
+				
+				// get the identifier URI of the conflicting ContextAssertion
+				Statement conflictingAssertionStmt = cm.getProperty(vio, ConsertConstraint.HAS_CONFLICTING_ASSERTION);
+				String assertionUUID = conflictingAssertionStmt.getResource().getURI();
+				
+				// check for assertion or annotation violation value indicators
+				Resource assertionConflictingVal = null;
+				Resource annotationConflictingVal = null;
+				
+				Statement assertionConflictValueStmt = cm.getProperty(vio, ConsertConstraint.HAS_CONFLICT_ASSERTION_VALUE);
+				if (assertionConflictValueStmt != null) {
+					assertionConflictingVal = assertionConflictValueStmt.getResource();
+				}
+				
+				Statement annotationConflictValueStmt = cm.getProperty(vio, ConsertConstraint.HAS_CONFLICT_ANNOTATION_VALUE);
+				if (annotationConflictValueStmt != null) {
+					annotationConflictingVal = annotationConflictValueStmt.getResource();
+				}
+				
+				results.add(createValueConstraintViolation(assertion, source, assertionUUID, assertionConflictingVal, annotationConflictingVal));
+			}
+		}
+		
     }
 	
 	
-	private static ContextConstraintViolation createConstraintViolation(
-            ContextAssertion assertion, String newAssertionIdURI,
-            String conflictingAssertionIdURI, Resource source) {
+	private static ContextConstraintViolation createUniquenessConstraintViolation(
+            ContextAssertion assertion, String assertionUUID1, String assertionUUID2, Resource source) {
 	    
-		return new ContextUniquenessConstraintViolation(assertion, source, newAssertionIdURI, conflictingAssertionIdURI);
+		return new ContextUniquenessConstraintViolation(assertion, source, assertionUUID1, assertionUUID2);
+    }
+	
+	private static ContextConstraintViolation createValueConstraintViolation(ContextAssertion assertion, 
+			Resource source, String assertionUUID, Resource assertionConflictValue, Resource annotationConflictValue) {
+	    
+		return new ContextValueConstraintViolation(assertion, source, assertionUUID, assertionConflictValue, annotationConflictValue);
     }
 }

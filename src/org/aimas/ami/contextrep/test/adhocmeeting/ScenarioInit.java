@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.aimas.ami.contextrep.core.Engine;
+import org.aimas.ami.contextrep.datatype.CalendarInterval;
+import org.aimas.ami.contextrep.datatype.CalendarIntervalList;
 import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
 import org.aimas.ami.contextrep.test.ContextEvent;
-import org.aimas.ami.contextrep.utils.CalendarInterval;
-import org.aimas.ami.contextrep.utils.CalendarIntervalList;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;

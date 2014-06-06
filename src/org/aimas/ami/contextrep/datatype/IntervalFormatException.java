@@ -1,4 +1,4 @@
-package org.aimas.ami.contextrep.utils;
+package org.aimas.ami.contextrep.datatype;
 
 public class IntervalFormatException extends Exception {
 

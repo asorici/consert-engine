@@ -1,6 +1,7 @@
 package org.aimas.ami.contextrep.core;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class ContextAnnotationIndex {
 	private Map<OntProperty, List<StructuredAnnotation>> structuredAnnotationMap;
@@ -53,23 +55,23 @@ public class ContextAnnotationIndex {
 	
 	
 	// ================== get annotation by resource ==================
-	public ContextAnnotation getByResource(OntResource ontRes) {
+	public ContextAnnotation getByResource(Resource annotationRes) {
 		// first search in the structured annotation list
-		ContextAnnotation ann = getStructuredByResource(ontRes);
+		ContextAnnotation ann = getStructuredByResource(annotationRes);
 		if (ann != null) {
 			return ann;
 		}
 		
 		// then in the unstructured one
-		ann = getBasicByResource(ontRes);
+		ann = getBasicByResource(annotationRes);
 		return ann;
 	}
 	
 	
-	public ContextAnnotation getBasicByResource(OntResource ontRes) {
+	public ContextAnnotation getBasicByResource(Resource annotationRes) {
 		for (List<ContextAnnotation> annotations : basicAnnotationMap.values()) {
 			for (ContextAnnotation ann : annotations) {
-				if (ann.getOntologyResource().equals(ontRes)) {
+				if (ann.getOntologyResource().equals(annotationRes)) {
 					return ann;
 				}
 			}
@@ -79,10 +81,10 @@ public class ContextAnnotationIndex {
 	}
 	
 	
-	public StructuredAnnotation getStructuredByResource(OntResource ontRes) {
+	public StructuredAnnotation getStructuredByResource(Resource annotationRes) {
 		for (List<StructuredAnnotation> annotations : structuredAnnotationMap.values()) {
 			for (StructuredAnnotation ann : annotations) {
-				if (ann.getOntologyResource().equals(ontRes)) {
+				if (ann.getOntologyResource().equals(annotationRes)) {
 					return ann;
 				}
 			}
@@ -99,6 +101,14 @@ public class ContextAnnotationIndex {
 	
 	public Set<OntProperty> getStructuredAnnotationProperties() {
 		return structuredAnnotationMap.keySet();
+	}
+	
+	public Set<OntProperty> getAnnotationProperties() {
+		Set<OntProperty> allAnnProperties = new HashSet<OntProperty>();
+		allAnnProperties.addAll(basicAnnotationMap.keySet());
+		allAnnProperties.addAll(structuredAnnotationMap.keySet());
+		
+		return allAnnProperties;
 	}
 	
 	// ========== list ContextAnnotations per type and annotation property category ==========

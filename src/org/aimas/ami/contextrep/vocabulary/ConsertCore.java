@@ -71,8 +71,10 @@ public class ConsertCore {
 	}
 	
 	public final static Property CONTEXT_ASSERTION_ROLE = m_model.createProperty( NS + "assertionRole" );
-	public final static Property CONTEXT_ASSERTION_RESOURCE = m_model.createProperty( NS + "assertionResource" );
 	public final static Property CONTEXT_ASSERTION_TYPE_PROPERTY = m_model.createProperty( NS + "assertionType" );
+	
+	public final static Property CONTEXT_ASSERTION_RESOURCE = m_model.createProperty( NS + "assertionResource" );
+	public final static Property CONTEXT_ASSERTION_CONTENT = m_model.createProperty( NS + "assertionContent" );
 	
 	public final static Property CONTEXT_AGENT_TYPE_PROPERTY = m_model.createProperty( NS + "agentType" );
 	

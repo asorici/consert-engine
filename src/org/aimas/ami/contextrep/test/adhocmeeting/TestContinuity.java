@@ -2,7 +2,7 @@ package org.aimas.ami.contextrep.test.adhocmeeting;
 
 import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
-import org.aimas.ami.contextrep.exceptions.ConfigException;
+import org.aimas.ami.contextrep.core.api.ConfigException;
 import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
 import org.aimas.ami.contextrep.vocabulary.ConsertFunctions;
 import org.apache.jena.atlas.logging.LogCtl;

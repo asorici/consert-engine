@@ -7,26 +7,22 @@ import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.aimas.ami.contextrep.core.Engine;
-import org.aimas.ami.contextrep.model.BinaryContextAssertion;
+import org.aimas.ami.contextrep.core.api.InsertResult;
 import org.aimas.ami.contextrep.model.ContextAssertion;
-import org.aimas.ami.contextrep.model.NaryContextAssertion;
-import org.aimas.ami.contextrep.model.UnaryContextAssertion;
 import org.aimas.ami.contextrep.model.exceptions.ContextAssertionContentException;
 import org.aimas.ami.contextrep.model.exceptions.ContextAssertionModelException;
 import org.aimas.ami.contextrep.test.performance.RunTest;
-import org.aimas.ami.contextrep.utils.ContextUpdateUtil;
+import org.aimas.ami.contextrep.utils.ContextAnnotationUtil;
+import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.shared.PropertyNotFoundException;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.modify.request.QuadDataAcc;
 import com.hp.hpl.jena.sparql.modify.request.UpdateCreate;
@@ -34,7 +30,6 @@ import com.hp.hpl.jena.sparql.modify.request.UpdateDataInsert;
 import com.hp.hpl.jena.update.Update;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
-import com.hp.hpl.jena.vocabulary.RDF;
 
 public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 	private Node contextAssertionUUID;
@@ -45,7 +40,7 @@ public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 	}
 	
 	@Override
-	public HookResult exec(Dataset contextStoreDataset) {
+	public AssertionInheritanceResult exec(Dataset contextStoreDataset) {
 		// for testing purposes - we need to see how to control this
 		long start = System.currentTimeMillis();
 		
@@ -54,7 +49,7 @@ public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 		
 		// determine if this ContextAssertion has ancestors from which it inherits
 		List<ContextAssertion> assertionAncestorList = 
-			ContextUpdateUtil.getContextAssertionAncestors(contextAssertion, contextModel);
+			ContextAssertionUtil.getContextAssertionAncestors(contextAssertion, contextModel);
 		
 		
 		if (!assertionAncestorList.isEmpty()) {
@@ -63,7 +58,7 @@ public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 			
 			// get all annotations of the ContextAssertion
 			Map<Statement, Set<Statement>> assertionAnnotations = 
-				ContextUpdateUtil.getAnnotationsFor(contextAssertion, assertionUUIDRes, contextModel, contextStoreDataset);
+				ContextAnnotationUtil.getAnnotationsFor(contextAssertion, assertionUUIDRes, contextModel, contextStoreDataset);
 		
 			try {
 				// create the appropriate UpdateRequest entries for each ancestor assertion
@@ -74,29 +69,36 @@ public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 	            // enqueue them as individual insertion requests
 	            for (UpdateRequest req : ancestorAssertionInsertions) {
 	            	ContextUpdateExecutionWrapper ancestorInsertWrapper = new ContextUpdateExecutionWrapper(req);
-	            	Future<AssertionInsertResult> result = Engine.assertionInsertExecutor().submit(ancestorInsertWrapper);
+	            	Future<InsertResult> result = Engine.assertionInsertExecutor().submit(ancestorInsertWrapper);
 					
-					RunTest.insertionTaskEnqueueTime.put(ancestorInsertWrapper.getAssertionInsertID(), System.currentTimeMillis());
-					RunTest.insertionResults.put(ancestorInsertWrapper.getAssertionInsertID(), result);
+	            	// TODO see about performance collect
+					//RunTest.insertionTaskEnqueueTime.put(ancestorInsertWrapper.getAssertionInsertID(), System.currentTimeMillis());
+					//RunTest.insertionResults.put(ancestorInsertWrapper.getAssertionInsertID(), result);
 	            }
 	            
-	            long end = System.currentTimeMillis();
-	    		return new AssertionInheritanceHookResult(start, (int)(end - start), false, assertionAncestorList);
+	            return new AssertionInheritanceResult(contextAssertion, null, assertionAncestorList);
+	            // TODO: performance collect
+	            //long end = System.currentTimeMillis();
+	    		//return new AssertionInheritanceResult(start, (int)(end - start), false, assertionAncestorList);
             }
             catch (ContextAssertionContentException e) {
-	            e.printStackTrace();
-	            long end = System.currentTimeMillis();
-	            return new AssertionInheritanceHookResult(start, (int)(end - start), true, null);
+	            return new AssertionInheritanceResult(contextAssertion, e, null);
+	            // TODO: performance collect
+	            //long end = System.currentTimeMillis();
+	            //return new AssertionInheritanceResult(start, (int)(end - start), true, null);
             }
             catch (ContextAssertionModelException e) {
-	            e.printStackTrace();
-	            long end = System.currentTimeMillis();
-	            return new AssertionInheritanceHookResult(start, (int)(end - start), true, null);
+            	return new AssertionInheritanceResult(contextAssertion, e, null);
+            	// TODO: performance collect
+            	//long end = System.currentTimeMillis();
+	            //return new AssertionInheritanceResult(start, (int)(end - start), true, null);
             }
 		}
 		
-		long end = System.currentTimeMillis();
-		return new AssertionInheritanceHookResult(start, (int)(end - start), false, null);
+		return new AssertionInheritanceResult(contextAssertion, null, null);
+		// TODO: performance collect
+		//long end = System.currentTimeMillis();
+		//return new AssertionInheritanceResult(start, (int)(end - start), false, null);
 	}
 	
 	

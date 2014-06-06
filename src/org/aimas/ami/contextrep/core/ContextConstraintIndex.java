@@ -27,6 +27,7 @@ import org.topbraid.spin.vocabulary.SPL;
 import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -59,13 +60,7 @@ public class ContextConstraintIndex {
 		ContextConstraintIndex constraintIndex = new ContextConstraintIndex();
 		
 		// add the spl:, spin: and sp: namespaces to the constraints model to be able to detect them
-		MultiUnion spinUnion = JenaUtil.createMultiUnion();
-		spinUnion.addGraph(SP.getModel().getGraph());
-		spinUnion.addGraph(SPL.getModel().getGraph());
-		spinUnion.addGraph(SPIN.getModel().getGraph());
-		
-		OntModel extendedConstraintModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, contextModelConstraints);
-		extendedConstraintModel.union(ModelFactory.createModelForGraph(spinUnion));
+		OntModel extendedConstraintModel = Loader.ensureSPINImported(contextModelConstraints);
 		
 		// make sure to register the templates as they will be searched for when collecting the constraints
 		SPINModuleRegistry.get().registerAll(extendedConstraintModel, null);

@@ -1,9 +1,11 @@
-package org.aimas.ami.contextrep.utils;
+package org.aimas.ami.contextrep.datatype;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+
+import org.aimas.ami.contextrep.utils.SortedList;
 
 public class CalendarIntervalList extends IntervalList<CalendarInterval> {
 	public static final String INTERVAL_SEPARATOR = ";";

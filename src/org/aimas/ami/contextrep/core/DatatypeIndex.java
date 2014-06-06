@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.aimas.ami.contextrep.utils.CalendarIntervalListType;
+import org.aimas.ami.contextrep.datatype.CalendarIntervalListType;
 
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.TypeMapper;

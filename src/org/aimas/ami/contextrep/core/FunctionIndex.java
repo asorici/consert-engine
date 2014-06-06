@@ -104,16 +104,7 @@ public class FunctionIndex {
 		SPINModuleRegistry.get().init();
 		
 		// add the spin: and sp: namespaces to the functions module (they were not imported on initial load)
-		//OntDocumentManager spinDocumentMgr = Loader.getOntDocumentManager(ConfigKeys.SPIN_ONT_DOCMGR_FILE);
-		//spinDocumentMgr.loadImport(contextModelFunctions, SPIN.BASE_URI);
-		
-		MultiUnion spinUnion = JenaUtil.createMultiUnion();
-		spinUnion.addGraph(SP.getModel().getGraph());
-		spinUnion.addGraph(SPL.getModel().getGraph());
-		spinUnion.addGraph(SPIN.getModel().getGraph());
-		
-		OntModel extendedFunctionsModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, contextModelFunctions);
-		extendedFunctionsModel.union(ModelFactory.createModelForGraph(spinUnion));
+		OntModel extendedFunctionsModel = Loader.ensureSPINImported(contextModelFunctions);
 		
 		// register SPIN custom functions and templates which the Context Model Function module defines
 		SPINModuleRegistry.get().registerAll(extendedFunctionsModel, null);

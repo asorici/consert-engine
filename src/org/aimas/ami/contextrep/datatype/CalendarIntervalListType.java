@@ -1,4 +1,4 @@
-package org.aimas.ami.contextrep.utils;
+package org.aimas.ami.contextrep.datatype;
 
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 

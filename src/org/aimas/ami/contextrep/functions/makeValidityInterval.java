@@ -2,9 +2,9 @@ package org.aimas.ami.contextrep.functions;
 
 import java.util.Calendar;
 
-import org.aimas.ami.contextrep.utils.CalendarInterval;
-import org.aimas.ami.contextrep.utils.CalendarIntervalList;
-import org.aimas.ami.contextrep.utils.CalendarIntervalListType;
+import org.aimas.ami.contextrep.datatype.CalendarInterval;
+import org.aimas.ami.contextrep.datatype.CalendarIntervalList;
+import org.aimas.ami.contextrep.datatype.CalendarIntervalListType;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.sparql.expr.ExprEvalException;

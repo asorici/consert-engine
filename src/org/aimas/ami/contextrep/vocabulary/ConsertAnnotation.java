@@ -27,7 +27,7 @@ public class ConsertAnnotation {
     public final static Resource TIMESTAMP_ANNOTATION = m_model.createResource( NS + "TimestampAnnotation" );
     public final static Resource VALIDITY_ANNOTATION = m_model.createResource( NS + "ValidityAnnotation" );
     
-    public final static Resource NUMERIIC_VALUE_CERTAINTY = m_model.createResource( NS + "NumericValueCertainty" );
+    public final static Resource NUMERIC_VALUE_CERTAINTY = m_model.createResource( NS + "NumericValueCertainty" );
     public final static Resource DATETIME_TIMESTAMP = m_model.createResource( NS + "DatetimeTimestamp" );
     public final static Resource TEMPORAL_VALIDITY = m_model.createResource( NS + "TemporalValidity" );
     

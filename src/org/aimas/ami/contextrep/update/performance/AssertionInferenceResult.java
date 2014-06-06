@@ -1,6 +1,7 @@
-package org.aimas.ami.contextrep.update;
+package org.aimas.ami.contextrep.update.performance;
 
 import org.aimas.ami.contextrep.model.ContextAssertion;
+import org.aimas.ami.contextrep.update.InferenceResult;
 
 public class AssertionInferenceResult {
 	private int referenceID;
@@ -8,10 +9,10 @@ public class AssertionInferenceResult {
 	private int duration;
 	
 	private ContextAssertion assertion;
-	private InferenceHookResult inferenceHookResult;
+	private InferenceResult inferenceHookResult;
 	
 	public AssertionInferenceResult(int referenceID, long startTime, int duration, 
-			ContextAssertion assertion, InferenceHookResult inferenceHookResult) {
+			ContextAssertion assertion, InferenceResult inferenceHookResult) {
 	    this.referenceID = referenceID;
 	    this.startTime = startTime;
 	    this.duration = duration;
@@ -35,7 +36,7 @@ public class AssertionInferenceResult {
 		return assertion;
 	}
 
-	public InferenceHookResult inferenceHookResult() {
+	public InferenceResult inferenceHookResult() {
 		return inferenceHookResult;
 	}
 }

@@ -1,30 +1,26 @@
 package org.aimas.ami.contextrep.update;
 
+import org.aimas.ami.contextrep.model.ContextAssertion;
+
 public class HookResult {
-	long startTime;
-	int duration;
-	
-	boolean error;
+	ContextAssertion assertion;
+	Exception execError;
 
-	public HookResult(long startTime, int duration, boolean error) {
-	    this.startTime = startTime;
-	    this.duration = duration;
-	    this.error = error;
+	public HookResult(ContextAssertion assertion, Exception error) {
+	    this.assertion = assertion;
+		this.execError = error;
     }
-
-	public long getStartTime() {
-		return startTime;
-	}
-
-	public int getDuration() {
-		return duration;
-	}
-
-	public boolean hasError() {
-		return error;
+	
+	public ContextAssertion getHookAssertion() {
+		return assertion;
 	}
 	
-	public long getEnd() {
-		return startTime + duration;
+	public boolean hasError() {
+		return execError != null;
+	}
+	
+	
+	public Exception getError() {
+		return execError;
 	}
 }
