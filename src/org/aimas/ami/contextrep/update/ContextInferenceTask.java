@@ -10,7 +10,7 @@ import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.ReadWrite;
 
 
-public class ContextInferenceExecutionWrapper implements Callable<InferenceResult> {
+public class ContextInferenceTask implements Callable<InferenceResult> {
 	private CheckInferenceHook inferenceHook;
 	
 	/** 
@@ -28,7 +28,7 @@ public class ContextInferenceExecutionWrapper implements Callable<InferenceResul
 	}
 	
 	
-	public ContextInferenceExecutionWrapper(CheckInferenceHook inferenceHook) {
+	public ContextInferenceTask(CheckInferenceHook inferenceHook) {
 		this.inferenceHook = inferenceHook;
 	}
 	
@@ -39,7 +39,7 @@ public class ContextInferenceExecutionWrapper implements Callable<InferenceResul
 		InferenceResult inferenceHookResult = null;
 		
 		// for test purposes increment atomic counter
-		RunTest.enqueuedInferenceTracker.getAndIncrement();
+		// TODO: performance collector RunTest.enqueuedInferenceTracker.getAndIncrement();
 		
 		// STEP 1: start a new READ transaction on the contextStoreDataset
 		Dataset contextDataset = Engine.getRuntimeContextStore();

@@ -27,12 +27,12 @@ import com.hp.hpl.jena.update.Update;
 import com.hp.hpl.jena.update.UpdateAction;
 import com.hp.hpl.jena.update.UpdateRequest;
 
-public class ContextUpdateExecutionWrapper implements Callable<InsertResult> {
+public class ContextUpdateTask implements Callable<InsertResult> {
 	private int assertionInsertID;
 	
 	private UpdateRequest request;
 	
-	public ContextUpdateExecutionWrapper(UpdateRequest request) {
+	public ContextUpdateTask(UpdateRequest request) {
 		this.request = request;
 	}
 	
@@ -118,6 +118,8 @@ public class ContextUpdateExecutionWrapper implements Callable<InsertResult> {
 			
 			// STEP 6: commit transaction
 			contextDataset.commit();
+			
+			// TODO: notify the ContextInsertListener (the SubscriptionMonitor) of the newly inserted ContextAssertion type
 		} 
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -129,7 +131,7 @@ public class ContextUpdateExecutionWrapper implements Callable<InsertResult> {
 		
 		// STEP 7: enqueue detected INFERENCE HOOK to assertionInferenceExecutor
 		if (inferenceHook != null) {
-			Future<InferenceResult> result = Engine.assertionInferenceExecutor().submit(new ContextInferenceExecutionWrapper(inferenceHook));
+			Future<InferenceResult> result = Engine.assertionInferenceExecutor().submit(new ContextInferenceTask(inferenceHook));
 			// TODO: performance collection
 		}
 		
@@ -194,7 +196,7 @@ public class ContextUpdateExecutionWrapper implements Callable<InsertResult> {
 	
 	private void enqueueInferenceHooks(List<CheckInferenceHook> inferenceHooks) {
 	    for (CheckInferenceHook hook : inferenceHooks) {
-	    	Future<InferenceResult> result = Engine.assertionInferenceExecutor().submit(new ContextInferenceExecutionWrapper(hook));
+	    	Future<InferenceResult> result = Engine.assertionInferenceExecutor().submit(new ContextInferenceTask(hook));
 	    	
 	    	// TODO: figure out performance collection
 	    	//RunTest.inferenceTaskEnqueueTime.put(assertionInsertID, System.currentTimeMillis());

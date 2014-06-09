@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.aimas.ami.contextrep.model.BinaryContextAssertion;
 import org.aimas.ami.contextrep.model.ConstraintsWrapper;
@@ -19,16 +20,9 @@ import org.topbraid.spin.model.Template;
 import org.topbraid.spin.model.TemplateCall;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.CommandWrapper;
-import org.topbraid.spin.util.JenaUtil;
-import org.topbraid.spin.vocabulary.SP;
 import org.topbraid.spin.vocabulary.SPIN;
-import org.topbraid.spin.vocabulary.SPL;
 
-import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -61,6 +55,7 @@ public class ContextConstraintIndex {
 		
 		// add the spl:, spin: and sp: namespaces to the constraints model to be able to detect them
 		OntModel extendedConstraintModel = Loader.ensureSPINImported(contextModelConstraints);
+		//OntModel extendedConstraintModel = contextModelConstraints;
 		
 		// make sure to register the templates as they will be searched for when collecting the constraints
 		SPINModuleRegistry.get().registerAll(extendedConstraintModel, null);
@@ -94,7 +89,7 @@ public class ContextConstraintIndex {
 	    		if (constraintsMap != null && !constraintsMap.isEmpty()) {
 	    			for (Resource anchorResource : constraintsMap.keySet()) {
 		    			List<CommandWrapper> constraints = constraintsMap.get(anchorResource);
-		    			List<CommandWrapper> filteredConstraints = filterBinaryConstraintsFor(constraints, binaryAssertion, extendedConstraintModel);
+		    			List<CommandWrapper> filteredConstraints = filterBinaryConstraintsFor(constraints, binaryAssertion, contextAssertionIndex, extendedConstraintModel);
 		    			
 		    			ConstraintsWrapper constraintsWrapper = new ConstraintsWrapper(filteredConstraints, anchorResource);
 	    				constraintIndex.addAssertionConstraint(binaryAssertion, constraintsWrapper);
@@ -128,7 +123,7 @@ public class ContextConstraintIndex {
 	 * the ones who do not relate to <code>binaryAssertion</code>.
 	 */
 	private static List<CommandWrapper> filterBinaryConstraintsFor(List<CommandWrapper> constraints,
-            BinaryContextAssertion binaryAssertion, OntModel rdfsContextModel) {
+            BinaryContextAssertion binaryAssertion, ContextAssertionIndex contextAssertionIndex, OntModel rdfsContextModel) {
 		List<CommandWrapper> filteredConstraints = new ArrayList<>();
 		
 		for (CommandWrapper cmd : constraints) {
@@ -154,16 +149,16 @@ public class ContextConstraintIndex {
 			//Map<String, RDFNode> templateBindings = initialTemplateBindings.get(cmd);
 			Map<String, RDFNode> templateBindings = cmd.getTemplateBinding();
 			
-			ContextAssertionFinder ruleBodyFinder = new ContextAssertionFinder(whereElements, rdfsContextModel, templateBindings);
+			ContextAssertionFinder ruleBodyFinder = new ContextAssertionFinder(whereElements, contextAssertionIndex, rdfsContextModel, templateBindings);
 			
 			// run context assertion rule body finder and collect results
 			ruleBodyFinder.run();
-			List<ContextAssertionGraph> bodyContextAssertions = ruleBodyFinder.getResult();
+			Set<ContextAssertionGraph> bodyContextAssertions = ruleBodyFinder.getResult();
 			
 			// see if the list of collected context assertions contains our binaryAssertion
 			//initialTemplateBindings.remove(cmd);							// attempted remove of bindings for cmd
 			for (ContextAssertionGraph assertionGraph : bodyContextAssertions) {
-				if (assertionGraph.getAssertionResource().equals(binaryAssertion.getOntologyResource())) {
+				if (assertionGraph.getAssertion().equals(binaryAssertion.getOntologyResource())) {
 					// if the collected assertions really include our binaryAssertion
 					filteredConstraints.add(cmd);							// add the command to the filtered ones
 					//initialTemplateBindings.put(cmd, templateBindings);		// and add the mapping back to the template bindings

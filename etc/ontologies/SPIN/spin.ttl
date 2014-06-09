@@ -1,7 +1,6 @@
 # baseURI: http://spinrdf.org/spin
 # imports: http://spinrdf.org/sp
 
-# c14n-version: 3
 @prefix arg: <http://spinrdf.org/arg#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -10,6 +9,7 @@
 @prefix spin: <http://spinrdf.org/spin#> .
 @prefix spl: <http://spinrdf.org/spl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
 sp:Construct
   rdfs:subClassOf spin:Rule ;
 .
@@ -256,6 +256,14 @@ spin:body
   rdfs:comment "The body of a Function or Template. This points to a Query instance. For Functions, this is limited to either ASK or SELECT type queries. If the body is the ASK function then the return value is xsd:boolean. Otherwise, the SELECT query must have a single return variable. The first binding of this SELECT query will be returned as result of the function call." ;
   rdfs:label "body"^^xsd:string ;
   rdfs:range sp:Command ;
+  rdfs:subPropertyOf spin:systemProperty ;
+.
+spin:cachable
+  rdf:type rdf:Property ;
+  rdfs:comment "Can be set to true to instruct the SPIN engine that it may cache the results of all calls to the associated function. Functions should only be marked as cachable if the same combination of input arguments always returns the same result. Functions that query a graph or other background data that may change over time should not be cached. Caching can significantly improve performance of frequently needed functions."^^xsd:string ;
+  rdfs:domain spin:Function ;
+  rdfs:label "cachable"^^xsd:string ;
+  rdfs:range xsd:boolean ;
   rdfs:subPropertyOf spin:systemProperty ;
 .
 spin:column

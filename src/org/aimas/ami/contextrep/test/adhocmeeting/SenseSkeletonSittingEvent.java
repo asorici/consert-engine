@@ -10,11 +10,11 @@ import org.aimas.ami.contextrep.datatype.CalendarIntervalList;
 import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
+import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
@@ -114,24 +114,52 @@ public class SenseSkeletonSittingEvent extends ContextEvent {
 		Literal sourceAnn = ResourceFactory.createTypedLiteral(DEFAULT_SOURCE_URI, XSDDatatype.XSDanyURI);
 		
 		// create update quads
-		Node storeURINode = NodeFactory.createURI(
+		Node storeURINode = Node.createURI(
 			Engine.getContextAssertionIndex().getAssertionFromResource(assertionClass).getAssertionStoreURI());
 		
-		OntProperty assertedBy = contextModel.getOntProperty(ConsertAnnotation.HAS_SOURCE.getURI());
+		OntProperty hasSource = contextModel.getOntProperty(ConsertAnnotation.HAS_SOURCE.getURI());
 		OntProperty hasTimestamp = contextModel.getOntProperty(ConsertAnnotation.HAS_TIMESTAMP.getURI());
-		OntProperty validDuring = contextModel.getOntProperty(ConsertAnnotation.HAS_VALIDITY.getURI());
-		OntProperty hasAccuracy = contextModel.getOntProperty(ConsertAnnotation.HAS_CERTAINTY.getURI());
-		
-		Quad q1 = Quad.create(storeURINode, graphURINode, assertedBy.asNode(), sourceAnn.asNode());
-		Quad q2 = Quad.create(storeURINode, graphURINode, hasTimestamp.asNode(), timestampAnn.asNode());
-		Quad q3 = Quad.create(storeURINode, graphURINode, validDuring.asNode(), validityAnn.asNode());
-		Quad q4 = Quad.create(storeURINode, graphURINode, hasAccuracy.asNode(), accuracyAnn.asNode());
+		OntProperty hasValidity = contextModel.getOntProperty(ConsertAnnotation.HAS_VALIDITY.getURI());
+		OntProperty hasCertainty = contextModel.getOntProperty(ConsertAnnotation.HAS_CERTAINTY.getURI());
 		
 		QuadDataAcc data = new QuadDataAcc();
-		data.addQuad(q1);
-		data.addQuad(q2);
-		data.addQuad(q3);
-		data.addQuad(q4);
+		
+		// source ann
+		Resource srcRes = ResourceFactory.createResource();
+		Quad qSrc1 = Quad.create(storeURINode, graphURINode, hasSource.asNode(), srcRes.asNode());
+		Quad qSrc2 = Quad.create(storeURINode, srcRes.asNode(), RDF.type.asNode(), ConsertAnnotation.SOURCE_ANNOTATION.asNode());
+		Quad qSrc3 = Quad.create(storeURINode, srcRes.asNode(), ConsertAnnotation.HAS_UNSTRUCTURED_VALUE.asNode(), sourceAnn.asNode());
+		data.addQuad(qSrc1); data.addQuad(qSrc2); data.addQuad(qSrc3); 
+		
+		// timestamp ann
+		Resource timestampRes = ResourceFactory.createResource();
+		Quad qTimestamp1 = Quad.create(storeURINode, graphURINode, hasTimestamp.asNode(), timestampRes.asNode());
+		Quad qTimestamp2 = Quad.create(storeURINode, timestampRes.asNode(), RDF.type.asNode(), ConsertAnnotation.DATETIME_TIMESTAMP.asNode());
+		Quad qTimestamp3 = Quad.create(storeURINode, timestampRes.asNode(), ConsertAnnotation.HAS_STRUCTURED_VALUE.asNode(), timestampAnn.asNode());
+		data.addQuad(qTimestamp1); data.addQuad(qTimestamp2); data.addQuad(qTimestamp3); 
+		
+		// validity ann
+		Resource validityRes = ResourceFactory.createResource();
+		Quad qValidity1 = Quad.create(storeURINode, graphURINode, hasValidity.asNode(), validityRes.asNode());
+		Quad qValidity2 = Quad.create(storeURINode, validityRes.asNode(), RDF.type.asNode(), ConsertAnnotation.TEMPORAL_VALIDITY.asNode());
+		Quad qValidity3 = Quad.create(storeURINode, validityRes.asNode(), ConsertAnnotation.HAS_STRUCTURED_VALUE.asNode(), validityAnn.asNode());
+		data.addQuad(qValidity1); data.addQuad(qValidity2); data.addQuad(qValidity3); 
+		
+		// certainty ann
+		Resource certaintyRes = ResourceFactory.createResource();
+		Quad qCertainty1 = Quad.create(storeURINode, graphURINode, hasCertainty.asNode(), certaintyRes.asNode());
+		Quad qCertainty2 = Quad.create(storeURINode, certaintyRes.asNode(), RDF.type.asNode(), ConsertAnnotation.NUMERIC_VALUE_CERTAINTY.asNode());
+		Quad qCertainty3 = Quad.create(storeURINode, certaintyRes.asNode(), ConsertAnnotation.HAS_STRUCTURED_VALUE.asNode(), accuracyAnn.asNode());
+		data.addQuad(qCertainty1); data.addQuad(qCertainty2); data.addQuad(qCertainty3); 
+		
+		Quad qAssertionType = Quad.create(storeURINode, graphURINode, ConsertCore.CONTEXT_ASSERTION_TYPE_PROPERTY.asNode(), 
+				ConsertCore.TYPE_SENSED.asNode());
+		data.addQuad(qAssertionType);
+		
+		Quad qAssertionRes = Quad.create(storeURINode, graphURINode, ConsertCore.CONTEXT_ASSERTION_RESOURCE.asNode(), 
+				assertionClass.asNode());
+		data.addQuad(qAssertionRes);
+		
 		
 		Update annotationUpdate = new UpdateDataInsert(data);
 		return annotationUpdate;

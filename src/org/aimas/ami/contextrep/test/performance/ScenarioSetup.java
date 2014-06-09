@@ -12,7 +12,7 @@ import org.aimas.ami.contextrep.test.performance.PerformanceConfig.ContextAssert
 import org.aimas.ami.contextrep.test.performance.PerformanceConfig.ContextEntityConfig;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;
-import org.apache.jena.atlas.logging.Log;
+import org.openjena.atlas.logging.Log;
 import org.topbraid.spin.model.SPINFactory;
 import org.topbraid.spin.model.Template;
 import org.topbraid.spin.model.TemplateCall;

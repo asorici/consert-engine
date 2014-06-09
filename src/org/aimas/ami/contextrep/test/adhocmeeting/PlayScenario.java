@@ -3,22 +3,21 @@ package org.aimas.ami.contextrep.test.adhocmeeting;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.api.ConfigException;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
 import org.aimas.ami.contextrep.test.ContextEvent;
-import org.aimas.ami.contextrep.update.ContextUpdateExecutionWrapper;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
-import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
 import org.aimas.ami.contextrep.vocabulary.ConsertRules;
-import org.apache.jena.atlas.logging.LogCtl;
+import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
+import org.apache.log4j.PropertyConfigurator;
+import org.openjena.atlas.logging.Log;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
 import org.topbraid.spin.inference.SPINInferences;
@@ -31,7 +30,6 @@ import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.query.Dataset;
-import com.hp.hpl.jena.query.ReadWrite;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -49,21 +47,22 @@ public class PlayScenario {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		//PropertyConfigurator.configure("log4j.properties");
-		String configurationFile = "src/org/aimas/ami/contextrep/test/adhocmeeting/config.properties";
-		LogCtl.setLog4j();
+		PropertyConfigurator.configure("etc/log4j.properties");
+		//String configurationFile = "src/org/aimas/ami/contextrep/test/adhocmeeting/config.properties";
+		String configurationFile = "etc/config.properties";
+		Log.setLog4j();
 		
 		try {
 			// init configuration
 			Engine.init(configurationFile, true);
-			Engine.cleanPersistentContextStore();
 			
+			/*
 			Dataset dataset = Engine.getRuntimeContextStore();
-			OntModel basicContextModel = Engine.getCoreContextModel();
-			OntModel basicScenarioModel = ScenarioInit.initScenario(dataset, basicContextModel);
+			OntModel coreContextModel = Engine.getCoreContextModel();
+			OntModel basicScenarioModel = ScenarioInit.initScenario(dataset, coreContextModel);
 			
 			//attempSPINInference(dataset, basicContextModel);
-			List<ContextEvent> scenarioEvents = buildScenarioEvents(basicScenarioModel, basicContextModel, dataset);
+			List<ContextEvent> scenarioEvents = buildScenarioEvents(basicScenarioModel, coreContextModel, dataset);
 			
 			
 			// ============================= start event generation =============================
@@ -91,7 +90,7 @@ public class PlayScenario {
 						
 						// wrap event for execution and send it to insert executor
 						System.out.println("GENERATING EVENT: " + event);
-						Engine.assertionInsertExecutor().submit(new ContextUpdateExecutionWrapper(event.getUpdateRequest()));
+						Engine.assertionInsertExecutor().submit(new ContextUpdateTask(event.getUpdateRequest()));
 					}
 				}
 				
@@ -124,21 +123,22 @@ public class PlayScenario {
 				System.out.println(dataStoreNameIt.next());
 			}
 			
-			/*
-			OntResource sensesSkelAssertion = basicContextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "SensesSkelInPosition");
-			Model sensesSkeletonStore = dataset.getNamedModel(Config.getStoreForAssertion(sensesSkelAssertion)); 
-			ScenarioInit.printStatements(sensesSkeletonStore);
+			
+			//OntResource sensesSkelAssertion = basicContextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "SensesSkelInPosition");
+			//Model sensesSkeletonStore = dataset.getNamedModel(Config.getStoreForAssertion(sensesSkelAssertion)); 
+			//ScenarioInit.printStatements(sensesSkeletonStore);
+						
+			dataset.end();
 			*/
 			
-			dataset.end();
-			
 			Engine.close(false);
+			
 		} catch (ConfigException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static void attempSPINInference(Dataset dataset, OntModel basicContextModel) {
+	private static void attemptSPINInference(Dataset dataset, OntModel basicContextModel) {
 		System.out.println("#### Attempting SPIN Inference ####");
 		long timestamp = System.currentTimeMillis();
 		

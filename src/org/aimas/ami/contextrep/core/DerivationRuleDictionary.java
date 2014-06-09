@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.ContextAssertionGraph;
@@ -19,17 +20,10 @@ import org.topbraid.spin.model.TemplateCall;
 import org.topbraid.spin.model.TripleTemplate;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.CommandWrapper;
-import org.topbraid.spin.util.JenaUtil;
 import org.topbraid.spin.util.SPINQueryFinder;
-import org.topbraid.spin.vocabulary.SP;
-import org.topbraid.spin.vocabulary.SPIN;
-import org.topbraid.spin.vocabulary.SPL;
 
-import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntResource;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -120,6 +114,7 @@ public class DerivationRuleDictionary {
 		
 		// build the extended Rules Module including the SPL, SP and SPIN namespaces
 		OntModel extendedRulesModel = Loader.ensureSPINImported(contextModelRules);
+		//OntModel extendedRulesModel = contextModelRules;
 		
 		// make sure to register the templates as they will be searched for when collecting the constraints
 		SPINModuleRegistry.get().registerAll(extendedRulesModel, null);
@@ -164,11 +159,11 @@ public class DerivationRuleDictionary {
 				ContextAssertion derivedAssertion = null; 
 				
 				ContextAssertionFinder ruleBodyFinder = 
-					new ContextAssertionFinder(whereElements, extendedRulesModel, templateBindings);
+					new ContextAssertionFinder(whereElements, contextAssertionIndex, extendedRulesModel, templateBindings);
 				
 				// run context assertion rule body finder and collect results
 				ruleBodyFinder.run();
-				List<ContextAssertionGraph> bodyContextAssertions = ruleBodyFinder.getResult();
+				Set<ContextAssertionGraph> bodyContextAssertions = ruleBodyFinder.getResult();
 				
 				// look through asserted triples as part of the CONSTRUCT for the derived assertion and retrieve
 				// its resource type
@@ -195,9 +190,7 @@ public class DerivationRuleDictionary {
 				
 				for (ContextAssertionGraph assertionGraph : bodyContextAssertions) {
 					// System.out.println(assertion.getAssertionResource().getURI() + ": " + assertion.getAssertionType());
-					dict.addDerivationForAssertion(
-						contextAssertionIndex.getAssertionFromResource(assertionGraph.getAssertionResource()), 
-						derivationWrapper);
+					dict.addDerivationForAssertion(assertionGraph.getAssertion(), derivationWrapper);
 				}
 				
 				// add all ContextEntity to SPIN:Rule list mappings

@@ -9,13 +9,13 @@ import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.GraphEventManager;
 import com.hp.hpl.jena.graph.GraphStatisticsHandler;
 import com.hp.hpl.jena.graph.Node;
-//import com.hp.hpl.jena.graph.Reifier;
+import com.hp.hpl.jena.graph.Reifier;
 import com.hp.hpl.jena.graph.TransactionHandler;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.TripleMatch;
 import com.hp.hpl.jena.graph.impl.GraphWithPerform;
 import com.hp.hpl.jena.graph.impl.SimpleBulkUpdateHandler;
-//import com.hp.hpl.jena.graph.query.QueryHandler;
+import com.hp.hpl.jena.graph.query.QueryHandler;
 import com.hp.hpl.jena.shared.AddDeniedException;
 import com.hp.hpl.jena.shared.DeleteDeniedException;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -57,25 +57,26 @@ class ControlledCtxUpdateGraph implements GraphWithPerform {
 		performAdd(t);
 	}
 	
+	/*
 	@Override
 	public void clear() {
 		for(Triple triple : find(Node.ANY, Node.ANY, Node.ANY).toList()) {
 			delete(triple);
 		}
 	}
-	
+	*/
 	
 	@Override
 	public boolean dependsOn(Graph other) {
 		return delegate.dependsOn(other);
 	}
 	
-	/*
+	
 	@Override
 	public QueryHandler queryHandler() {
 		return delegate.queryHandler();
 	}
-	*/
+	
 
 	@Override
 	public TransactionHandler getTransactionHandler() {
@@ -102,12 +103,12 @@ class ControlledCtxUpdateGraph implements GraphWithPerform {
 		return delegate.getStatisticsHandler();
 	}
 	
-	/*
+	
 	@Override
 	public Reifier getReifier() {
 		return delegate.getReifier();
 	}
-	*/
+	
 
 	@Override
 	public PrefixMapping getPrefixMapping() {
@@ -182,13 +183,14 @@ class ControlledCtxUpdateGraph implements GraphWithPerform {
 		delegate.delete(t);
 	}
 	
-	
+	/*
 	@Override
 	public void remove(Node s, Node p, Node o) {
 		for(Triple triple : find(s, p, o).toList()) {
 			delete(triple);
 		}
 	}
+	*/
 	
 	public Iterable<Triple> getAddedTriples() {
 		return addedTriples;

@@ -3,6 +3,7 @@ package org.aimas.ami.contextrep.test;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.aimas.ami.contextrep.model.ContextAssertionGraph;
 import org.aimas.ami.contextrep.utils.ContextAssertionFinder;
@@ -126,11 +127,11 @@ public class CollectSpinRulesTest {
 				OntModel contextBasicInfModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_TRANS_INF, contextModel);
 				ContextAssertionFinder finder = new ContextAssertionFinder(elements, contextBasicInfModel, initialTemplateBindings.get(cmd));
 				finder.run();
-				List<ContextAssertionGraph> contextAssertions = finder.getResult();
+				Set<ContextAssertionGraph> contextAssertions = finder.getResult();
 				
 				System.out.println("Found " + contextAssertions.size() + " ContextAssertions!!!");
 				for (ContextAssertionGraph assertion : contextAssertions) {
-					System.out.println(assertion.getAssertionResource().getURI());
+					System.out.println(assertion.getAssertion().getOntologyResource().getURI());
 				}
 				
 				/*

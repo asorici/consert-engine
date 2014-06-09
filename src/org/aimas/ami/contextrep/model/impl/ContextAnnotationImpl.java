@@ -84,7 +84,7 @@ public class ContextAnnotationImpl implements ContextAnnotation {
 	 * 		The method return null if the <code>annotationClass</code> does not provide all the required elements. 
 	 */
 	public static String[] getStructureElementURIs(OntClass annotationClass, OntModel annotationModel) {
-		String[] elementURIs = new String[3];
+		String[] elementURIs = new String[4];
 		
 		Iterator<OntClass> supers = annotationClass.listSuperClasses(true);
 		for(;supers.hasNext();) {

@@ -11,7 +11,7 @@ import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.StructuredAnnotation;
 import org.aimas.ami.contextrep.update.CheckContinuityHook;
 import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
-import org.apache.jena.atlas.lib.Pair;
+import org.openjena.atlas.lib.Pair;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;

@@ -17,14 +17,13 @@ import org.aimas.ami.contextrep.utils.ContextAnnotationUtil;
 import org.aimas.ami.contextrep.utils.ContextUpdateUtil;
 import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
 import org.aimas.ami.contextrep.vocabulary.ConsertFunctions;
-import org.apache.jena.atlas.lib.Pair;
+import org.openjena.atlas.lib.Pair;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.model.Template;
 import org.topbraid.spin.system.SPINModuleRegistry;
 
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -40,6 +39,7 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.function.FunctionBase2;
 import com.hp.hpl.jena.sparql.function.FunctionRegistry;
+import com.hp.hpl.jena.sparql.util.NodeFactory;
 import com.hp.hpl.jena.tdb.TDB;
 
 public class CheckContinuityHook extends ContextUpdateHook {
@@ -174,7 +174,7 @@ public class CheckContinuityHook extends ContextUpdateHook {
 						Statement annValStmt = assertionStoreModel.getProperty(annStmt.getResource(), ConsertAnnotation.HAS_STRUCTURED_VALUE);
 						
 						NodeValue joinedVal = revisedStructuredAnnotations.get(structAnn);
-						Literal joinedValLiteral = (Literal)NodeFactory.createLiteral(joinedVal.asNode().getLiteral());
+						Literal joinedValLiteral = (Literal)Node.createLiteral(joinedVal.asNode().getLiteral());
 						
 						assertionStoreModel.remove(annValStmt);
 						assertionStoreModel.add(annStmt.getResource(), ConsertAnnotation.HAS_STRUCTURED_VALUE, joinedValLiteral);

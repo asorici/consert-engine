@@ -5,25 +5,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.aimas.ami.contextrep.functions.certaintyPermitsContinuity;
 import org.aimas.ami.contextrep.functions.datetimeDelay;
 import org.aimas.ami.contextrep.functions.getCurrentAgent;
 import org.aimas.ami.contextrep.functions.makeValidityInterval;
 import org.aimas.ami.contextrep.functions.newGraphUUID;
 import org.aimas.ami.contextrep.functions.now;
+import org.aimas.ami.contextrep.functions.timestampPermitsContinuity;
 import org.aimas.ami.contextrep.functions.validityIntervalsCloseEnough;
 import org.aimas.ami.contextrep.functions.validityIntervalsInclude;
 import org.aimas.ami.contextrep.functions.validityIntervalsOverlap;
+import org.aimas.ami.contextrep.functions.validityPermitsContinuity;
 import org.aimas.ami.contextrep.vocabulary.ConsertFunctions;
 import org.topbraid.spin.system.SPINModuleRegistry;
-import org.topbraid.spin.util.JenaUtil;
-import org.topbraid.spin.vocabulary.SP;
-import org.topbraid.spin.vocabulary.SPIN;
-import org.topbraid.spin.vocabulary.SPL;
 
-import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.ontology.OntModelSpec;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.function.FunctionRegistry;
 
 public class FunctionIndex {
@@ -52,6 +48,16 @@ public class FunctionIndex {
 		
 		// register newGraphUUID function
 		customFunctions.put(ConsertFunctions.NS + "newGraphUUID", newGraphUUID.class) ;
+		
+		// register timestampPermitsContinuity function
+		customFunctions.put(ConsertFunctions.NS + "timestampPermitsContinuity", timestampPermitsContinuity.class) ;
+		
+		// register certaintyPermitsContinuity function
+		customFunctions.put(ConsertFunctions.NS + "certaintyPermitsContinuity", certaintyPermitsContinuity.class) ;
+		
+		// register validityPermitsContinuity function
+		customFunctions.put(ConsertFunctions.NS + "validityPermitsContinuity", validityPermitsContinuity.class) ;
+				
 	}
 	
 	public static Class<?> getFunctionClass(String operatorURI) {
@@ -106,6 +112,7 @@ public class FunctionIndex {
 		// add the spin: and sp: namespaces to the functions module (they were not imported on initial load)
 		OntModel extendedFunctionsModel = Loader.ensureSPINImported(contextModelFunctions);
 		
+		
 		// register SPIN custom functions and templates which the Context Model Function module defines
 		SPINModuleRegistry.get().registerAll(extendedFunctionsModel, null);
 		
@@ -114,6 +121,9 @@ public class FunctionIndex {
 		
 		// make a Jena registration of the Java classes that implement custom filter functions defined in the Context Model Function module
 		registerCustomFilterFunctions();
+		
+		// free up any resources used by the extendedFunctionsModel
+		//extendedFunctionsModel.close();
 	}
 	
 	private static void registerCustomFilterFunctions() {

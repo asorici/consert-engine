@@ -7,13 +7,10 @@ import org.aimas.ami.contextrep.datatype.CalendarIntervalList;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.test.adhocmeeting.ScenarioInit;
 import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
-import org.aimas.ami.contextrep.vocabulary.ConsertConstraint;
-import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.rdf.model.Literal;
@@ -114,7 +111,7 @@ public abstract class ContextEvent implements Comparable<ContextEvent> {
 		Literal sourceAnn = ResourceFactory.createTypedLiteral(DEFAULT_SOURCE_URI, XSDDatatype.XSDanyURI);
 		
 		// create update quads
-		Node storeURINode = NodeFactory.createURI(assertion.getAssertionStoreURI());
+		Node storeURINode = Node.createURI(assertion.getAssertionStoreURI());
 		OntProperty assertedBy = contextModel.getOntProperty(ConsertAnnotation.HAS_SOURCE.getURI());
 		OntProperty hasTimestamp = contextModel.getOntProperty(ConsertAnnotation.HAS_TIMESTAMP.getURI());
 		OntProperty validDuring = contextModel.getOntProperty(ConsertAnnotation.HAS_VALIDITY.getURI());

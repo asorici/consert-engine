@@ -6,22 +6,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.jena.atlas.iterator.Iter;
+import org.openjena.atlas.iterator.Iter;
 
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.query.ARQ;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.shared.Lock;
 import com.hp.hpl.jena.sparql.core.Quad;
-import com.hp.hpl.jena.sparql.modify.GraphStoreEvents;
 //import com.hp.hpl.jena.sparql.modify.GraphStoreUtils;
 import com.hp.hpl.jena.sparql.util.Context;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.store.DatasetGraphTDB;
 import com.hp.hpl.jena.update.GraphStore;
+import com.hp.hpl.jena.update.UpdateRequest;
 
 
 /**
@@ -112,7 +111,7 @@ class ControlledCtxUpdateGraphStore implements GraphStore {
 		List<Node> results = new LinkedList<Node>();
 		Iterator<String> it = dataset.listNames();
 		while(it.hasNext()) {
-			results.add(NodeFactory.createURI(it.next()));
+			results.add(Node.createURI(it.next()));
 		}
 		return results.iterator();
 	}
@@ -258,6 +257,20 @@ class ControlledCtxUpdateGraphStore implements GraphStore {
 	public void delete(Node g, Node s, Node p, Node o) {
 		delete(Quad.create(g, s, p, o));
 	}
+
+
+	@Override
+    public void finishRequest(UpdateRequest arg0) {
+	    // TODO Auto-generated method stub
+	    
+    }
+
+
+	@Override
+    public void startRequest(UpdateRequest arg0) {
+	    // TODO Auto-generated method stub
+	    
+    }
 	
 	
 	/*

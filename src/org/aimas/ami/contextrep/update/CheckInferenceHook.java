@@ -14,7 +14,6 @@ import org.aimas.ami.contextrep.core.api.InsertResult;
 import org.aimas.ami.contextrep.model.ContextAnnotation;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
-import org.aimas.ami.contextrep.test.performance.RunTest;
 import org.aimas.ami.contextrep.utils.ContextAnnotationUtil;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.utils.ContextStoreUtil;
@@ -23,14 +22,13 @@ import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINInferences.ContextInferenceResult;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.aimas.ami.contextrep.vocabulary.ConsertRules;
-import org.apache.jena.atlas.lib.Pair;
+import org.openjena.atlas.lib.Pair;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
 import org.topbraid.spin.inference.SPINRuleComparator;
 import org.topbraid.spin.util.CommandWrapper;
 
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Dataset;
@@ -45,6 +43,7 @@ import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.modify.request.QuadDataAcc;
 import com.hp.hpl.jena.sparql.modify.request.UpdateCreate;
 import com.hp.hpl.jena.sparql.modify.request.UpdateDataInsert;
+import com.hp.hpl.jena.sparql.util.NodeFactory;
 import com.hp.hpl.jena.update.Update;
 import com.hp.hpl.jena.update.UpdateFactory;
 import com.hp.hpl.jena.update.UpdateRequest;
@@ -73,7 +72,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		
 		if (derivationCommands != null) {
 			// Create a list to collect inference results
-			List<ContextUpdateExecutionWrapper> inferredContext = new ArrayList<>();
+			List<ContextUpdateTask> inferredContext = new ArrayList<>();
 			List<ContextAssertion> inferredContextAssertions = new ArrayList<>();
 			
 			// get the query model as the union of the named graphs in our dataset
@@ -82,7 +81,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			
 			// for each derivation rule do a separate inference procedure
 			for (DerivedAssertionWrapper derivationWrapper : derivationCommands) {
-				List<ContextUpdateExecutionWrapper> inferred = attemptDerivationRule(derivationWrapper, queryModel, contextModelCore, contextDataset);
+				List<ContextUpdateTask> inferred = attemptDerivationRule(derivationWrapper, queryModel, contextModelCore, contextDataset);
 				
 				if (!inferred.isEmpty()) {
 					inferredContextAssertions.add(derivationWrapper.getDerivedResource());
@@ -91,7 +90,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			}
 			
 			if (!inferredContext.isEmpty()) {
-				for (ContextUpdateExecutionWrapper inferredAssertion : inferredContext) {
+				for (ContextUpdateTask inferredAssertion : inferredContext) {
 					Future<InsertResult> result = Engine.assertionInsertExecutor().submit(inferredAssertion);
 					
 					// TODO: performance collection
@@ -119,9 +118,9 @@ public class CheckInferenceHook extends ContextUpdateHook {
 	}
 	
 	
-	private List<ContextUpdateExecutionWrapper> attemptDerivationRule(DerivedAssertionWrapper derivationWrapper, 
+	private List<ContextUpdateTask> attemptDerivationRule(DerivedAssertionWrapper derivationWrapper, 
 			Model queryModel, OntModel contextModelCore, Dataset contextDataset) {
-		List<ContextUpdateExecutionWrapper> inferred = new ArrayList<>();
+		List<ContextUpdateTask> inferred = new ArrayList<>();
 		
 		DerivationRuleDictionary ruleDict = Engine.getDerivationRuleDictionary();
 		
@@ -211,7 +210,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 				
 				
 				// Step 4: create the new identifier graph and add the derived assertion statements in it creating an Update object
-				Node graphUUIDNode = NodeFactory.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
+				Node graphUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(derivedAssertionResource));
 				Update derivedAssertionCreateIdentifierUpdate = new UpdateCreate(graphUUIDNode);
 				Update derivedAssertionContentUpdate = createDerivedContentUpdate(derivedAssertion, derivedAssertionContents, graphUUIDNode);
 				
@@ -225,7 +224,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 				insertInferredRequest.add(derivedAssertionContentUpdate);
 				insertInferredRequest.add(derivedAssertionAnnotationUpdate);
 				
-				inferred.add(new ContextUpdateExecutionWrapper(insertInferredRequest));
+				inferred.add(new ContextUpdateTask(insertInferredRequest));
 			}
 		}
 		else if (inferenceResult != null && !inferenceResult.isInferred()) {
@@ -252,7 +251,7 @@ public class CheckInferenceHook extends ContextUpdateHook {
 			Map<ContextAnnotation, Pair<Resource, Set<Statement>>> derivedAssertionAnnotations, Node graphUUIDNode) {
 		
 		QuadDataAcc annotationData = new QuadDataAcc();
-		Node derivedAssertionStore = NodeFactory.createURI(derivedAssertion.getAssertionStoreURI());
+		Node derivedAssertionStore = Node.createURI(derivedAssertion.getAssertionStoreURI());
 		
 		for (ContextAnnotation annotation : derivedAssertionAnnotations.keySet()) {
 			Pair<Resource, Set<Statement>> annotationPair = derivedAssertionAnnotations.get(annotation);

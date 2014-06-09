@@ -30,13 +30,13 @@ import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.test.ContextEvent;
 import org.aimas.ami.contextrep.test.adhocmeeting.ScenarioInit;
 import org.aimas.ami.contextrep.update.ConstraintResult;
-import org.aimas.ami.contextrep.update.ContextUpdateExecutionWrapper;
+import org.aimas.ami.contextrep.update.ContextUpdateTask;
 import org.aimas.ami.contextrep.update.ContinuityResult;
 import org.aimas.ami.contextrep.update.performance.AssertionInferenceResult;
 import org.aimas.ami.contextrep.update.performance.AssertionInsertResult;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;
-import org.apache.jena.atlas.logging.LogCtl;
+import org.openjena.atlas.logging.Log;
 import org.topbraid.spin.statistics.SPINStatistics;
 
 import com.google.gson.Gson;
@@ -84,7 +84,7 @@ public class RunTest {
 	
 	public static void main(String[] args) {
 		String configurationFile = "src/org/aimas/ami/contextrep/test/performance/config.properties";
-		LogCtl.setLog4j();
+		Log.setLog4j();
 		
 		try {
 			// read performance setup configuration
@@ -530,7 +530,7 @@ public class RunTest {
 					// wrap event for execution and send it to insert
 					// executor
 					//System.out.println("GENERATING EVENT: " + event);
-					ContextUpdateExecutionWrapper insertTask = new ContextUpdateExecutionWrapper(event.getUpdateRequest());
+					ContextUpdateTask insertTask = new ContextUpdateTask(event.getUpdateRequest());
 					Future<AssertionInsertResult> taskResult = Engine.assertionInsertExecutor().submit(insertTask);
 					
 					insertionTaskEnqueueTime.put(insertTask.getAssertionInsertID(), System.currentTimeMillis());

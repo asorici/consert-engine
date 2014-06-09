@@ -8,11 +8,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public interface ContextAssertionGraph extends NamedGraph {
 	
 	/**
-	 * Get the context domain ontology definition for this ContextAssertion 
-	 * @return the <a>com.hp.hpl.jena.ontology.OntResource</a> that defines
-	 * this instance of a ContextAssertion  
+	 * Get the ContextAssertion whose instance is contained in this graph 
 	 */
-	public OntResource getAssertionResource();
+	public ContextAssertion getAssertion();
 	
 	/**
 	 * Gets the URI Resource or Variable that holds the identifier of this

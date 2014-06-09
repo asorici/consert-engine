@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.aimas.ami.contextrep.core.api.ConfigException;
 import org.aimas.ami.contextrep.test.PerformanceRunner;
-import org.aimas.ami.contextrep.update.ContextAssertionUpdateEngine;
 
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Dataset;
@@ -74,6 +73,9 @@ public class Engine {
 	private static ThreadPoolExecutor assertionInsertExecutor;
 	private static ThreadPoolExecutor assertionInferenceExecutor;
 	private static ThreadPoolExecutor assertionQueryExecutor;
+	
+	// Subscription Monitor
+	private static SubscriptionMonitor subscriptionMonitor;
 	
 	
 	/**
@@ -188,13 +190,15 @@ public class Engine {
 		timestamp = System.currentTimeMillis();
 		
 		// register custom TDB UpdateEgine to listen for ContextAssertion insertions
-		ContextAssertionUpdateEngine.register();
+		//ContextAssertionUpdateEngine.register();
 		
 		
 		// ==================== Create CONSERT Engine execution services ==================== 
 		assertionInsertExecutor = createInsertionExecutor();
 		assertionInferenceExecutor = createInferenceExecutor();
 		assertionQueryExecutor = createQueryExecutor();
+		
+		subscriptionMonitor = new SubscriptionMonitor();
 	}
 	
 	
@@ -357,7 +361,15 @@ public class Engine {
 		}
 		
 		return assertionQueryExecutor;
-	}  
+	}
+	
+	
+	public static SubscriptionMonitor subscriptionMonitor() {
+		if (subscriptionMonitor == null) {
+			subscriptionMonitor = new SubscriptionMonitor();
+		}
+		return subscriptionMonitor;
+	}
 	
 	
 	private static ThreadPoolExecutor createInsertionExecutor() {
@@ -370,8 +382,7 @@ public class Engine {
 	        assertionInsertThreadPoolSize = 1;
         }
 		
-		return (ThreadPoolExecutor)Executors.newFixedThreadPool(assertionInsertThreadPoolSize, 
-				new ContextInsertThreadFactory());
+		return (ThreadPoolExecutor)Executors.newFixedThreadPool(assertionInsertThreadPoolSize, new ContextInsertThreadFactory());
 	}
 	
 	private static ThreadPoolExecutor createInferenceExecutor() {
@@ -384,8 +395,7 @@ public class Engine {
         	assertionInferenceThreadPoolSize = 1;
         }
 		
-		return (ThreadPoolExecutor)Executors.newFixedThreadPool(assertionInferenceThreadPoolSize, 
-				new ContextInferenceThreadFactory());
+		return (ThreadPoolExecutor)Executors.newFixedThreadPool(assertionInferenceThreadPoolSize, new ContextInferenceThreadFactory());
 	}
 	
 	
@@ -399,8 +409,7 @@ public class Engine {
         	assertionQueryThreadPoolSize = 1;
         }
 		
-		return (ThreadPoolExecutor)Executors.newFixedThreadPool(assertionQueryThreadPoolSize, 
-				new ContextInferenceThreadFactory());
+		return (ThreadPoolExecutor)Executors.newFixedThreadPool(assertionQueryThreadPoolSize, new ContextQueryThreadFactory());
     }
 	
 }

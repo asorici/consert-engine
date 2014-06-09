@@ -12,12 +12,9 @@ import java.util.Set;
 import org.aimas.ami.contextrep.core.ContextAssertionIndex;
 import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.datatype.CalendarIntervalList;
-import org.aimas.ami.contextrep.model.BinaryContextAssertion;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.ContextAssertion.ContextAssertionType;
 import org.aimas.ami.contextrep.update.CheckInferenceHook;
-import org.aimas.ami.contextrep.update.ContextAssertionUpdateListener;
-import org.aimas.ami.contextrep.update.ContextAssertionUpdateListener.ContextUpdateHookWrapper;
 import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
 import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.topbraid.spin.util.JenaUtil;
@@ -147,10 +144,10 @@ public class ContextAssertionUtil {
 		Resource idGraph = ResourceFactory.createResource(graphURI);
 		
 		OntProperty assertionTypeProp = contextModel.getOntProperty(ConsertCore.CONTEXT_ASSERTION_TYPE_PROPERTY.getURI());
-		OntProperty assertedByProp = contextModel.getOntProperty(ConsertAnnotation.HAS_SOURCE.getURI());
+		OntProperty hasSourceProp = contextModel.getOntProperty(ConsertAnnotation.HAS_SOURCE.getURI());
 		OntProperty hasTimestampProp = contextModel.getOntProperty(ConsertAnnotation.HAS_TIMESTAMP.getURI());
-		OntProperty validDuringProp = contextModel.getOntProperty(ConsertAnnotation.HAS_VALIDITY.getURI());
-		OntProperty hasAccuracyProp = contextModel.getOntProperty(ConsertAnnotation.HAS_CERTAINTY.getURI());
+		OntProperty hasValidityProp = contextModel.getOntProperty(ConsertAnnotation.HAS_VALIDITY.getURI());
+		OntProperty hasCertaintyProp = contextModel.getOntProperty(ConsertAnnotation.HAS_CERTAINTY.getURI());
 		
 		// Create type statement
 		Individual typeIndividual = contextModel.getIndividual(assertionType.getTypeURI());
@@ -158,30 +155,50 @@ public class ContextAssertionUtil {
 		annotationStatements.add(typeStatement);
 		
 		// Create validity statement
-		Literal validityAnn = ResourceFactory.createTypedLiteral(validity);
-		Statement validityStatement = ResourceFactory.createStatement(idGraph, validDuringProp, validityAnn);
+		Literal validityAnnVal = ResourceFactory.createTypedLiteral(validity);
+		Resource validityAnn = ResourceFactory.createResource();
+		Statement validityStatement = ResourceFactory.createStatement(idGraph, hasValidityProp, validityAnn);
+		Statement validityTypeStatement = ResourceFactory.createStatement(validityAnn, RDF.type, ConsertAnnotation.TEMPORAL_VALIDITY);
+		Statement validityValStatement = ResourceFactory.createStatement(validityAnn, ConsertAnnotation.HAS_STRUCTURED_VALUE, validityAnnVal);
 		annotationStatements.add(validityStatement);
+		annotationStatements.add(validityTypeStatement);
+		annotationStatements.add(validityValStatement);
 		
 		// Create timestamp Literal
 		XSDDateTime xsdTimestamp = new XSDDateTime(timestamp);
-		Literal timestampAnn = ResourceFactory.createTypedLiteral(xsdTimestamp);
+		Literal timestampValAnn = ResourceFactory.createTypedLiteral(xsdTimestamp);
+		Resource timestampAnn = ResourceFactory.createResource();
 		Statement timestampStatement = ResourceFactory.createStatement(idGraph, hasTimestampProp, timestampAnn);
+		Statement timestampTypeStatement = ResourceFactory.createStatement(timestampAnn, RDF.type, ConsertAnnotation.DATETIME_TIMESTAMP);
+		Statement timestampValStatement = ResourceFactory.createStatement(timestampAnn, ConsertAnnotation.HAS_STRUCTURED_VALUE, timestampValAnn);
 		annotationStatements.add(timestampStatement);
+		annotationStatements.add(timestampTypeStatement);
+		annotationStatements.add(timestampValStatement);
 				
-		// Create accuracy Literal
-		Literal accuracyAnn = ResourceFactory.createTypedLiteral(new Double(accuracy));
-		Statement accuracyStatement = ResourceFactory.createStatement(idGraph, hasAccuracyProp, accuracyAnn);
-		annotationStatements.add(accuracyStatement);
+		// Create certainty Literal
+		Literal certaintyAnnVal = ResourceFactory.createTypedLiteral(new Double(accuracy));
+		Resource certaintyAnn = ResourceFactory.createResource();
+		Statement certaintyStatement = ResourceFactory.createStatement(idGraph, hasCertaintyProp, certaintyAnn);
+		Statement certaintyTypeStatement = ResourceFactory.createStatement(certaintyAnn, RDF.type, ConsertAnnotation.NUMERIC_VALUE_CERTAINTY);
+		Statement certaintyValStatement = ResourceFactory.createStatement(certaintyAnn, ConsertAnnotation.HAS_STRUCTURED_VALUE, certaintyAnnVal);
+		annotationStatements.add(certaintyStatement);
+		annotationStatements.add(certaintyTypeStatement);
+		annotationStatements.add(certaintyValStatement);
 		
 		// Create source Literal
-		Literal sourceAnn = ResourceFactory.createTypedLiteral(sourceURI, XSDDatatype.XSDanyURI);
-		Statement sourceStatement = ResourceFactory.createStatement(idGraph, assertedByProp, sourceAnn);
+		Literal sourceAnnVal = ResourceFactory.createTypedLiteral(sourceURI, XSDDatatype.XSDanyURI);
+		Resource sourceAnn = ResourceFactory.createResource();
+		Statement sourceStatement = ResourceFactory.createStatement(idGraph, hasSourceProp, sourceAnn);
+		Statement sourceTypeStatement = ResourceFactory.createStatement(sourceAnn, RDF.type, ConsertAnnotation.SOURCE_ANNOTATION);
+		Statement sourceValStatement = ResourceFactory.createStatement(sourceAnn, ConsertAnnotation.HAS_UNSTRUCTURED_VALUE, sourceAnnVal);
 		annotationStatements.add(sourceStatement);
+		annotationStatements.add(sourceTypeStatement);
+		annotationStatements.add(sourceValStatement);
 		
 		return annotationStatements;
 	}
 	
-	
+	/*
 	public static List<ContextAssertionUpdateListener> registerContextAssertionStoreListeners(Dataset dataset) {
 		List<ContextAssertionUpdateListener> registeredContextStoreListeners = new ArrayList<>();
 		
@@ -217,7 +234,7 @@ public class ContextAssertionUtil {
 		return registeredContextStoreListeners;
 	}
 	
-	/*
+	
 	public static void executeContextUpdateHooks(Dataset dataset) {
 		ContextAssertionIndex contextAssertionIndex = Config.getContextAssertionIndex();
 		Map<OntResource, String> assertion2StoreMap = contextAssertionIndex.getAssertion2StoreMap();
@@ -234,7 +251,7 @@ public class ContextAssertionUtil {
 			}
 		}
     }
-	*/
+	
 
 	public static ContextUpdateHookWrapper collectContextUpdateHooks(
 		List<ContextAssertionUpdateListener> registeredContextStoreListeners) {
@@ -252,7 +269,7 @@ public class ContextAssertionUtil {
 		
 		return combinedHookWrapper;
     }
-	
+	*/
 	
 	/**
 	 * Returns the {@link ContextAssertion} that is a direct parent of the <code>contextAssertion</code> 

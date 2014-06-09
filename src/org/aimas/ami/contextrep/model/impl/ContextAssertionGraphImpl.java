@@ -2,10 +2,10 @@ package org.aimas.ami.contextrep.model.impl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.aimas.ami.contextrep.core.ContextAssertionIndex;
+import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.ContextAssertionGraph;
-import org.aimas.ami.contextrep.vocabulary.ConsertCore;
 import org.topbraid.spin.model.Element;
 import org.topbraid.spin.model.NamedGraph;
 import org.topbraid.spin.model.SPINFactory;
@@ -17,7 +17,6 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
-import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -25,16 +24,16 @@ import com.hp.hpl.jena.vocabulary.RDF;
 public class ContextAssertionGraphImpl extends NamedGraphImpl implements
 		ContextAssertionGraph {
 	
-	protected OntResource assertionOntologyResource;
+	protected ContextAssertion contextAssertion;
 	
-	protected ContextAssertionGraphImpl(Node node, EnhGraph graph, OntResource assertionOntologyResource) {
+	protected ContextAssertionGraphImpl(Node node, EnhGraph graph, ContextAssertion assertionOntologyResource) {
 		super(node, graph);
-		this.assertionOntologyResource = assertionOntologyResource;
+		this.contextAssertion = assertionOntologyResource;
 	}
 
 	@Override
-	public OntResource getAssertionResource() {
-		return assertionOntologyResource;
+	public ContextAssertion getAssertion() {
+		return contextAssertion;
 	}
 	
 	@Override
@@ -45,20 +44,21 @@ public class ContextAssertionGraphImpl extends NamedGraphImpl implements
 	
 	@Override
 	public String toString() {
-		return assertionOntologyResource.toString();
+		return contextAssertion.toString();
 	}
 	
 	/**
 	 * Construct an appropriate instance of ContextAssertionGraph from the given <code>namedGraph</code> instance and based on
 	 * the ContextAssertion definitions available in the ontology model give by <code>assertionModel</code> 
 	 * @param namedGraph The named graph instance which is supposed to contain the statements of a ContextAssertion
+	 * @param assertionIndex The index of available ContextAssertions
 	 * @param assertionModel The ontology model which contains definitions for available ContextAssertions
 	 * @param templateBindings A map containing mappings of possible variable resources contained in 
 	 * the statements of the named graph
 	 * @return The appropriate instance of a ContextAssertion or null if the Named Graph does not contain statements
 	 * that make up a ContextAssertion
 	 */
-	public static ContextAssertionGraphImpl getFromNamedGraph(NamedGraph namedGraph, OntModel assertionModel, Map<String, RDFNode> templateBindings) {
+	public static ContextAssertionGraphImpl getFromNamedGraph(NamedGraph namedGraph, ContextAssertionIndex assertionIndex, OntModel assertionModel, Map<String, RDFNode> templateBindings) {
 		List<Element> childElements = namedGraph.getElements();
 		
 		for (Element element : childElements) {
@@ -87,7 +87,14 @@ public class ContextAssertionGraphImpl extends NamedGraphImpl implements
 					OntProperty assertionProperty = assertionModel.getOntProperty(property.asResource().getURI());
 					
 					if (assertionProperty != null) {
+						ContextAssertion binaryAssertion = assertionIndex.getAssertionFromResource(assertionProperty);
+						
+						if (binaryAssertion != null) {
+							return new ContextAssertionGraphImpl(namedGraph.asNode(), (EnhGraph)namedGraph.getModel(), binaryAssertion);
+						}
+						
 						// get the entityRelationAssertion and entityDataAssertion properties
+						/*
 						OntProperty entityRelationAssertion = assertionModel.getOntProperty(ConsertCore.ENTITY_RELATION_ASSERTION.getURI());
 						OntProperty entityDataAssertion = assertionModel.getOntProperty(ConsertCore.ENTITY_DATA_ASSERTION.getURI());
 						Set<? extends OntProperty> supers = assertionProperty.listSuperProperties().toSet();
@@ -95,6 +102,7 @@ public class ContextAssertionGraphImpl extends NamedGraphImpl implements
 						if (supers.contains(entityRelationAssertion) || supers.contains(entityDataAssertion)) {
 							return new ContextAssertionGraphImpl(namedGraph.asNode(), (EnhGraph)namedGraph.getModel(), assertionProperty);
 						}
+						*/
 					}
 					
 					// check if we have an assertion class
@@ -102,6 +110,13 @@ public class ContextAssertionGraphImpl extends NamedGraphImpl implements
 						OntClass assertionClass = assertionModel.getOntClass(object.asResource().getURI());
 						
 						if (assertionClass != null) {
+							ContextAssertion naryAssertion = assertionIndex.getAssertionFromResource(assertionClass);
+							
+							if (naryAssertion != null) {
+								return new ContextAssertionGraphImpl(namedGraph.asNode(), (EnhGraph)namedGraph.getModel(), naryAssertion);
+							}
+							
+							/*
 							OntClass unaryContextAssertion = assertionModel.getOntClass(ConsertCore.UNARY_CONTEXT_ASSERTION.getURI());
 							OntClass naryContextAssertion = assertionModel.getOntClass(ConsertCore.NARY_CONTEXT_ASSERTION.getURI());
 							Set<? extends OntClass> supers = assertionClass.listSuperClasses().toSet();
@@ -109,6 +124,7 @@ public class ContextAssertionGraphImpl extends NamedGraphImpl implements
 							if (supers.contains(unaryContextAssertion) || supers.contains(naryContextAssertion)) {
 								return new ContextAssertionGraphImpl(namedGraph.asNode(), (EnhGraph)namedGraph.getModel(), assertionClass);
 							}
+							*/
 						}
 					}
 				}

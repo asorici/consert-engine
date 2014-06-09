@@ -11,13 +11,11 @@ import org.aimas.ami.contextrep.core.api.InsertResult;
 import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.exceptions.ContextAssertionContentException;
 import org.aimas.ami.contextrep.model.exceptions.ContextAssertionModelException;
-import org.aimas.ami.contextrep.test.performance.RunTest;
 import org.aimas.ami.contextrep.utils.ContextAnnotationUtil;
 import org.aimas.ami.contextrep.utils.ContextAssertionUtil;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -68,7 +66,7 @@ public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 	            
 	            // enqueue them as individual insertion requests
 	            for (UpdateRequest req : ancestorAssertionInsertions) {
-	            	ContextUpdateExecutionWrapper ancestorInsertWrapper = new ContextUpdateExecutionWrapper(req);
+	            	ContextUpdateTask ancestorInsertWrapper = new ContextUpdateTask(req);
 	            	Future<InsertResult> result = Engine.assertionInsertExecutor().submit(ancestorInsertWrapper);
 					
 	            	// TODO see about performance collect
@@ -111,7 +109,7 @@ public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 		
 		for (ContextAssertion ancestorAssertion : assertionAncestorList) {
 			// create the named graph UUID update request for this ancestor ContextAssertion
-			Node ancestorUUIDNode = NodeFactory.createURI(GraphUUIDGenerator.createUUID(ancestorAssertion.getOntologyResource()));
+			Node ancestorUUIDNode = Node.createURI(GraphUUIDGenerator.createUUID(ancestorAssertion.getOntologyResource()));
 			Update ancestorCreateUpdate = new UpdateCreate(ancestorUUIDNode);
 			
 		    Update ancestorContentUpdate = createAssertionContentUpdate(assertionUUIDRes, 
@@ -153,7 +151,7 @@ public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 	private Update createAssertionAnnotationUpdate(ContextAssertion ancestorAssertion, Node ancestorUUIDNode,
             Map<Statement, Set<Statement>> assertionAnnotations) {
 		
-		Node ancestorAssertionStore = NodeFactory.createURI(ancestorAssertion.getAssertionStoreURI());
+		Node ancestorAssertionStore = Node.createURI(ancestorAssertion.getAssertionStoreURI());
 		
 		QuadDataAcc data = new QuadDataAcc();
 		for (Statement annStatement : assertionAnnotations.keySet()) {

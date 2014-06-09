@@ -1,9 +1,10 @@
 package org.aimas.ami.contextrep.utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.aimas.ami.contextrep.core.ContextAssertionIndex;
 import org.aimas.ami.contextrep.model.ContextAssertionGraph;
 import org.aimas.ami.contextrep.model.impl.ContextAssertionGraphImpl;
 import org.topbraid.spin.model.Aggregation;
@@ -35,19 +36,21 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public class ContextAssertionFinder {
 	private Element rootElement;
+	private ContextAssertionIndex assertionIndex;
 	private OntModel assertionModel;
 	private Map<String, RDFNode> templateBindings;
 	
-	private List<ContextAssertionGraph> contextAssertions;
+	private Set<ContextAssertionGraph> contextAssertions;
 	
 	private ElementWalker walker;
 	
-	public ContextAssertionFinder(Element rootElement, OntModel assertionModel, Map<String, RDFNode> templateBindings) {
+	public ContextAssertionFinder(Element rootElement, ContextAssertionIndex contextAssertionIndex, OntModel assertionModel, Map<String, RDFNode> templateBindings) {
 		this.rootElement = rootElement;
+		this.assertionIndex = contextAssertionIndex;
 		this.assertionModel = assertionModel;
 		this.templateBindings = templateBindings;
 		
-		contextAssertions = new ArrayList<ContextAssertionGraph>();
+		contextAssertions = new HashSet<ContextAssertionGraph>();
 	}
 	
 	
@@ -57,7 +60,7 @@ public class ContextAssertionFinder {
 	}
 	
 	
-	public List<ContextAssertionGraph> getResult() {
+	public Set<ContextAssertionGraph> getResult() {
 		return contextAssertions;
 	}
 	
@@ -98,7 +101,7 @@ public class ContextAssertionFinder {
 		public void visit(NamedGraph namedGraph) {
 			//System.out.println("A NAMED GRAPH statement: " + namedGraph.getElements().size() + " subelements");
 			//System.out.println();
-			ContextAssertionGraph assertion = ContextAssertionGraphImpl.getFromNamedGraph(namedGraph, assertionModel, templateBindings);
+			ContextAssertionGraph assertion = ContextAssertionGraphImpl.getFromNamedGraph(namedGraph,  assertionIndex, assertionModel, templateBindings);
 			if (assertion != null) {
 				contextAssertions.add(assertion);
 			}

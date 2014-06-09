@@ -20,11 +20,11 @@
 <DocumentManagerPolicy>
     <!-- Ignore importing SPIN related models. These will be loaded at the appropriate time when 
      building indexes for Context Derivation Rules and Context Constraints -->
-    <ignoreImport rdf:datatype="&xsd;anyURI">http://spinrdf.org/spl</ignoreImport>
-    <ignoreImport rdf:datatype="&xsd;anyURI">http://spinrdf.org/spin</ignoreImport>
-    <ignoreImport rdf:datatype="&xsd;anyURI">http://spinrdf.org/sp</ignoreImport>
-    <ignoreImport rdf:datatype="&xsd;anyURI">http://spinrdf.org/spinowl</ignoreImport>
-    <ignoreImport rdf:datatype="&xsd;anyURI">http://topbraid.org/spin/owlrl-all</ignoreImport>
+    <ignoreImport rdf:resource="http://spinrdf.org/spl" />
+    <ignoreImport rdf:resource="http://spinrdf.org/spin" />
+    <ignoreImport rdf:resource="http://spinrdf.org/sp" />
+    <ignoreImport rdf:resource="http://spinrdf.org/spinowl" />
+    <ignoreImport rdf:resource="http://topbraid.org/spin/owlrl-all" />
 </DocumentManagerPolicy>
 
 

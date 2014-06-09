@@ -5,15 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
+import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.api.ConfigException;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
-import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
 import org.aimas.ami.contextrep.vocabulary.ConsertRules;
-import org.apache.jena.atlas.logging.LogCtl;
+import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
+import org.openjena.atlas.logging.Log;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
 import org.topbraid.spin.inference.SPINInferences;
@@ -43,7 +43,7 @@ public class Test {
 	public static void main(String[] args) {
 		// PropertyConfigurator.configure("log4j.properties");
 		String configurationFile = "src/org/aimas/ami/contextrep/test/adhocmeeting/config.properties";
-		LogCtl.setLog4j();
+		Log.setLog4j();
 		
 		try {
 			// init configuration

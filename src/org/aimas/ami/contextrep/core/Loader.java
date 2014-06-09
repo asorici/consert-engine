@@ -3,6 +3,7 @@ package org.aimas.ami.contextrep.core;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.aimas.ami.contextrep.core.api.ConfigException;
@@ -15,7 +16,7 @@ import org.topbraid.spin.vocabulary.SPIN;
 import org.topbraid.spin.vocabulary.SPL;
 
 import com.hp.hpl.jena.graph.Graph;
-import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.graph.compose.MultiUnion;
 import com.hp.hpl.jena.ontology.OntDocumentManager;
@@ -131,7 +132,7 @@ public class Loader {
 	 * @throws ConfigException if the configuration properties are not initialized (usually because the 
 	 * <i>configuration.properties</i> was not found) 
 	 */
-	public static Location createRuntimeStoreLocation() throws ConfigException {
+	static Location createRuntimeStoreLocation() throws ConfigException {
 		if (configProperties != null) {
 			String storeMemoryLocation = configProperties.getString(ConfigKeys.MEMORY_STORE_NAME, CONSERT_MEMORY_STORE_NAME_DEFAULT);
 			
@@ -159,7 +160,7 @@ public class Loader {
 	 * @throws ConfigException if the configuration properties are not initialized (usually because the 
 	 * <i>configuration.properties</i> was not found) 
 	 */
-	public static Location createPersistentStoreLocation() throws ConfigException {
+	static Location createPersistentStoreLocation() throws ConfigException {
 		if (configProperties != null) {
 			String storePersistentDirectory = configProperties.getString(ConfigKeys.PERSISTENT_STORE_DIRECTORY, 
 					CONSERT_PERSISTENT_STORAGE_DIRECTORY_DEFAULT);
@@ -176,7 +177,7 @@ public class Loader {
 	 * Create the named graph that acts as the store for ContextEntity and EntityDescription instances
 	 * @param dataset The TDB-backed dataset that holds the graphs
 	 */
-	public static void createEntityStoreGraph(Dataset dataset) {
+	static void createEntityStoreGraph(Dataset dataset) {
 		Model graphStore = dataset.getNamedModel(ConsertCore.ENTITY_STORE_URI);
 		TDB.sync(graphStore);
 	}
@@ -186,7 +187,7 @@ public class Loader {
 	 * <i>core, annotation, constraints, functions, rules</i>
 	 * @return A map of the base URIs for each type of module within the current domain Context Model
 	 */
-	public static Map<String, String> getContextModelURIs() throws ConfigException {
+	static Map<String, String> getContextModelURIs() throws ConfigException {
 	    Map<String, String> contextModelURIMap = new HashMap<String, String>();
 	    
 	    /* build the mapping from context domain model keys to the corresponding URIs (if defined)
@@ -245,11 +246,31 @@ public class Loader {
 		// ======== create a document manager configuration for the Context Domain ========
         Model domainDocMgrModel = ModelFactory.createDefaultModel();
         
-        // read both the CONSERT and domain specific document manager config into it
+        // read the CONSERT and domain specific document manager config into it
         domainDocMgrModel.read(consertOntDocMgrFile);
         domainDocMgrModel.read(domainOntDocMgrFile);
         OntDocumentManager domainDocManager = new OntDocumentManager(domainDocMgrModel);
         ontDocumentManagers.put(ConfigKeys.DOMAIN_ONT_DOCMGR_FILE, domainDocManager);
+        
+        // ======== setup the global document manager to block no imports and define the path to everything ========
+        Model globalDocMgrModel = ModelFactory.createDefaultModel();
+        globalDocMgrModel.read(spinOntDocMgrFile);
+        globalDocMgrModel.read(consertOntDocMgrFile);
+        globalDocMgrModel.read(domainOntDocMgrFile);
+        
+        OntDocumentManager globalDocManager = OntDocumentManager.getInstance();
+        globalDocManager.configure(globalDocMgrModel);
+        
+        // remove all the import restrictions in previous documentManagers
+        for (Iterator<String> ignoreIt = consertDocManager.listIgnoredImports(); ignoreIt.hasNext();) {
+        	String ignoredURI = ignoreIt.next();
+        	globalDocManager.removeIgnoreImport(ignoredURI);
+        }
+        
+        for (Iterator<String> ignoreIt = domainDocManager.listIgnoredImports(); ignoreIt.hasNext();) {
+        	String ignoredURI = ignoreIt.next();
+        	globalDocManager.removeIgnoreImport(ignoredURI);
+        }
 	}
 	
 	/**
@@ -275,7 +296,7 @@ public class Loader {
 	 * @return A map of the models for each type of module within the current domain Context Model
 	 * @see getContextModelURIs
 	 */
-	public static Map<String, OntModel> getContextModelModules(Map<String, String> contextModelURIMap) throws ConfigException {
+	static Map<String, OntModel> getContextModelModules(Map<String, String> contextModelURIMap) throws ConfigException {
 		Map<String, OntModel> contextModelMap = new HashMap<String, OntModel>();
 		
 		// ======== setup document managers for ontology importing ========
@@ -363,6 +384,25 @@ public class Loader {
 	 * 		SPL, SPIN and SP ontologies
 	 */
 	public static OntModel ensureSPINImported(OntModel baseContextModelModule) {
+		// First create a new OntModelSpec which copies the inference-mode from
+		// the one of the baseContextModel. It then adds the global instance of the document manager.
+		OntModelSpec enrichedModelSpec = new OntModelSpec(baseContextModelModule.getSpecification());
+		OntDocumentManager globalDocMgr = OntDocumentManager.getInstance();
+		enrichedModelSpec.setDocumentManager(globalDocMgr);
+		
+		// Now create a new model with the new specification 
+		OntModel enrichedModel = ModelFactory.createOntologyModel(enrichedModelSpec, baseContextModelModule);
+		//globalDocMgr.loadImport(enrichedModel, SP.BASE_URI);
+		//globalDocMgr.loadImport(enrichedModel, SPIN.BASE_URI);
+		//globalDocMgr.loadImport(enrichedModel, SPL.BASE_URI);
+		
+		enrichedModel.read(SP.BASE_URI, "TTL");
+		enrichedModel.read(SPIN.BASE_URI, "TTL");
+		enrichedModel.read(SPL.BASE_URI, "TTL");
+		
+		return enrichedModel;
+		
+		/*
 		Graph baseGraph = baseContextModelModule.getGraph();
 		MultiUnion spinUnion = JenaUtil.createMultiUnion();
 		
@@ -371,7 +411,12 @@ public class Loader {
 		ensureImported(baseGraph, spinUnion, SPIN.BASE_URI, SPIN.getModel());
 		Model unionModel = ModelFactory.createModelForGraph(spinUnion);
 		
-		return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, unionModel.union(baseContextModelModule));
+		OntDocumentManager docManager = ontDocumentManagers.get(ConfigKeys.DOMAIN_ONT_DOCMGR_FILE);
+		OntModelSpec modelSpec = new OntModelSpec(OntModelSpec.OWL_DL_MEM_RDFS_INF);
+		modelSpec.setDocumentManager(docManager);
+		
+		return ModelFactory.createOntologyModel(modelSpec, unionModel.union(baseContextModelModule));
+		*/
 	}
 	
 	
@@ -394,7 +439,7 @@ public class Loader {
 	}
 	
 	private static void ensureImported(Graph baseGraph, MultiUnion union, String baseURI, Model model) {
-		if(!baseGraph.contains(Triple.create(NodeFactory.createURI(baseURI), RDF.type.asNode(), OWL.Ontology.asNode()))) {
+		if(!baseGraph.contains(Triple.create(Node.createURI(baseURI), RDF.type.asNode(), OWL.Ontology.asNode()))) {
 			union.addGraph(model.getGraph());
 		}
 	}
