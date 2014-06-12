@@ -22,7 +22,9 @@ import com.hp.hpl.jena.query.QuerySolutionMap;
 public class SubscriptionMonitor implements ContextInsertListener {
 	private Map<ContextAssertion, Map<SubscriptionWrapper, List<QueryResultNotifier>>> subscriptionIndex;
 	
-	public SubscriptionMonitor() {}
+	SubscriptionMonitor() {
+		subscriptionIndex = new HashMap<ContextAssertion, Map<SubscriptionWrapper,List<QueryResultNotifier>>>();
+	}
 	
 	@Override
     public void notifyAssertionInserted(ContextAssertion assertion) {

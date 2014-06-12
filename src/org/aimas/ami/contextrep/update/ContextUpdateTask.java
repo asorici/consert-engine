@@ -68,6 +68,7 @@ public class ContextUpdateTask implements Callable<InsertResult> {
 		AssertionInheritanceResult inheritanceResult = null;
 		
 		CheckInferenceHook inferenceHook = null;
+		boolean cleanUpdate = false;
 		
 		try {
 			// STEP 3: determine the inserted ContextAssertion based on the request analysis - the updates context stores
@@ -118,8 +119,7 @@ public class ContextUpdateTask implements Callable<InsertResult> {
 			
 			// STEP 6: commit transaction
 			contextDataset.commit();
-			
-			// TODO: notify the ContextInsertListener (the SubscriptionMonitor) of the newly inserted ContextAssertion type
+			cleanUpdate = true;
 		} 
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -127,6 +127,10 @@ public class ContextUpdateTask implements Callable<InsertResult> {
 		}
 		finally {
 			contextDataset.end();
+			if (cleanUpdate) {
+				// TODO: notify the ContextInsertListener (the SubscriptionMonitor) of the newly inserted ContextAssertion type
+				Engine.subscriptionMonitor().notifyAssertionInserted(insertedAssertion);
+			}
 		}
 		
 		// STEP 7: enqueue detected INFERENCE HOOK to assertionInferenceExecutor

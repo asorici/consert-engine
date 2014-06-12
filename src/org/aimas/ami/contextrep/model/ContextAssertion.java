@@ -13,10 +13,10 @@ import com.hp.hpl.jena.rdf.model.Statement;
 
 public interface ContextAssertion {
 	public static enum ContextAssertionType {
-		Static("http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Static"), 
-		Sensed("http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Sensed"), 
-		Profiled("http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Profiled"), 
-		Derived("http://pervasive.semanticweb.org/ont/2013/05/contextassertion#Derived") ;
+		Static("http://pervasive.semanticweb.org/ont/2014/05/consert/core#Static"), 
+		Sensed("http://pervasive.semanticweb.org/ont/2014/05/consert/core#Sensed"), 
+		Profiled("http://pervasive.semanticweb.org/ont/2014/05/consert/core#Profiled"), 
+		Derived("http://pervasive.semanticweb.org/ont/2014/05/consert/core#Derived") ;
 		
 		private String typeURI;
 		

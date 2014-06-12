@@ -18,9 +18,17 @@ import org.aimas.ami.contextrep.functions.validityIntervalsOverlap;
 import org.aimas.ami.contextrep.functions.validityPermitsContinuity;
 import org.aimas.ami.contextrep.vocabulary.ConsertFunctions;
 import org.topbraid.spin.system.SPINModuleRegistry;
+import org.topbraid.spin.vocabulary.SP;
+import org.topbraid.spin.vocabulary.SPIN;
+import org.topbraid.spin.vocabulary.SPL;
 
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.function.FunctionRegistry;
+import com.hp.hpl.jena.vocabulary.RDF;
 
 public class FunctionIndex {
 	private static Map<String, Class<?>> customFunctions = new HashMap<String, Class<?>>();
@@ -112,6 +120,17 @@ public class FunctionIndex {
 		// add the spin: and sp: namespaces to the functions module (they were not imported on initial load)
 		OntModel extendedFunctionsModel = Loader.ensureSPINImported(contextModelFunctions);
 		
+		/*
+		Statement splMaxStmt = extendedFunctionsModel.getProperty(ResourceFactory.createResource(SPL.NS + "max"), SPIN.body);
+		Statement whereStmt = extendedFunctionsModel.getProperty(splMaxStmt.getResource(), SP.where);
+		Statement whereContent = extendedFunctionsModel.getProperty(whereStmt.getResource(), RDF.first);
+		Statement exprStmt = extendedFunctionsModel.getProperty(whereContent.getResource(), SP.expression);
+		Statement exprContent =  extendedFunctionsModel.getProperty(exprStmt.getResource(), RDF.first);
+		
+		for (Statement s : extendedFunctionsModel.listStatements(exprStmt.getResource(), (Property)null, (RDFNode)null).toList()) {
+			System.out.println(s);
+		}
+		*/
 		
 		// register SPIN custom functions and templates which the Context Model Function module defines
 		SPINModuleRegistry.get().registerAll(extendedFunctionsModel, null);

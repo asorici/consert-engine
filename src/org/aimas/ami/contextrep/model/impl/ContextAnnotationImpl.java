@@ -17,9 +17,9 @@ import com.hp.hpl.jena.rdf.model.Resource;
 
 public class ContextAnnotationImpl implements ContextAnnotation {
 	
-	private ContextAnnotationType annotationType;
-	private OntClass annotationOntClass;
-	private OntProperty bindingOntProperty;
+	protected ContextAnnotationType annotationType;
+	protected OntClass annotationOntClass;
+	protected OntProperty bindingOntProperty;
 	
 	
 	public ContextAnnotationImpl(ContextAnnotationType annotationType, OntClass annotationOntClass, 
@@ -71,6 +71,17 @@ public class ContextAnnotationImpl implements ContextAnnotation {
 		    return false;
 	    return true;
     }
+	
+	@Override
+	public String toString() {
+		String result = "{";
+		result += "annotation class: " + annotationOntClass + ", ";
+		result += "binding prop.: " + bindingOntProperty;
+		result += "}";
+		
+		return result;
+	}
+	
 	
 	/**
 	 * Return an array containing the 4 elements defining a structured annotation: meet operator,

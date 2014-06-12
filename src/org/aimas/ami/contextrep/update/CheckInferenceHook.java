@@ -135,8 +135,8 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		Resource entityRes = ruleDict.getEntityForDerivation(derivationWrapper);
 		CommandWrapper cmd = derivationWrapper.getDerivationCommand();
 		
-		//Map<CommandWrapper, Map<String, RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String, RDFNode>>();
-		//initialTemplateBindings.put(cmd, derivationWrapper.getCommandBindings());
+		Map<CommandWrapper, Map<String, RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String, RDFNode>>();
+		initialTemplateBindings.put(cmd, derivationWrapper.getCommandBindings());
 		
 		// create entityCommandWrappers required for SPIN inference API call
 		List<CommandWrapper> entityCommandWrappers = new ArrayList<>();
@@ -147,10 +147,10 @@ public class CheckInferenceHook extends ContextUpdateHook {
 		//long timestamp = System.currentTimeMillis();
 		ARQFactory.set(new ContextARQFactory(contextDataset));
 		
-		//ContextInferenceResult inferenceResult = ContextSPINInferences.runContextInference(queryModel, newTriples,
-		//	cls2Query, cls2Constructor, initialTemplateBindings, null, SPINVocabulary.deriveAssertionRule, comparator);
 		ContextInferenceResult inferenceResult = ContextSPINInferences.runContextInference(queryModel, newTriples,
-			cls2Query, cls2Constructor, null, ConsertRules.DERIVE_ASSERTION, comparator);
+			cls2Query, cls2Constructor, initialTemplateBindings, null, ConsertRules.DERIVE_ASSERTION, comparator);
+		//ContextInferenceResult inferenceResult = ContextSPINInferences.runContextInference(queryModel, newTriples,
+		//	cls2Query, cls2Constructor, null, ConsertRules.DERIVE_ASSERTION, comparator);
 		
 		if (inferenceResult != null && inferenceResult.isInferred()) {
 			//System.out.println("[INFO] WE HAVE DEDUCED A NEW CONTEXT-ASSERTION following insertion of " + contextAssertion 

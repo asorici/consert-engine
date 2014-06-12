@@ -150,6 +150,7 @@ public class ContextAnnotationIndex {
 	    OntClass structuredAnnRootClass = contextModelAnnotations.getOntClass(ConsertAnnotation.STRUCTURED_ANNOTATION.getURI());
 	    Set<OntClass> structuredAnnotationClasses = structuredAnnRootClass.listSubClasses(true).toSet();
 	    
+	    
 	    // Do the same now to collect all subclasses of basic ContextAnnotations 
 	    // This time the search is exhaustive, as we do not consider the notion of annotation categories
 	    // for the unstructured ContextAnotations.
@@ -161,6 +162,7 @@ public class ContextAnnotationIndex {
 	    // The :range of these properties provides the hint towards the exact type.
 	    OntProperty hasAnnotationProperty = contextModelAnnotations.getOntProperty(ConsertAnnotation.HAS_ANNOTATION.getURI());
 	    Set<? extends OntProperty> annotationProperties = hasAnnotationProperty.listSubProperties(true).toSet();
+	    
 	    
 	    // Now inspect each discovered annotation property in turn, determine its structured or basic 
 	    // ContextAnnotation range and look for all the subclasses of that class. These will be added to the

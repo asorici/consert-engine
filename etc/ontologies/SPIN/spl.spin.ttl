@@ -1,6 +1,7 @@
 # baseURI: http://spinrdf.org/spl
 # imports: http://spinrdf.org/spin
 
+# c14n-version: 3
 @prefix afn: <http://jena.hpl.hp.com/ARQ/function#> .
 @prefix fn: <http://www.w3.org/2005/xpath-functions#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
@@ -10,7 +11,6 @@
 @prefix spin: <http://spinrdf.org/spin#> .
 @prefix spl: <http://spinrdf.org/spl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
 <http://spinrdf.org/arg#max>
   rdf:type rdf:Property ;
   rdfs:subPropertyOf sp:arg ;
@@ -1271,20 +1271,20 @@ spl:Argument
                       sp:expression [
                           rdf:type sp:or ;
                           sp:arg1 [
-                              rdf:type sp:not ;
-                              sp:arg1 [
-                                  rdf:type sp:bound ;
-                                  sp:arg1 [
-                                      sp:varName "optional"^^xsd:string ;
-                                    ] ;
-                                ] ;
+rdf:type sp:not ;
+sp:arg1 [
+    rdf:type sp:bound ;
+    sp:arg1 [
+        sp:varName "optional"^^xsd:string ;
+      ] ;
+  ] ;
                             ] ;
                           sp:arg2 [
-                              rdf:type sp:eq ;
-                              sp:arg1 [
-                                  sp:varName "optional"^^xsd:string ;
-                                ] ;
-                              sp:arg2 "false"^^xsd:boolean ;
+rdf:type sp:eq ;
+sp:arg1 [
+    sp:varName "optional"^^xsd:string ;
+  ] ;
+sp:arg2 "false"^^xsd:boolean ;
                             ] ;
                         ] ;
                     ]
@@ -1293,11 +1293,11 @@ spl:Argument
                       sp:elements (
                           [
                             sp:object [
-                                sp:varName "value"^^xsd:string ;
-                              ] ;
+  sp:varName "value"^^xsd:string ;
+] ;
                             sp:predicate [
-                                sp:varName "predicate"^^xsd:string ;
-                              ] ;
+  sp:varName "predicate"^^xsd:string ;
+] ;
                             sp:subject spin:_this ;
                           ]
                         ) ;
@@ -1307,10 +1307,10 @@ spl:Argument
                       sp:expression [
                           rdf:type sp:not ;
                           sp:arg1 [
-                              rdf:type sp:bound ;
-                              sp:arg1 [
-                                  sp:varName "value"^^xsd:string ;
-                                ] ;
+rdf:type sp:bound ;
+sp:arg1 [
+    sp:varName "value"^^xsd:string ;
+  ] ;
                             ] ;
                         ] ;
                     ]
@@ -1323,8 +1323,8 @@ spl:Argument
                         sp:arg2 [
                             rdf:type afn:localname ;
                             sp:arg1 [
-                                sp:varName "predicate"^^xsd:string ;
-                              ] ;
+  sp:varName "predicate"^^xsd:string ;
+] ;
                           ] ;
                       ] ;
                     sp:variable [
@@ -1339,7 +1339,7 @@ spl:Argument
                       sp:expression [
                           rdf:type sp:bound ;
                           sp:arg1 [
-                              sp:varName "valueType"^^xsd:string ;
+sp:varName "valueType"^^xsd:string ;
                             ] ;
                         ] ;
                     ]
@@ -1357,32 +1357,32 @@ spl:Argument
                       sp:expression [
                           rdf:type sp:and ;
                           sp:arg1 [
-                              rdf:type sp:not ;
-                              sp:arg1 [
-                                  rdf:type spl:instanceOf ;
-                                  sp:arg1 [
-                                      sp:varName "value"^^xsd:string ;
-                                    ] ;
-                                  sp:arg2 [
-                                      sp:varName "valueType"^^xsd:string ;
-                                    ] ;
-                                ] ;
+rdf:type sp:not ;
+sp:arg1 [
+    rdf:type spl:instanceOf ;
+    sp:arg1 [
+        sp:varName "value"^^xsd:string ;
+      ] ;
+    sp:arg2 [
+        sp:varName "valueType"^^xsd:string ;
+      ] ;
+  ] ;
                             ] ;
                           sp:arg2 [
-                              rdf:type sp:or ;
-                              sp:arg1 [
-                                  rdf:type sp:ne ;
-                                  sp:arg1 [
-                                      sp:varName "valueType"^^xsd:string ;
-                                    ] ;
-                                  sp:arg2 rdfs:Resource ;
-                                ] ;
-                              sp:arg2 [
-                                  rdf:type sp:isLiteral ;
-                                  sp:arg1 [
-                                      sp:varName "value"^^xsd:string ;
-                                    ] ;
-                                ] ;
+rdf:type sp:or ;
+sp:arg1 [
+    rdf:type sp:ne ;
+    sp:arg1 [
+        sp:varName "valueType"^^xsd:string ;
+      ] ;
+    sp:arg2 rdfs:Resource ;
+  ] ;
+sp:arg2 [
+    rdf:type sp:isLiteral ;
+    sp:arg1 [
+        sp:varName "value"^^xsd:string ;
+      ] ;
+  ] ;
                             ] ;
                         ] ;
                     ]
@@ -1395,15 +1395,15 @@ spl:Argument
                         sp:arg2 [
                             rdf:type afn:localname ;
                             sp:arg1 [
-                                sp:varName "predicate"^^xsd:string ;
-                              ] ;
+  sp:varName "predicate"^^xsd:string ;
+] ;
                           ] ;
                         sp:arg3 " (expected: " ;
                         sp:arg4 [
                             rdf:type afn:localname ;
                             sp:arg1 [
-                                sp:varName "valueType"^^xsd:string ;
-                              ] ;
+  sp:varName "valueType"^^xsd:string ;
+] ;
                           ] ;
                         sp:arg5 ")" ;
                       ] ;
@@ -1489,21 +1489,21 @@ spl:Attribute
                         sp:arg1 [
                             rdf:type sp:bound ;
                             sp:arg1 [
-                                sp:varName "minCount"^^xsd:string ;
-                              ] ;
+  sp:varName "minCount"^^xsd:string ;
+] ;
                           ] ;
                         sp:arg2 [
                             rdf:type sp:lt ;
                             sp:arg1 [
-                                rdf:type spl:objectCount ;
-                                sp:arg1 spin:_this ;
-                                sp:arg2 [
-                                    sp:varName "predicate"^^xsd:string ;
-                                  ] ;
-                              ] ;
+  rdf:type spl:objectCount ;
+  sp:arg1 spin:_this ;
+  sp:arg2 [
+      sp:varName "predicate"^^xsd:string ;
+    ] ;
+] ;
                             sp:arg2 [
-                                sp:varName "minCount"^^xsd:string ;
-                              ] ;
+  sp:varName "minCount"^^xsd:string ;
+] ;
                           ] ;
                       ] ;
                   ]
@@ -1516,21 +1516,21 @@ spl:Attribute
                         sp:arg1 [
                             rdf:type sp:bound ;
                             sp:arg1 [
-                                sp:varName "maxCount"^^xsd:string ;
-                              ] ;
+  sp:varName "maxCount"^^xsd:string ;
+] ;
                           ] ;
                         sp:arg2 [
                             rdf:type sp:gt ;
                             sp:arg1 [
-                                rdf:type spl:objectCount ;
-                                sp:arg1 spin:_this ;
-                                sp:arg2 [
-                                    sp:varName "predicate"^^xsd:string ;
-                                  ] ;
-                              ] ;
+  rdf:type spl:objectCount ;
+  sp:arg1 spin:_this ;
+  sp:arg2 [
+      sp:varName "predicate"^^xsd:string ;
+    ] ;
+] ;
                             sp:arg2 [
-                                sp:varName "maxCount"^^xsd:string ;
-                              ] ;
+  sp:varName "maxCount"^^xsd:string ;
+] ;
                           ] ;
                       ] ;
                   ]
@@ -1561,11 +1561,11 @@ spl:Attribute
                         sp:arg1 [
                             rdf:type spl:instanceOf ;
                             sp:arg1 [
-                                sp:varName "value"^^xsd:string ;
-                              ] ;
+  sp:varName "value"^^xsd:string ;
+] ;
                             sp:arg2 [
-                                sp:varName "valueType"^^xsd:string ;
-                              ] ;
+  sp:varName "valueType"^^xsd:string ;
+] ;
                           ] ;
                       ] ;
                   ]
@@ -2900,12 +2900,12 @@ spl:instanceOf
                       sp:expression [
                           rdf:type sp:or ;
                           sp:arg1 [
-                              rdf:type sp:isIRI ;
-                              sp:arg1 spin:_arg1 ;
+rdf:type sp:isIRI ;
+sp:arg1 spin:_arg1 ;
                             ] ;
                           sp:arg2 [
-                              rdf:type sp:isBlank ;
-                              sp:arg1 spin:_arg1 ;
+rdf:type sp:isBlank ;
+sp:arg1 spin:_arg1 ;
                             ] ;
                         ] ;
                     ]
@@ -2958,44 +2958,44 @@ spl:instanceOf
                         sp:arg1 [
                             rdf:type sp:or ;
                             sp:arg1 [
-                                rdf:type sp:eq ;
-                                sp:arg1 [
-                                    sp:varName "datatype"^^xsd:string ;
-                                  ] ;
-                                sp:arg2 spin:_arg2 ;
-                              ] ;
+  rdf:type sp:eq ;
+  sp:arg1 [
+      sp:varName "datatype"^^xsd:string ;
+    ] ;
+  sp:arg2 spin:_arg2 ;
+] ;
                             sp:arg2 [
-                                rdf:type sp:eq ;
-                                sp:arg1 spin:_arg2 ;
-                                sp:arg2 rdfs:Literal ;
-                              ] ;
+  rdf:type sp:eq ;
+  sp:arg1 spin:_arg2 ;
+  sp:arg2 rdfs:Literal ;
+] ;
                           ] ;
                         sp:arg2 [
                             rdf:type sp:and ;
                             sp:arg1 [
-                                rdf:type sp:or ;
-                                sp:arg1 [
-                                    rdf:type sp:not ;
-                                    sp:arg1 [
-                                        rdf:type sp:bound ;
-                                        sp:arg1 [
-                                            sp:varName "datatype"^^xsd:string ;
-                                          ] ;
-                                      ] ;
-                                  ] ;
-                                sp:arg2 [
-                                    rdf:type sp:eq ;
-                                    sp:arg1 rdf:langString ;
-                                    sp:arg2 [
-                                        sp:varName "datatype"^^xsd:string ;
-                                      ] ;
-                                  ] ;
-                              ] ;
+  rdf:type sp:or ;
+  sp:arg1 [
+      rdf:type sp:not ;
+      sp:arg1 [
+          rdf:type sp:bound ;
+          sp:arg1 [
+              sp:varName "datatype"^^xsd:string ;
+            ] ;
+        ] ;
+    ] ;
+  sp:arg2 [
+      rdf:type sp:eq ;
+      sp:arg1 rdf:langString ;
+      sp:arg2 [
+          sp:varName "datatype"^^xsd:string ;
+        ] ;
+    ] ;
+] ;
                             sp:arg2 [
-                                rdf:type sp:eq ;
-                                sp:arg1 spin:_arg2 ;
-                                sp:arg2 xsd:string ;
-                              ] ;
+  rdf:type sp:eq ;
+  sp:arg1 spin:_arg2 ;
+  sp:arg2 xsd:string ;
+] ;
                           ] ;
                       ] ;
                   ]
@@ -3071,6 +3071,56 @@ spl:max
             sp:varName "result"^^xsd:string ;
           ]
         ) ;
+      sp:text """PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  person: <http://example.org/person#>
+PREFIX  swon: <http://uispin.org/swon#>
+PREFIX  spra: <http://spinrdf.org/spra#>
+PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
+PREFIX  sm2wsdl: <http://topbraid.org/sparqlmotion/sm2wsdl.sms#>
+PREFIX  spr:  <http://spinrdf.org/spr#>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  arg:  <http://spinrdf.org/arg#>
+PREFIX  spellCheck: <http://evn.topbraidlive.org/static/scripts/spellcheck-report#>
+PREFIX  testPerformUpdate: <http://tests.sparqlmotion.topbraid.org/performUpdate/scripts5829/ImportRDF#>
+PREFIX  teamwork: <http://topbraid.org/teamwork#>
+PREFIX  spl:  <http://spinrdf.org/spl#>
+PREFIX  search: <http://topbraid.org/search#>
+PREFIX  evnconstraints: <http://topbraid.org/spin/evnconstraints#>
+PREFIX  udf:  <http://tests.sparqlmotion.topbraid.org/functions/UserDefinedSMFunction#>
+PREFIX  spin: <http://spinrdf.org/spin#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  fn:   <http://www.w3.org/2005/xpath-functions#>
+PREFIX  ui:   <http://uispin.org/ui#>
+PREFIX  evnprojects: <http://evn.topbraidlive.org/evnprojects#>
+PREFIX  backspin: <http://topbraid.org/backspin#>
+PREFIX  tops: <http://www.topbraid.org/tops#>
+PREFIX  sm:   <http://topbraid.org/sparqlmotion#>
+PREFIX  sp:   <http://spinrdf.org/sp#>
+PREFIX  spif: <http://spinrdf.org/spif#>
+PREFIX  sml:  <http://topbraid.org/sparqlmotionlib#>
+PREFIX  labels: <http://topbraid.org/spin/generateLabel#>
+PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
+PREFIX  tagger: <http://evn.topbraidlive.org/tagger#>
+PREFIX  ThomsonLoginIssue: <http://tests.sparqlmotion.topbraid.org/tbl/importCurrentRDF#>
+PREFIX  tables: <http://topbraid.org/tables#>
+PREFIX  spinmap: <http://spinrdf.org/spinmap#>
+PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  jfn:  <java:com.hp.hpl.jena.sparql.function.library.>
+PREFIX  tablesmap: <http://topbraid.org/spin/tablesmap#>
+PREFIX  uix:  <http://topbraidlive.org/uix#>
+PREFIX  smf:  <http://topbraid.org/sparqlmotionfunctions#>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX  html: <http://uispin.org/html#>
+PREFIX  swa:  <http://topbraid.org/swa#>
+PREFIX  skosspin: <http://topbraid.org/spin/skosspin#>
+PREFIX  skostemplate: <http://topbraid.org/spin/skostemplates#>
+PREFIX  spinmapl: <http://topbraid.org/spin/spinmapl#>
+
+SELECT  ?result
+WHERE
+  { LET (?result := if(( ?arg1 > ?arg2 ), ?arg1, ?arg2)) }
+"""^^xsd:string ;
       sp:where (
           [
             rdf:type sp:Bind ;
@@ -3120,6 +3170,56 @@ spl:min
             sp:varName "result"^^xsd:string ;
           ]
         ) ;
+      sp:text """PREFIX  afn:  <http://jena.hpl.hp.com/ARQ/function#>
+PREFIX  person: <http://example.org/person#>
+PREFIX  swon: <http://uispin.org/swon#>
+PREFIX  spra: <http://spinrdf.org/spra#>
+PREFIX  evnui: <http://evn.topbraidlive.org/ui#>
+PREFIX  sm2wsdl: <http://topbraid.org/sparqlmotion/sm2wsdl.sms#>
+PREFIX  spr:  <http://spinrdf.org/spr#>
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  arg:  <http://spinrdf.org/arg#>
+PREFIX  spellCheck: <http://evn.topbraidlive.org/static/scripts/spellcheck-report#>
+PREFIX  testPerformUpdate: <http://tests.sparqlmotion.topbraid.org/performUpdate/scripts5829/ImportRDF#>
+PREFIX  teamwork: <http://topbraid.org/teamwork#>
+PREFIX  spl:  <http://spinrdf.org/spl#>
+PREFIX  search: <http://topbraid.org/search#>
+PREFIX  evnconstraints: <http://topbraid.org/spin/evnconstraints#>
+PREFIX  udf:  <http://tests.sparqlmotion.topbraid.org/functions/UserDefinedSMFunction#>
+PREFIX  spin: <http://spinrdf.org/spin#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX  fn:   <http://www.w3.org/2005/xpath-functions#>
+PREFIX  ui:   <http://uispin.org/ui#>
+PREFIX  evnprojects: <http://evn.topbraidlive.org/evnprojects#>
+PREFIX  backspin: <http://topbraid.org/backspin#>
+PREFIX  tops: <http://www.topbraid.org/tops#>
+PREFIX  sm:   <http://topbraid.org/sparqlmotion#>
+PREFIX  sp:   <http://spinrdf.org/sp#>
+PREFIX  spif: <http://spinrdf.org/spif#>
+PREFIX  sml:  <http://topbraid.org/sparqlmotionlib#>
+PREFIX  labels: <http://topbraid.org/spin/generateLabel#>
+PREFIX  owlrl: <http://topbraid.org/spin/owlrl#>
+PREFIX  tagger: <http://evn.topbraidlive.org/tagger#>
+PREFIX  ThomsonLoginIssue: <http://tests.sparqlmotion.topbraid.org/tbl/importCurrentRDF#>
+PREFIX  tables: <http://topbraid.org/tables#>
+PREFIX  spinmap: <http://spinrdf.org/spinmap#>
+PREFIX  pf:   <http://jena.hpl.hp.com/ARQ/property#>
+PREFIX  jfn:  <java:com.hp.hpl.jena.sparql.function.library.>
+PREFIX  tablesmap: <http://topbraid.org/spin/tablesmap#>
+PREFIX  uix:  <http://topbraidlive.org/uix#>
+PREFIX  smf:  <http://topbraid.org/sparqlmotionfunctions#>
+PREFIX  xsd:  <http://www.w3.org/2001/XMLSchema#>
+PREFIX  owl:  <http://www.w3.org/2002/07/owl#>
+PREFIX  html: <http://uispin.org/html#>
+PREFIX  swa:  <http://topbraid.org/swa#>
+PREFIX  skosspin: <http://topbraid.org/spin/skosspin#>
+PREFIX  skostemplate: <http://topbraid.org/spin/skostemplates#>
+PREFIX  spinmapl: <http://topbraid.org/spin/spinmapl#>
+
+SELECT  ?result
+WHERE
+  { BIND(if(( ?arg1 < ?arg2 ), ?arg1, ?arg2) AS ?result) }
+"""^^xsd:string ;
       sp:where (
           [
             rdf:type sp:Bind ;
@@ -3370,6 +3470,26 @@ spl:relevantPropertyAtClass
               ] ;
             sp:subject [
                 sp:varName "class"^^xsd:string ;
+              ] ;
+          ]
+          [
+            rdf:type sp:Filter ;
+            sp:expression [
+                rdf:type sp:and ;
+                sp:arg1 [
+                    rdf:type sp:ne ;
+                    sp:arg1 [
+                        sp:varName "superClass"^^xsd:string ;
+                      ] ;
+                    sp:arg2 owl:Thing ;
+                  ] ;
+                sp:arg2 [
+                    rdf:type sp:ne ;
+                    sp:arg1 [
+                        sp:varName "superClass"^^xsd:string ;
+                      ] ;
+                    sp:arg2 rdfs:Resource ;
+                  ] ;
               ] ;
           ]
           [
@@ -3636,3 +3756,88 @@ spl:valueType
   rdfs:label "value type"^^xsd:string ;
   rdfs:subPropertyOf sp:arg ;
 .
+[
+  rdf:type sp:Ask ;
+  sp:where (
+      [
+        rdf:type sp:Union ;
+        sp:elements (
+            (
+              [
+                rdf:type sp:Optional ;
+                sp:elements (
+                    [
+                      sp:object [
+                          sp:varName "body"^^xsd:string ;
+                        ] ;
+                      sp:predicate spin:body ;
+                      sp:subject spin:_this ;
+                    ]
+                  ) ;
+              ]
+              [
+                rdf:type sp:Filter ;
+                sp:expression [
+                    rdf:type sp:not ;
+                    sp:arg1 [
+                        rdf:type sp:bound ;
+                        sp:arg1 [
+                            sp:varName "body"^^xsd:string ;
+                          ] ;
+                      ] ;
+                  ] ;
+              ]
+            )
+            (
+              [
+                sp:object [
+                    sp:varName "body"^^xsd:string ;
+                  ] ;
+                sp:predicate spin:body ;
+                sp:subject spin:_this ;
+              ]
+              [
+                rdf:type sp:Union ;
+                sp:elements (
+                    (
+                      [
+                        sp:object sp:Ask ;
+                        sp:predicate rdf:type ;
+                        sp:subject [
+                            sp:varName "body"^^xsd:string ;
+                          ] ;
+                      ]
+                    )
+                    (
+                      [
+                        sp:object sp:Select ;
+                        sp:predicate rdf:type ;
+                        sp:subject [
+                            sp:varName "body"^^xsd:string ;
+                          ] ;
+                      ]
+                      [
+                        sp:object [
+                            sp:varName "vars"^^xsd:string ;
+                          ] ;
+                        sp:predicate sp:resultVariables ;
+                        sp:subject [
+                            sp:varName "body"^^xsd:string ;
+                          ] ;
+                      ]
+                      [
+                        sp:object () ;
+                        sp:predicate rdf:rest ;
+                        sp:subject [
+                            sp:varName "vars"^^xsd:string ;
+                          ] ;
+                      ]
+                    )
+                  ) ;
+              ]
+            )
+          ) ;
+      ]
+    ) ;
+  rdfs:comment "Function body must be either an Ask query or a Select with exactly one result variable"^^xsd:string ;
+].

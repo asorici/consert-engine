@@ -77,6 +77,7 @@ public class ContextQueryUtil {
 		
 		ContextAssertionFinder assertionFinder = new ContextAssertionFinder(whereElements, 
 				Engine.getContextAssertionIndex(), coreContextModel, bindingsMap);
+		assertionFinder.run();
 		Set<ContextAssertionGraph> visitedAssertionGraphs = assertionFinder.getResult();
 		
 		for (ContextAssertionGraph assertionGraph : visitedAssertionGraphs) {

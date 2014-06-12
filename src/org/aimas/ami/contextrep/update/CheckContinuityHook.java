@@ -19,10 +19,13 @@ import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
 import org.aimas.ami.contextrep.vocabulary.ConsertFunctions;
 import org.openjena.atlas.lib.Pair;
 import org.topbraid.spin.arq.ARQFactory;
+import org.topbraid.spin.arq.SPINARQFunction;
 import org.topbraid.spin.model.Select;
 import org.topbraid.spin.model.Template;
 import org.topbraid.spin.system.SPINModuleRegistry;
 
+import com.hp.hpl.jena.datatypes.RDFDatatype;
+import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.query.Dataset;
@@ -32,6 +35,7 @@ import com.hp.hpl.jena.query.QuerySolutionMap;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
@@ -39,7 +43,6 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.function.FunctionBase2;
 import com.hp.hpl.jena.sparql.function.FunctionRegistry;
-import com.hp.hpl.jena.sparql.util.NodeFactory;
 import com.hp.hpl.jena.tdb.TDB;
 
 public class CheckContinuityHook extends ContextUpdateHook {
@@ -56,8 +59,8 @@ public class CheckContinuityHook extends ContextUpdateHook {
 	public ContinuityResult exec(Dataset contextStoreDataset) {
 		long start = System.currentTimeMillis();
 		
-		//System.out.println("======== CHECKING CONTINUITY AVAILABALE FOR assertion <" + contextAssertion + ">. "
-		//        + "AssertionUUID: " + contextAssertionUUID);
+		System.out.println("======== CHECKING CONTINUITY AVAILABALE FOR assertion <" + contextAssertion.getOntologyResource().getLocalName() + ">. "
+		        + "with new AssertionUUID: " + contextAssertionUUID);
 		
 		// get context assertion store URI
 		String assertionStoreURI = contextAssertion.getAssertionStoreURI();
@@ -137,6 +140,10 @@ public class CheckContinuityHook extends ContextUpdateHook {
 		if (!availableContinuityPairs.isEmpty()) {
 			// Now that we have ContextAssertions that we can extend from a content and temporal point of view, 
 			// let us see if they pass the `permits continuity test' for each structured annotation that they may have 
+			System.out.println("======== THERE ARE " + availableContinuityPairs.size() + " candidates for CONTINUITY for <" + contextAssertion.getOntologyResource().getLocalName() + ">. "
+					+ "new AssertionUUID: " + contextAssertionUUID);
+			
+			
 			
 			// If all get continuity candidates pass the annotation tests, then at the end we can remove the newly inserted triples
 			boolean allUpdated = true;
@@ -144,11 +151,19 @@ public class CheckContinuityHook extends ContextUpdateHook {
 			Pair<Map<ContextAnnotation, Pair<Statement, Set<Statement>>>, Map<StructuredAnnotation, NodeValue>> newAssertionAnnotations = 
 				analyzeNewAssertionAnnotations(newAssertionUUIDRes, assertionStoreModel);
 			
+			// We create this mapping because the basic annotations involve copying over entire portions of annotation content
+			// Since at the end we delete the newly inserted content, we save this part before deleting and re-assert only the
+			// required basic annotation content
+			Map<Resource, Map<ContextAnnotation, Pair<Boolean, Pair<Statement, Set<Statement>>>>> basicAnnotationRevisionMap = 
+				new HashMap<Resource, Map<ContextAnnotation,Pair<Boolean,Pair<Statement,Set<Statement>>>>>();
+			
 			for (ContinuityWrapper pairWrapper : availableContinuityPairs) {
 				Resource extendibleAssertionUUIDRes = ResourceFactory.createResource(pairWrapper.assertionUUID.asNode().getURI());
+				System.out.println("======== CONTINUITY might be available for assertion <" + contextAssertion.getOntologyResource().getLocalName() + ">. "
+						+ "new AssertionUUID: " + contextAssertionUUID + " with existing AssertionUUID: " + extendibleAssertionUUIDRes);
 				
 				Pair<Map<ContextAnnotation, Pair<Boolean, Pair<Statement, Set<Statement>>>>, Map<StructuredAnnotation, NodeValue>> revisedAnnotations = 
-					analyzeAnnotationContinuity(newAssertionAnnotations, extendibleAssertionUUIDRes, assertionStoreModel);
+					analyzeAnnotationContinuity(newAssertionAnnotations, extendibleAssertionUUIDRes, assertionStoreModel, contextStoreDataset);
 				
 				if (revisedAnnotations != null) {
 					Map<ContextAnnotation, Pair<Boolean, Pair<Statement, Set<Statement>>>> revisedBasicAnnotations = revisedAnnotations.car();
@@ -160,7 +175,7 @@ public class CheckContinuityHook extends ContextUpdateHook {
 					
 					CalendarIntervalList mergedValidityIntervals = validityIntervals.joinCloseEnough(newValidityIntervals, CalendarInterval.MAX_GAP_MILLIS);
 					Literal mergedValidityLiteral = ResourceFactory.createTypedLiteral(mergedValidityIntervals);
-					revisedStructuredAnnotations.put(Engine.getContextAnnotationIndex().getStructuredByResource(ConsertAnnotation.NUMERIC_VALUE_CERTAINTY), 
+					revisedStructuredAnnotations.put(Engine.getContextAnnotationIndex().getStructuredByResource(ConsertAnnotation.TEMPORAL_VALIDITY), 
 						NodeValue.makeNode(mergedValidityLiteral.asNode()));
 					
 					/*
@@ -174,12 +189,39 @@ public class CheckContinuityHook extends ContextUpdateHook {
 						Statement annValStmt = assertionStoreModel.getProperty(annStmt.getResource(), ConsertAnnotation.HAS_STRUCTURED_VALUE);
 						
 						NodeValue joinedVal = revisedStructuredAnnotations.get(structAnn);
-						Literal joinedValLiteral = (Literal)Node.createLiteral(joinedVal.asNode().getLiteral());
+						RDFDatatype annDatatype = TypeMapper.getInstance().getTypeByName(joinedVal.getDatatypeURI());
+						RDFNode joinedValLiteral = assertionStoreModel.createTypedLiteral(joinedVal.asNode().getLiteralValue(), annDatatype);
 						
 						assertionStoreModel.remove(annValStmt);
 						assertionStoreModel.add(annStmt.getResource(), ConsertAnnotation.HAS_STRUCTURED_VALUE, joinedValLiteral);
 					}
 					
+					// Save the basic annotation revisions for later re-assertion
+					basicAnnotationRevisionMap.put(extendibleAssertionUUIDRes, revisedBasicAnnotations);
+					
+					System.out.println("CONTINUITY AVAILABALE FOR assertion <" + contextAssertion.getOntologyResource().getLocalName() + ">. "
+					        + "AssertionUUID: " + pairWrapper.assertionUUID
+					        + ", for duration: " + pairWrapper.assertionValidity);
+				}
+				else {
+					allUpdated = false;
+				}
+			}
+			
+			
+			if (allUpdated) {
+				// now remove the newly inserted triples. we just remove the named
+				// graphs altogether
+				contextStoreDataset.removeNamedModel(contextAssertionUUID.getURI());
+				
+				Set<Statement> newAssertionStatements = ContextUpdateUtil.getAllMetaPropertiesFor(newAssertionUUIDRes, assertionStoreModel);
+				assertionStoreModel.remove(new LinkedList<Statement>(newAssertionStatements));
+				
+				// Here is where we need to re-assert the saved basic annotations for each candidate that was extended
+				for (Resource extendibleAssertionUUIDRes : basicAnnotationRevisionMap.keySet()) {
+					Map<ContextAnnotation, Pair<Boolean, Pair<Statement, Set<Statement>>>> revisedBasicAnnotations = 
+							basicAnnotationRevisionMap.get(extendibleAssertionUUIDRes);
+				
 					for (ContextAnnotation basicAnn : revisedBasicAnnotations.keySet()) {
 						boolean replace = revisedBasicAnnotations.get(basicAnn).car();
 						Pair<Statement, Set<Statement>> revisedAnnInstance = revisedBasicAnnotations.get(basicAnn).cdr(); 
@@ -201,19 +243,6 @@ public class CheckContinuityHook extends ContextUpdateHook {
 						}
 					}
 				}
-				else {
-					allUpdated = false;
-				}
-			}
-			
-			
-			if (allUpdated) {
-				// now remove the newly inserted triples. we just remove the named
-				// graphs altogether
-				contextStoreDataset.removeNamedModel(contextAssertionUUID.getURI());
-				
-				Set<Statement> newAssertionStatements = ContextUpdateUtil.getAllMetaPropertiesFor(newAssertionUUIDRes, assertionStoreModel);
-				assertionStoreModel.remove(new LinkedList<Statement>(newAssertionStatements));
 			}
 			
 			return new ContinuityResult(contextAssertion, null, true);
@@ -269,7 +298,7 @@ public class CheckContinuityHook extends ContextUpdateHook {
 	
 	private Pair<Map<ContextAnnotation, Pair<Boolean, Pair<Statement, Set<Statement>>>>, Map<StructuredAnnotation, NodeValue>> analyzeAnnotationContinuity(
 			Pair<Map<ContextAnnotation, Pair<Statement, Set<Statement>>>, Map<StructuredAnnotation, NodeValue>> newAssertionAnnotations, 
-			Resource extendibleAssertionUUIDRes, Model assertionStoreModel) {
+			Resource extendibleAssertionUUIDRes, Model assertionStoreModel, Dataset contextStoreDataset) {
 		
 		Map<StructuredAnnotation, NodeValue> revisedStructuredAnnotations = new HashMap<StructuredAnnotation, NodeValue>();
 		Map<ContextAnnotation, Pair<Boolean, Pair<Statement, Set<Statement>>>> revisedBasicAnnotations = 
@@ -310,15 +339,38 @@ public class CheckContinuityHook extends ContextUpdateHook {
 					boolean permits = permitsVal.getBoolean();
 					
 					if (!permits) {		// if the annotation values DO NOT permit continuity, then stop
+						System.out.println(structuredAnn + " DOES NOT PERMIT CONTINUITY FOR " + extendibleAssertionUUIDRes);
+						
 						continuityPermitted = false;
 						break;
 					}
 					else {		// otherwise, compute the JOINED value
 						String joinOpFunc = structuredAnn.getJoinOperatorURI();
-						FunctionBase2 joinOp = (FunctionBase2)FunctionRegistry.get().get(joinOpFunc).create(joinOpFunc);
-						NodeValue joinedVal = joinOp.exec(extendibleAssertionAnnVal, newAssertionAnnVal);
-						
-						revisedStructuredAnnotations.put(structuredAnn, joinedVal);
+						Object joinOp = FunctionRegistry.get().get(joinOpFunc).create(joinOpFunc);
+						if (joinOp instanceof SPINARQFunction) {
+							SPINARQFunction joinOpSpin = (SPINARQFunction)joinOp;
+							Model defaultModel = ModelFactory.createDefaultModel();
+							RDFDatatype annDatatype = TypeMapper.getInstance().getTypeByName(newAssertionAnnVal.getDatatypeURI());
+							
+							RDFNode newAnnValNode = defaultModel.createTypedLiteral(newAssertionAnnVal.asNode().getLiteralValue(), annDatatype);
+							RDFNode extendibleAnnValNode = defaultModel.createTypedLiteral(extendibleAssertionAnnVal.asNode().getLiteralValue(), annDatatype);
+							
+							QuerySolutionMap bindings = new QuerySolutionMap();
+							bindings.add("arg1", newAnnValNode);
+							bindings.add("arg2", extendibleAnnValNode);
+							
+							NodeValue joinedVal = joinOpSpin.executeBody(contextStoreDataset, 
+									ModelFactory.createDefaultModel(), bindings);
+							revisedStructuredAnnotations.put(structuredAnn, joinedVal);
+						}
+						else if (joinOp instanceof FunctionBase2) {
+							FunctionBase2 joinOpJena = (FunctionBase2)joinOp;
+							NodeValue joinedVal = joinOpJena.exec(extendibleAssertionAnnVal, newAssertionAnnVal);
+							revisedStructuredAnnotations.put(structuredAnn, joinedVal);
+						}
+						else {
+							System.out.println("######### THIS SHOULD NOT HAPPEN TO A DOG!");
+						}
 					}
 				}
 			}

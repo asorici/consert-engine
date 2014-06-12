@@ -36,23 +36,23 @@ public class ContextSPINConstraints {
 		
 		Resource anchorResource = constraints.getAnchorResource();
 		List<CommandWrapper> constraintCommands = constraints.getConstraintCommands();
-		//Map<CommandWrapper, Map<String, RDFNode>> templateBindings = constraints.getConstraintTemplateBindings();
+		Map<CommandWrapper, Map<String, RDFNode>> templateBindings = constraints.getConstraintTemplateBindings();
 		
-		//return run(infContextModel, assertion, anchorResource, constraintCommands, templateBindings, stats);
-		return run(constraintContextModel, assertion, anchorResource, constraintCommands, stats);
+		return run(constraintContextModel, assertion, anchorResource, constraintCommands, templateBindings, stats);
+		//return run(constraintContextModel, assertion, anchorResource, constraintCommands, stats);
 	}
 	
 	private static List<ContextConstraintViolation> run(Model constraintContextModel, ContextAssertion assertion, 
 			Resource anchorResource, List<CommandWrapper> constraintCommands,
-			//Map<CommandWrapper, Map<String, RDFNode>> templateBindings,
+			Map<CommandWrapper, Map<String, RDFNode>> templateBindings,
 			List<SPINStatistics> stats) {
 		
 		List<ContextConstraintViolation> results = new LinkedList<>();
 		
 		for(CommandWrapper arqConstraint : constraintCommands) {
 			QueryWrapper queryConstraintWrapper = (QueryWrapper) arqConstraint;
-			//Map<String,RDFNode> initialBindings = templateBindings.get(arqConstraint);
-			Map<String,RDFNode> initialBindings = arqConstraint.getTemplateBinding();
+			Map<String,RDFNode> initialBindings = templateBindings.get(arqConstraint);
+			//Map<String,RDFNode> initialBindings = arqConstraint.getTemplateBinding();
 			
 			Query arq = queryConstraintWrapper.getQuery();
 			String label = arqConstraint.getLabel();

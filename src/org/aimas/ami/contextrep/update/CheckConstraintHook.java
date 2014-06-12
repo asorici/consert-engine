@@ -3,6 +3,7 @@ package org.aimas.ami.contextrep.update;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.ContextConstraintIndex;
 import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.Loader;
@@ -11,6 +12,7 @@ import org.aimas.ami.contextrep.model.ContextAssertion;
 import org.aimas.ami.contextrep.model.ContextConstraintViolation;
 import org.aimas.ami.contextrep.utils.ContextStoreUtil;
 import org.aimas.ami.contextrep.utils.spin.ContextSPINConstraints;
+import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.statistics.SPINStatistics;
 
 import com.hp.hpl.jena.query.Dataset;
@@ -44,6 +46,8 @@ public class CheckConstraintHook extends ContextUpdateHook {
 			 */    
 			Model assertionModel = ContextStoreUtil.unionModelForAssertion(contextAssertion, contextStoreDataset);
 			Model constraintContextModel = Loader.ensureSPINImported(assertionModel);
+			
+			ARQFactory.set(new ContextARQFactory(contextStoreDataset));
 			
 			List<SPINStatistics> stats = new LinkedList<>();
 			

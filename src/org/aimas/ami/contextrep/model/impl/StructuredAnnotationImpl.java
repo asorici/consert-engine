@@ -54,4 +54,15 @@ public class StructuredAnnotationImpl extends ContextAnnotationImpl implements S
 	    return valueRestrictionURI;
     }
 	
+	@Override
+	public String toString() {
+		String result = "{";
+		result += "annotationResource: " + annotationOntClass.getURI() + ", ";
+		result += "binding prop.: " + bindingOntProperty + ", ";
+		result += "valueRestriction: " + valueRestrictionURI;
+		result += "}";
+		
+		return result;
+	}
+	
 }

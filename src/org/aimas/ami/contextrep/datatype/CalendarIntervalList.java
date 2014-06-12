@@ -368,6 +368,12 @@ public class CalendarIntervalList extends IntervalList<CalendarInterval> {
 		return true;
 	}
 	
+	@Override
+	public String toString() {
+		return unparse();
+	}
+	
+	
 	private class IntervalMark implements Comparable<IntervalMark> {
 		public static final int LOWER = 0;
 		public static final int UPPER = 1;

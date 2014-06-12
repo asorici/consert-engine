@@ -6,10 +6,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.aimas.ami.contextrep.core.ContextAssertionIndex;
 import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.datatype.CalendarIntervalList;
 import org.aimas.ami.contextrep.model.ContextAssertion;
@@ -21,7 +19,6 @@ import org.topbraid.spin.util.JenaUtil;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.datatypes.xsd.XSDDateTime;
-import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.ontology.AllValuesFromRestriction;
 import com.hp.hpl.jena.ontology.HasValueRestriction;
 import com.hp.hpl.jena.ontology.Individual;
@@ -30,9 +27,9 @@ import com.hp.hpl.jena.ontology.OntModel;
 import com.hp.hpl.jena.ontology.OntProperty;
 import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.ontology.Restriction;
-import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.NodeIterator;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.ReifiedStatement;
@@ -40,6 +37,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Selector;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.OWL;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -283,42 +281,60 @@ public class ContextAssertionUtil {
 	 */
 	public static ContextAssertion getContextAssertionParent(ContextAssertion contextAssertion, OntModel contextModel) {
 		OntResource assertionRes = contextAssertion.getOntologyResource();
-		Resource directAssertionParent = null;
 		
 		// we must make the distinction between assertion arity
-		if (contextAssertion.isUnary()) {
+		if (contextAssertion.isUnary() || contextAssertion.isNary()) {
 			Collection<Resource> directAssertionParents = JenaUtil.getSuperClasses(assertionRes);
+			
 			for (Resource res : directAssertionParents) {
-				if (res.isURIResource() && !res.equals(ConsertCore.UNARY_CONTEXT_ASSERTION)) {
-					directAssertionParent = res;
-					break;
+				ContextAssertion parentAssertion = validParentClass(res, assertionRes, contextModel);
+				if (parentAssertion != null) {
+					return parentAssertion;
 				}
 			}
 		}
 		else if (contextAssertion.isBinary()) {
-			directAssertionParent = JenaUtil.getResourceProperty(assertionRes, RDFS.subPropertyOf);
-			if (ConsertCore.ROOT_BINARY_RELATION_ASSERTION_SET.contains(directAssertionParent) 
-				|| ConsertCore.ROOT_BINARY_DATA_ASSERTION_SET.contains(directAssertionParent)) {
-				directAssertionParent = null;
-			}
-		}
-		else {
-			Collection<Resource> directAssertionParents = JenaUtil.getSuperClasses(assertionRes);
-			for (Resource res : directAssertionParents) {
-				if (res.isURIResource() && !res.equals(ConsertCore.NARY_CONTEXT_ASSERTION)) {
-					directAssertionParent = res;
-					break;
+			NodeIterator directParentIt = contextModel.listObjectsOfProperty(assertionRes, RDFS.subPropertyOf);
+			for (;directParentIt.hasNext();) {
+				RDFNode parentProp = directParentIt.nextNode();
+				if (parentProp.isURIResource()) {
+					ContextAssertion parentAssertion = validParentProperty(parentProp.asResource(), assertionRes, contextModel);
+					if (parentAssertion != null) {
+						return parentAssertion;
+					}
 				}
 			}
 		}
 		
-		if (directAssertionParent != null) {
-			OntResource assertionOntRes = contextModel.getOntResource(directAssertionParent);
-			return Engine.getContextAssertionIndex().getAssertionFromResource(assertionOntRes);
+		return null;
+	}
+	
+	private static ContextAssertion validParentClass(Resource parentRes, OntResource assertionRes, OntModel contextModel) {
+		if (parentRes.isURIResource() && !parentRes.equals(assertionRes) 
+				&& !parentRes.equals(ConsertCore.UNARY_CONTEXT_ASSERTION)
+				&& !parentRes.equals(ConsertCore.NARY_CONTEXT_ASSERTION)
+				&& !parentRes.equals(OWL.Thing) && !parentRes.equals(RDFS.Resource)) {
+			
+			OntResource parentOntRes = contextModel.getOntResource(parentRes);
+			return Engine.getContextAssertionIndex().getAssertionFromResource(parentOntRes);
 		}
 		
 		return null;
-	}
+    }
+	
+	
+	private static ContextAssertion validParentProperty(Resource parentRes, OntResource assertionRes, OntModel contextModel) {
+		if (parentRes.isURIResource() && !parentRes.equals(assertionRes)
+				&& !ConsertCore.ROOT_BINARY_RELATION_ASSERTION_SET.contains(parentRes) 
+				&& !ConsertCore.ROOT_BINARY_DATA_ASSERTION_SET.contains(parentRes)) {
+			
+			OntResource parentOntRes = contextModel.getOntResource(parentRes);
+			return Engine.getContextAssertionIndex().getAssertionFromResource(parentOntRes);
+		}
+		
+		return null;
+    }
+
 	
 	
 	/**

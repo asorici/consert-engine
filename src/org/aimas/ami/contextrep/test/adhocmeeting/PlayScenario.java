@@ -3,6 +3,7 @@ package org.aimas.ami.contextrep.test.adhocmeeting;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -11,9 +12,13 @@ import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
 import org.aimas.ami.contextrep.core.Engine;
 import org.aimas.ami.contextrep.core.api.ConfigException;
+import org.aimas.ami.contextrep.core.api.QueryResultNotifier;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
+import org.aimas.ami.contextrep.query.QueryResult;
 import org.aimas.ami.contextrep.test.ContextEvent;
+import org.aimas.ami.contextrep.update.ContextUpdateTask;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
+import org.aimas.ami.contextrep.vocabulary.ConsertAnnotation;
 import org.aimas.ami.contextrep.vocabulary.ConsertRules;
 import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
 import org.apache.log4j.PropertyConfigurator;
@@ -28,13 +33,22 @@ import org.topbraid.spin.util.CommandWrapper;
 import com.hp.hpl.jena.ontology.Individual;
 import com.hp.hpl.jena.ontology.OntClass;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.OntResource;
 import com.hp.hpl.jena.query.Dataset;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.query.QuerySolutionMap;
+import com.hp.hpl.jena.query.ReadWrite;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.tdb.TDB;
 
 public class PlayScenario {
@@ -56,14 +70,22 @@ public class PlayScenario {
 			// init configuration
 			Engine.init(configurationFile, true);
 			
-			/*
+			
 			Dataset dataset = Engine.getRuntimeContextStore();
 			OntModel coreContextModel = Engine.getCoreContextModel();
-			OntModel basicScenarioModel = ScenarioInit.initScenario(dataset, coreContextModel);
+			OntModel annotationContextModel = Engine.getAnnotationContextModel();
+			OntModel contextModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+			contextModel.addSubModel(coreContextModel);
+			contextModel.addSubModel(annotationContextModel);
+			
+			// create a combined model of core + annotations to build the scenario events
+			OntModel basicScenarioModel = ScenarioInit.initScenario(dataset, contextModel);
 			
 			//attempSPINInference(dataset, basicContextModel);
-			List<ContextEvent> scenarioEvents = buildScenarioEvents(basicScenarioModel, coreContextModel, dataset);
+			List<ContextEvent> scenarioEvents = buildScenarioEvents(basicScenarioModel, contextModel, dataset);
 			
+			// create a query to test the subscription functionality
+			buildSubscribeQuery(contextModel);
 			
 			// ============================= start event generation =============================
 			while (!scenarioEvents.isEmpty()) {
@@ -123,13 +145,31 @@ public class PlayScenario {
 				System.out.println(dataStoreNameIt.next());
 			}
 			
+			System.out.println();
+			System.out.println();
 			
-			//OntResource sensesSkelAssertion = basicContextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "SensesSkelInPosition");
-			//Model sensesSkeletonStore = dataset.getNamedModel(Config.getStoreForAssertion(sensesSkelAssertion)); 
-			//ScenarioInit.printStatements(sensesSkeletonStore);
-						
-			dataset.end();
+			/*
+			OntResource sensesSkelAssertion = contextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "SensesSkelInPosition");
+			Model sensesSkeletonStore = dataset.getNamedModel(Engine.getContextAssertionIndex().getAssertionFromResource(sensesSkelAssertion).getAssertionStoreURI()); 
+			ScenarioInit.printStatements(sensesSkeletonStore);
 			*/
+			
+			OntResource adhocMeetingAssertion = contextModel.getOntClass(ScenarioInit.AD_HOC_MEETING_NS + "HostsAdHocMeeting");
+			Model adHocMeetingStore = dataset.getNamedModel(Engine.getContextAssertionIndex().getAssertionFromResource(adhocMeetingAssertion).getAssertionStoreURI()); 
+			ScenarioInit.printStatements(adHocMeetingStore);
+			
+			System.out.println();
+			System.out.println();
+			
+			// see what's inside the derived HostsAdHocMeeting
+			Statement adhocSt = adHocMeetingStore.getProperty(null, ConsertAnnotation.HAS_TIMESTAMP);
+			Resource adhocUUID = adhocSt.getSubject();
+			System.out.println("AdHoc Content with UUID: " + adhocUUID);
+			
+			Model adhocContent = dataset.getNamedModel(adhocUUID.getURI());
+			ScenarioInit.printStatements(adhocContent);
+			
+			dataset.end();
 			
 			Engine.close(false);
 			
@@ -138,6 +178,7 @@ public class PlayScenario {
 		}
 	}
 	
+
 	private static void attemptSPINInference(Dataset dataset, OntModel basicContextModel) {
 		System.out.println("#### Attempting SPIN Inference ####");
 		long timestamp = System.currentTimeMillis();
@@ -195,8 +236,8 @@ public class PlayScenario {
 		
 		//ARQ.setExecutionLogging(Explain.InfoLevel.FINE);
 		ARQFactory.set(new ContextARQFactory());
-		//SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, true, SPINVocabulary.deriveAssertionRule, comparator, null);
-		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, null, null, true, ConsertRules.DERIVE_ASSERTION, comparator, null);
+		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, true, ConsertRules.DERIVE_ASSERTION, comparator, null);
+		//SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, null, null, true, ConsertRules.DERIVE_ASSERTION, comparator, null);
 		
 		System.out.println("[INFO] Ran SPIN Inference. Duration: " + 
 			(System.currentTimeMillis() - timestamp) );
@@ -270,4 +311,48 @@ public class PlayScenario {
 		
 		return events;
 	}
+	
+	private static void buildSubscribeQuery(OntModel contextModel) {
+	    String queryString = ""
+    		+ "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>" + "\n"
+    		+ "PREFIX ctxmod: <http://pervasive.semanticweb.org/ont/2013/09/adhocmeeting/models#>" + "\n"
+    		+ "PREFIX ctxcore: <http://pervasive.semanticweb.org/ont/2014/05/consert/core#>" + "\n"
+    		+ "SELECT ?room" + "\n"
+    		+ "WHERE {" + "\n"
+    		+ "	GRAPH ?assertionID {" + "\n"
+    		+ "		[] 	rdf:type ctxmod:HostsAdHocMeeting;" + "\n"
+    		+ "			ctxcore:assertionRole ?room." + "\n"
+    		+ "	}" + "\n"
+    		+ "}";
+	    
+	    QuerySolutionMap bindings = new QuerySolutionMap();
+	    Query subscribeQuery = QueryFactory.create(queryString);
+	    QueryResultNotifier subscribeNotifier = new QueryResultNotifier() {
+			
+			@Override
+			public void notifyQueryResult(QueryResult result) {
+				if (result.hasError()) {
+					System.out.println("[QUERY] Received subscription notification with error.");
+					result.getError().printStackTrace();
+				}
+				else {
+					System.out.println("[QUERY] Received subscription notification with results: ");
+					
+					ResultSet resultSet = result.getResultSet();
+					while (resultSet.hasNext()) {
+						QuerySolution sol = resultSet.nextSolution();
+						System.out.println("AdHoc Meeting Room: " + sol.get("room"));
+					}
+				}
+			}
+			
+			@Override
+			public void notifyAskResult(QueryResult result) {
+				System.out.println("WE SHOULD NOT BE GETTING RESULTS HERE!");
+			}
+		}; 
+		
+		Engine.subscriptionMonitor().newSubscription(subscribeQuery, bindings, subscribeNotifier);
+    }
+	
 }

@@ -1,5 +1,6 @@
 # baseURI: http://spinrdf.org/sp
 
+# c14n-version: 3
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -7,12 +8,11 @@
 @prefix spin: <http://spinrdf.org/spin#> .
 @prefix spl: <http://spinrdf.org/spl#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
 <http://spinrdf.org/sp>
   rdf:type owl:Ontology ;
   rdfs:comment "An RDF schema to syntactically represent SPARQL queries and update commands as RDF triples."^^xsd:string ;
   rdfs:label "SPIN SPARQL Syntax"^^xsd:string ;
-  owl:versionInfo "1.5.0"^^xsd:string ;
+  owl:versionInfo "1.4.2"^^xsd:string ;
 .
 sp:Aggregation
   rdf:type rdfs:Class ;
@@ -349,12 +349,6 @@ sp:Update
   rdfs:label "Update"^^xsd:string ;
   rdfs:subClassOf sp:Command ;
 .
-sp:Values
-  rdf:type rdfs:Class ;
-  rdfs:comment "A VALUES element. sp:varNames points to an rdf:List of strings for the variables, sp:values to an rdf:List of rdf:Lists with nodes for each variable, in the order defined by the variables list."^^xsd:string ;
-  rdfs:label "Values"^^xsd:string ;
-  rdfs:subClassOf sp:Element ;
-.
 sp:Variable
   rdf:type rdfs:Class ;
   rdfs:comment "A variable mentioned in a Triple or expression. Variables are often blank nodes with the variable name stored in ts:name. Variables can also be supplied with a URI in which case the system will attempt to reuse the same variable instance across multiple query definitions." ;
@@ -408,14 +402,6 @@ sp:as
   rdfs:comment "Points to a Variable used in an AS statement such as COUNT aggregates." ;
   rdfs:label "as"^^xsd:string ;
   rdfs:range sp:Variable ;
-  rdfs:subPropertyOf sp:systemProperty ;
-.
-sp:bindings
-  rdf:type rdf:Property ;
-  rdfs:comment "The actual bindings of a sp:Values element."^^xsd:string ;
-  rdfs:domain sp:Values ;
-  rdfs:label "bindings"^^xsd:string ;
-  rdfs:range rdf:List ;
   rdfs:subPropertyOf sp:systemProperty ;
 .
 sp:default
@@ -715,28 +701,12 @@ sp:usingNamed
   rdfs:range rdfs:Resource ;
   rdfs:subPropertyOf sp:systemProperty ;
 .
-sp:values
-  rdf:type rdf:Property ;
-  rdfs:comment "The VALUES block at the end of a query. The object may just be an untyped blank node, i.e. the sp:Values type triple is optional."^^xsd:string ;
-  rdfs:domain sp:Query ;
-  rdfs:label "values"^^xsd:string ;
-  rdfs:range sp:Values ;
-  rdfs:subPropertyOf sp:systemProperty ;
-.
 sp:varName
   rdf:type rdf:Property ;
   rdfs:comment "The name of a Variable." ;
   rdfs:domain sp:Variable ;
   rdfs:label "varName"^^xsd:string ;
   rdfs:range xsd:string ;
-  rdfs:subPropertyOf sp:systemProperty ;
-.
-sp:varNames
-  rdf:type rdf:Property ;
-  rdfs:comment "The names of the variables (xsd:strings) of the variables declared for a VALUES element."^^xsd:string ;
-  rdfs:domain sp:Values ;
-  rdfs:label "var names"^^xsd:string ;
-  rdfs:range rdf:List ;
   rdfs:subPropertyOf sp:systemProperty ;
 .
 sp:variable

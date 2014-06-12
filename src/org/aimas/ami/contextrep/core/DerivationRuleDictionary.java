@@ -108,20 +108,20 @@ public class DerivationRuleDictionary {
 	public static DerivationRuleDictionary create(ContextAssertionIndex contextAssertionIndex, OntModel contextModelRules) {
 		DerivationRuleDictionary dict = new DerivationRuleDictionary();
 		
-		//Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
-		//Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(
-		//		transitiveContextModel, transitiveContextModel, deriveAssertionProp, false, initialTemplateBindings, false);
+		Map<CommandWrapper, Map<String,RDFNode>> initialTemplateBindings = new HashMap<CommandWrapper, Map<String,RDFNode>>();
 		
 		// build the extended Rules Module including the SPL, SP and SPIN namespaces
 		OntModel extendedRulesModel = Loader.ensureSPINImported(contextModelRules);
-		//OntModel extendedRulesModel = contextModelRules;
 		
 		// make sure to register the templates as they will be searched for when collecting the constraints
 		SPINModuleRegistry.get().registerAll(extendedRulesModel, null);
 		
 		// Collect spin:deriveassertion rules in the extended Rules module of the domain Context Model 
 		Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(
-			extendedRulesModel, extendedRulesModel, ConsertRules.DERIVE_ASSERTION, false, false);
+			extendedRulesModel, extendedRulesModel, ConsertRules.DERIVE_ASSERTION, false, initialTemplateBindings, false);
+		
+		//Map<Resource,List<CommandWrapper>> cls2Query = SPINQueryFinder.getClass2QueryMap(
+		//	extendedRulesModel, extendedRulesModel, ConsertRules.DERIVE_ASSERTION, false, false);
 		
 		
 		// build map for ContextAssertion to SPIN:Rule list
@@ -154,8 +154,8 @@ public class DerivationRuleDictionary {
 				ElementList whereElements = constructCommand.getWhere();
 				List<TripleTemplate> constructedTriples = constructCommand.getTemplates();
 				
-				//Map<String, RDFNode> templateBindings = initialTemplateBindings.get(cmd);
-				Map<String, RDFNode> templateBindings = cmd.getTemplateBinding();
+				Map<String, RDFNode> templateBindings = initialTemplateBindings.get(cmd);
+				//Map<String, RDFNode> templateBindings = cmd.getTemplateBinding();
 				ContextAssertion derivedAssertion = null; 
 				
 				ContextAssertionFinder ruleBodyFinder = 

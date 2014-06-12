@@ -5,14 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.aimas.ami.contextrep.core.ConfigKeys;
 import org.aimas.ami.contextrep.core.ContextARQFactory;
 import org.aimas.ami.contextrep.core.DerivationRuleDictionary;
 import org.aimas.ami.contextrep.core.Engine;
+import org.aimas.ami.contextrep.core.Loader;
 import org.aimas.ami.contextrep.core.api.ConfigException;
 import org.aimas.ami.contextrep.model.DerivedAssertionWrapper;
 import org.aimas.ami.contextrep.utils.GraphUUIDGenerator;
 import org.aimas.ami.contextrep.vocabulary.ConsertRules;
 import org.aimas.ami.contextrep.vocabulary.JenaVocabulary;
+import org.apache.log4j.PropertyConfigurator;
 import org.openjena.atlas.logging.Log;
 import org.topbraid.spin.arq.ARQFactory;
 import org.topbraid.spin.inference.DefaultSPINRuleComparator;
@@ -20,9 +23,13 @@ import org.topbraid.spin.inference.SPINInferences;
 import org.topbraid.spin.inference.SPINRuleComparator;
 import org.topbraid.spin.system.SPINModuleRegistry;
 import org.topbraid.spin.util.CommandWrapper;
+import org.topbraid.spin.vocabulary.SPL;
 
+import com.hp.hpl.jena.ontology.OntDocumentManager;
 import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.ontology.OntProperty;
+import com.hp.hpl.jena.ontology.ProfileRegistry;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -41,23 +48,52 @@ public class Test {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// PropertyConfigurator.configure("log4j.properties");
-		String configurationFile = "src/org/aimas/ami/contextrep/test/adhocmeeting/config.properties";
+		PropertyConfigurator.configure("etc/log4j.properties");
+		String configurationFile = "etc/config.properties";
 		Log.setLog4j();
+		
+		System.setProperty("http.proxyHost", "proxy.emse.fr");
+		System.setProperty("http.proxyPort", "8080");
 		
 		try {
 			// init configuration
-			Engine.init(configurationFile, true);
+			//Engine.init(configurationFile, true);
 			
-			Dataset dataset = Engine.getRuntimeContextStore();
-			OntModel basicContextModel = Engine.getCoreContextModel();
+			Loader.parseConfigProperties(configurationFile);
+			Map<String, String> contextModelURIMap = Loader.getContextModelURIs();
+			Map<String, OntModel> contextModelMap = Loader.getContextModelModules(contextModelURIMap);
 			
-			attempSPINInference(dataset, basicContextModel);
+			OntDocumentManager spinDocMgr = Loader.getOntDocumentManager(ConfigKeys.SPIN_ONT_DOCMGR_FILE);
+			OntModelSpec spinSpec = new OntModelSpec(OntModelSpec.OWL_MEM);
+			spinSpec.setDocumentManager(spinDocMgr);
 			
-			Engine.close(false);
+			
+			// Load main file
+			//Model baseModel = ModelFactory.createDefaultModel(ReificationStyle.Minimal);
+			//baseModel.read(SPL.BASE_URI);
+			
+			// Create OntModel with imports
+			//OntModel splModel = JenaUtil.createOntologyModel(OntModelSpec.OWL_MEM_RDFS_INF, baseModel);
+			
+			//OntModel splModel = ModelFactory.createOntologyModel(spinSpec, SPL.getModel());
+			OntModel splModel = ModelFactory.createOntologyModel(spinSpec);
+			splModel.read(SPL.BASE_URI, "RDF/XML");
+			
+			SPINModuleRegistry.get().registerAll(splModel, null);
+			System.out.println(SPINModuleRegistry.get().getFunction(SPL.NS + "max", null).getURI());
+			
+			
+//			Dataset dataset = Engine.getRuntimeContextStore();
+//			OntModel basicContextModel = Engine.getCoreContextModel();
+//			
+//			attempSPINInference(dataset, basicContextModel);
+			//Engine.close(false);
 		}
 		catch (ConfigException e) {
 			e.printStackTrace();
+		}
+		finally {
+			
 		}
 	}
 	
@@ -118,8 +154,8 @@ public class Test {
 		
 		//ARQ.setExecutionLogging(Explain.InfoLevel.FINE);
 		ARQFactory.set(new ContextARQFactory());
-		//SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, true, SPINVocabulary.deriveAssertionRule, comparator, null);
-		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, null, null, true, ConsertRules.DERIVE_ASSERTION, comparator, null);
+		SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, initialTemplateBindings, null, null, true, ConsertRules.DERIVE_ASSERTION, comparator, null);
+		//SPINInferences.run(queryModel, newTriples, cls2Query, cls2Constructor, null, null, true, ConsertRules.DERIVE_ASSERTION, comparator, null);
 		
 		System.out.println("[INFO] Ran SPIN Inference. Duration: " + 
 			(System.currentTimeMillis() - timestamp) );

@@ -10,7 +10,7 @@ public class ConfigKeys {
 	public static final String CONSERT_ONT_DOCMGR_FILE = "consert.ontology.documentmgr.file";
 	public static final String CONSERT_ONT_CORE_URI = "consert.ontology.core.uri";
 	public static final String CONSERT_ONT_ANNOTATION_URI = "consert.ontology.annotation.uri";
-	public static final String CONSERT_ONT_CONSTRAINT_URI = "consert.ontology.constraint.uri";
+	public static final String CONSERT_ONT_CONSTRAINT_URI = "consert.ontology.constraints.uri";
 	public static final String CONSERT_ONT_FUNCTIONS_URI = "consert.ontology.functions.uri";
 	public static final String CONSERT_ONT_RULES_URI = "consert.ontology.rules.uri";
 	
@@ -32,7 +32,7 @@ public class ConfigKeys {
 	//public static final String DOMAIN_ONT_ANNOTATION_ALT_URL = "context.model.ontology.annotation.alturl";
 	//public static final String DOMAIN_ONT_ANNOTATION_PREFIX = "context.model.ontology.annotation.prefix";
 	
-	public static final String DOMAIN_ONT_CONSTRAINT_URI = "context.model.ontology.constraint.uri";
+	public static final String DOMAIN_ONT_CONSTRAINT_URI = "context.model.ontology.constraints.uri";
 	//public static final String DOMAIN_ONT_CONSTRAINT_ALT_URL = "context.model.ontology.constraint.alturl";
 	//public static final String DOMAIN_ONT_CONSTRAINT_PREFIX = "context.model.ontology.constraint.prefix";
 	

@@ -10,6 +10,7 @@ import org.topbraid.spin.util.SPINQueryFinder;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
 
@@ -27,15 +28,15 @@ public class ContextSPINQueryFinder extends SPINQueryFinder {
 	 */
 	public static Map<Resource, List<CommandWrapper>> getClass2QueryMap(Model model, Model queryModel, 
 			Resource subject, Property predicate, boolean withClass, 
-			//Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings, 
+			Map<CommandWrapper,Map<String,RDFNode>> initialTemplateBindings, 
 			boolean allowAsk) {
 		
 		predicate = model.getProperty(predicate.getURI());
 		Map<Resource,List<CommandWrapper>> class2Query = new HashMap<Resource,List<CommandWrapper>>();
 		
 		for(Statement s : JenaUtil.listAllProperties(subject, predicate).toList()) {
-			//add(class2Query, s, model, withClass, initialTemplateBindings, allowAsk);
-			add(class2Query, s, model, withClass, allowAsk);
+			add(class2Query, s, model, withClass, initialTemplateBindings, allowAsk);
+			//add(class2Query, s, model, withClass, allowAsk);
 		}
 		return class2Query;
 	}

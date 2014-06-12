@@ -20,6 +20,7 @@
 <DocumentManagerPolicy>
     <!-- Ignore importing SPIN related models. These will be loaded at the appropriate time when 
          building indexes for Context Derivation Rules and Context Constraints -->
+    
     <ignoreImport rdf:resource="http://spinrdf.org/spl" />
     <ignoreImport rdf:resource="http://spinrdf.org/spin" />
     <ignoreImport rdf:resource="http://spinrdf.org/sp" />
@@ -28,11 +29,13 @@
     
     <!-- Ignore importing CONSERT Ont related models. They will be added later on programmatically, 
          on a per-module basis. -->
+    
     <ignoreImport rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/core" />
     <ignoreImport rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/annotation" />
     <ignoreImport rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/constraint" />
     <ignoreImport rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/functions" />
     <ignoreImport rdf:resource="http://pervasive.semanticweb.org/ont/2014/05/consert/rules" />
+    
 </DocumentManagerPolicy>
 
 

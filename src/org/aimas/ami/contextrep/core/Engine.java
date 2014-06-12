@@ -48,8 +48,11 @@ public class Engine {
 	
 	/** Map of basic ontology models for each module of the context model: 
 	 * 	core, annotations, constraints, functions, rules */
-	private static Map<String, OntModel> contextModelMap;
+	private static Map<String, OntModel> baseContextModelMap;
 	
+	/** Map of basic ontology models for each module of the context model: 
+	 * 	core, annotations, constraints, functions, rules */
+	private static Map<String, OntModel> rdfsContextModelMap;
 	
 	// ContextAssertion Derivation Rule Dictionary
 	private static DerivationRuleDictionary derivationRuleDictionary;
@@ -123,7 +126,7 @@ public class Engine {
 		// this has the side effect of also configuring the ontology document managers for
 		// CONSERT ontology, SPIN ontology set and Context Domain ontology
 		contextModelURIMap = Loader.getContextModelURIs();
-		contextModelMap = Loader.getContextModelModules(contextModelURIMap); 
+		baseContextModelMap = Loader.getContextModelModules(contextModelURIMap); 
 		
 		if (printDurations) {
 			System.out.println("Task: load context model modules. Duration: " + 
@@ -141,7 +144,7 @@ public class Engine {
 		timestamp = System.currentTimeMillis();
 		
 		// register custom functions (defined either by SPARQL queries or custom Java classes)
-		FunctionIndex.registerCustomFunctions(contextModelMap.get(ConfigKeys.DOMAIN_ONT_FUNCTIONS_URI));
+		FunctionIndex.registerCustomFunctions(baseContextModelMap.get(ConfigKeys.DOMAIN_ONT_FUNCTIONS_URI));
 		
 		if (printDurations) {
 			System.out.println("Task: register custom SPARQL functions. Duration: " + 
@@ -155,7 +158,9 @@ public class Engine {
 		Loader.createEntityStoreGraph(contextDataset);
 		
 		// build the ContextAssertion index
-		contextAssertionIndex = ContextAssertionIndex.create(contextModelMap.get(ConfigKeys.DOMAIN_ONT_CORE_URI));
+		OntModel baseCoreModule = baseContextModelMap.get(ConfigKeys.DOMAIN_ONT_CORE_URI);
+		OntModel rdfsCoreModule = Loader.getRDFSInferenceModel(baseCoreModule);
+		contextAssertionIndex = ContextAssertionIndex.create(rdfsCoreModule);
 		if (printDurations) {
 			System.out.println("Task: create the ContextAssertionIndex. Duration: " + 
 				(System.currentTimeMillis() - timestamp) + " ms");
@@ -163,7 +168,11 @@ public class Engine {
 		timestamp = System.currentTimeMillis();
 		
 		//build the ContextAnnotation index
-		contextAnnotationIndex = ContextAnnotationIndex.create(contextModelMap.get(ConfigKeys.DOMAIN_ONT_ANNOTATION_URI));
+		OntModel baseAnnotationModule = baseContextModelMap.get(ConfigKeys.DOMAIN_ONT_ANNOTATION_URI);
+		OntModel rdfsAnnotationModule = Loader.getRDFSInferenceModel(baseAnnotationModule);
+		contextAnnotationIndex = ContextAnnotationIndex.create(rdfsAnnotationModule);
+		System.out.println(contextAnnotationIndex.getAllStructuredAnnotations());
+		
 		if (printDurations) {
 			System.out.println("Task: create the ContextAnnotationIndex. Duration: " + 
 				(System.currentTimeMillis() - timestamp) + " ms");
@@ -171,7 +180,7 @@ public class Engine {
 		timestamp = System.currentTimeMillis();
 		
 		// build the ContextConstraint index
-		contextConstraintIndex = ContextConstraintIndex.create(contextAssertionIndex, contextModelMap.get(ConfigKeys.DOMAIN_ONT_CONSTRAINT_URI));
+		contextConstraintIndex = ContextConstraintIndex.create(contextAssertionIndex, baseContextModelMap.get(ConfigKeys.DOMAIN_ONT_CONSTRAINT_URI));
 		if (printDurations) {
 			System.out.println("Task: create the ContextConstraintIndex. Duration: " + 
 				(System.currentTimeMillis() - timestamp) + " ms");
@@ -179,7 +188,7 @@ public class Engine {
 		timestamp = System.currentTimeMillis();
 		
 		// build the Derivation Rule dictionary
-		derivationRuleDictionary = DerivationRuleDictionary.create(contextAssertionIndex, contextModelMap.get(ConfigKeys.DOMAIN_ONT_RULES_URI));
+		derivationRuleDictionary = DerivationRuleDictionary.create(contextAssertionIndex, baseContextModelMap.get(ConfigKeys.DOMAIN_ONT_RULES_URI));
 		if (printDurations) {
 			System.out.println("Task: compute derivation rule dictionary. Duration: " + 
 				(System.currentTimeMillis() - timestamp) + " ms");
@@ -233,8 +242,8 @@ public class Engine {
 		
 	private static void closeContextModel() {
 		// close the basic context model modules
-		for (String moduleKey : contextModelMap.keySet()) {
-			OntModel m = contextModelMap.get(moduleKey);
+		for (String moduleKey : baseContextModelMap.keySet()) {
+			OntModel m = baseContextModelMap.get(moduleKey);
 			m.close();
 		}
     }
@@ -300,23 +309,23 @@ public class Engine {
 	
 	// ######################## Access CONSERT Engine Context Model and Indexes ########################
 	public static OntModel getCoreContextModel() {
-		return contextModelMap.get(ConfigKeys.DOMAIN_ONT_CORE_URI);
+		return baseContextModelMap.get(ConfigKeys.DOMAIN_ONT_CORE_URI);
 	}
 	
 	public static OntModel getAnnotationContextModel() {
-		return contextModelMap.get(ConfigKeys.DOMAIN_ONT_ANNOTATION_URI);
+		return baseContextModelMap.get(ConfigKeys.DOMAIN_ONT_ANNOTATION_URI);
 	}
 	
 	public static OntModel getConstraintContextModel() {
-		return contextModelMap.get(ConfigKeys.DOMAIN_ONT_CONSTRAINT_URI);
+		return baseContextModelMap.get(ConfigKeys.DOMAIN_ONT_CONSTRAINT_URI);
 	}
 	
 	public static OntModel getFunctionContextModel() {
-		return contextModelMap.get(ConfigKeys.DOMAIN_ONT_FUNCTIONS_URI);
+		return baseContextModelMap.get(ConfigKeys.DOMAIN_ONT_FUNCTIONS_URI);
 	}
 	
 	public static OntModel getRuleContextModel() {
-		return contextModelMap.get(ConfigKeys.DOMAIN_ONT_RULES_URI);
+		return baseContextModelMap.get(ConfigKeys.DOMAIN_ONT_RULES_URI);
 	}
 	
 	public static ContextAssertionIndex getContextAssertionIndex() {

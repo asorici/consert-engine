@@ -126,6 +126,7 @@ public class ContextAnnotationUtil {
 					Set<Resource> reached = new HashSet<Resource>();
 					collectAnnotationStatements(annotationRoot, contentModel, collectedAnnotationStatements, reached);
 					
+					annotationInstance.put(annotation, new Pair<Resource, Set<Statement>>(annotationRoot, collectedAnnotationStatements));
 					break;
 				}
 			}

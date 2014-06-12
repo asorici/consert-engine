@@ -39,21 +39,21 @@
 <!-- ###################### SPIN ontologies local mappings  ###################### -->
 <OntologySpec>
     <publicURI rdf:resource="http://spinrdf.org/spl" />
-    <altURL    rdf:resource="file:etc/ontologies/SPIN/spl.spin.ttl" />
+    <altURL    rdf:resource="file:etc/ontologies/SPIN/spl.spin.rdf" />
     <language  rdf:resource="http://www.w3.org/2002/07/owl" />
     <prefix    rdf:datatype="&xsd;string">spl</prefix>
 </OntologySpec>
 
 <OntologySpec>
     <publicURI rdf:resource="http://spinrdf.org/spin" />
-    <altURL    rdf:resource="file:etc/ontologies/SPIN/spin.ttl" />
+    <altURL    rdf:resource="file:etc/ontologies/SPIN/spin.rdf" />
     <language  rdf:resource="http://www.w3.org/2002/07/owl" />
     <prefix    rdf:datatype="&xsd;string">spin</prefix>
 </OntologySpec>
 
 <OntologySpec>
     <publicURI rdf:resource="http://spinrdf.org/sp" />
-    <altURL    rdf:resource="file:etc/ontologies/SPIN/sp.ttl" />
+    <altURL    rdf:resource="file:etc/ontologies/SPIN/sp.rdf" />
     <language  rdf:resource="http://www.w3.org/2002/07/owl" />
     <prefix    rdf:datatype="&xsd;string">sp</prefix>
 </OntologySpec>

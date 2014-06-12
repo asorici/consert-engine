@@ -25,6 +25,7 @@ import com.hp.hpl.jena.ontology.OntModelSpec;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.sparql.graph.GraphFactory;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.base.file.Location;
 import com.hp.hpl.jena.vocabulary.OWL;
@@ -187,7 +188,7 @@ public class Loader {
 	 * <i>core, annotation, constraints, functions, rules</i>
 	 * @return A map of the base URIs for each type of module within the current domain Context Model
 	 */
-	static Map<String, String> getContextModelURIs() throws ConfigException {
+	public static Map<String, String> getContextModelURIs() throws ConfigException {
 	    Map<String, String> contextModelURIMap = new HashMap<String, String>();
 	    
 	    /* build the mapping from context domain model keys to the corresponding URIs (if defined)
@@ -290,20 +291,20 @@ public class Loader {
 	
 	
 	/**
-	 * Use the configuration file to create the map of ontology models (<b>with applied RDFS inferencing</b>) 
+	 * Use the configuration file to create the map of ontology models (<b>basic, no inference</b>) 
 	 * for each module of the domain Context Model: <i>core, annotation, constraints, functions, rules</i>
 	 * @param contextModelURIMap The Context Model URI map built by calling {@code getContextModelURIs}
 	 * @return A map of the models for each type of module within the current domain Context Model
 	 * @see getContextModelURIs
 	 */
-	static Map<String, OntModel> getContextModelModules(Map<String, String> contextModelURIMap) throws ConfigException {
+	public static Map<String, OntModel> getContextModelModules(Map<String, String> contextModelURIMap) throws ConfigException {
 		Map<String, OntModel> contextModelMap = new HashMap<String, OntModel>();
 		
 		// ======== setup document managers for ontology importing ========
         setupOntologyDocManagers();
 		
         OntDocumentManager domainDocManager = ontDocumentManagers.get(ConfigKeys.DOMAIN_ONT_DOCMGR_FILE);
-        OntModelSpec domainContextModelSpec = new OntModelSpec(OntModelSpec.OWL_MEM_RDFS_INF);
+        OntModelSpec domainContextModelSpec = new OntModelSpec(OntModelSpec.OWL_MEM);
         domainContextModelSpec.setDocumentManager(domainDocManager);
         
         // ======== now we are ready to load all context ontology modules ========
@@ -325,6 +326,9 @@ public class Loader {
         if (contextModelAnnotationURI != null) {
         	contextModelAnnotations.read(contextModelAnnotationURI);
         }
+//        else {
+//        	contextModelAnnotations.read(consertAnnotationURI);
+//        }
         contextModelMap.put(ConfigKeys.DOMAIN_ONT_ANNOTATION_URI, contextModelAnnotations);
         
         // 3) build the constraints context model
@@ -336,7 +340,11 @@ public class Loader {
         if (contextModelConstraintsURI != null) {
         	contextModelConstraints.read(contextModelConstraintsURI);
         }
+//      else {
+//      	contextModelConstraints.read(consertConstraintsURI);
+//      }
         contextModelMap.put(ConfigKeys.DOMAIN_ONT_CONSTRAINT_URI, contextModelConstraints);
+        
         
         // 4) build the functions context model
         String consertFunctionsURI = configProperties.getString(ConfigKeys.CONSERT_ONT_FUNCTIONS_URI);
@@ -347,6 +355,9 @@ public class Loader {
         if (contextModelFunctionsURI != null) {
         	contextModelFunctions.read(contextModelFunctionsURI);
         }
+//        else {
+//        	contextModelFunctions.read(consertFunctionsURI);
+//        }
         contextModelMap.put(ConfigKeys.DOMAIN_ONT_FUNCTIONS_URI, contextModelFunctions);
         
         // 5) build the rules context model
@@ -358,6 +369,9 @@ public class Loader {
         if (contextModelRulesURI != null) {
         	contextModelRules.read(contextModelRulesURI);
         }
+//        else {
+//        	contextModelRules.read(consertRulesURI);
+//        }
         contextModelMap.put(ConfigKeys.DOMAIN_ONT_RULES_URI, contextModelRules);
         
 	    return contextModelMap;
@@ -369,7 +383,13 @@ public class Loader {
 	}
 	
 	public static OntModel getRDFSInferenceModel(OntModel basicContextModel) {
-		return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_RDFS_INF, basicContextModel);
+		//Model inferenceHolder = ModelFactory.createDefaultModel();
+		//Model inferenceBase = inferenceHolder.union(basicContextModel);
+		//return ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_RDFS_INF, inferenceBase);
+		
+		OntModel rdfsModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM_RDFS_INF);
+		rdfsModel.addSubModel(basicContextModel);
+		return rdfsModel;
 	}
 	
 	public static OntModel getOWLInferenceModel(OntModel basicContextModel) {
@@ -384,23 +404,27 @@ public class Loader {
 	 * 		SPL, SPIN and SP ontologies
 	 */
 	public static OntModel ensureSPINImported(OntModel baseContextModelModule) {
-		// First create a new OntModelSpec which copies the inference-mode from
-		// the one of the baseContextModel. It then adds the global instance of the document manager.
-		OntModelSpec enrichedModelSpec = new OntModelSpec(baseContextModelModule.getSpecification());
+		//return baseContextModelModule;
+		
+		// First create a new OWL_MEM OntModelSpec; NO inference should be run on the SPIN ontology
+		// suits because for some reason it messes up the parsing process.
+		// Then add the global instance of the document manager.
+		OntModelSpec enrichedModelSpec = new OntModelSpec(OntModelSpec.OWL_MEM);
 		OntDocumentManager globalDocMgr = OntDocumentManager.getInstance();
 		enrichedModelSpec.setDocumentManager(globalDocMgr);
 		
 		// Now create a new model with the new specification 
 		OntModel enrichedModel = ModelFactory.createOntologyModel(enrichedModelSpec, baseContextModelModule);
-		//globalDocMgr.loadImport(enrichedModel, SP.BASE_URI);
-		//globalDocMgr.loadImport(enrichedModel, SPIN.BASE_URI);
-		//globalDocMgr.loadImport(enrichedModel, SPL.BASE_URI);
+		globalDocMgr.loadImport(enrichedModel, SP.BASE_URI);
+		globalDocMgr.loadImport(enrichedModel, SPIN.BASE_URI);
+		globalDocMgr.loadImport(enrichedModel, SPL.BASE_URI);
 		
-		enrichedModel.read(SP.BASE_URI, "TTL");
-		enrichedModel.read(SPIN.BASE_URI, "TTL");
-		enrichedModel.read(SPL.BASE_URI, "TTL");
+		//enrichedModel.read(SP.BASE_URI, "TTL");
+		//enrichedModel.read(SPIN.BASE_URI, "TTL");
+		//enrichedModel.read(SPL.BASE_URI, "TTL");
 		
 		return enrichedModel;
+		
 		
 		/*
 		Graph baseGraph = baseContextModelModule.getGraph();

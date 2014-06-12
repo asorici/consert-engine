@@ -57,7 +57,7 @@ public class CheckAssertionInheritanceHook extends ContextUpdateHook {
 			// get all annotations of the ContextAssertion
 			Map<Statement, Set<Statement>> assertionAnnotations = 
 				ContextAnnotationUtil.getAnnotationsFor(contextAssertion, assertionUUIDRes, contextModel, contextStoreDataset);
-		
+			
 			try {
 				// create the appropriate UpdateRequest entries for each ancestor assertion
 	            List<UpdateRequest> ancestorAssertionInsertions = 
